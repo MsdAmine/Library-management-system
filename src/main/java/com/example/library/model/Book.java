@@ -1,4 +1,4 @@
-package com.example.library_management_system.model;
+package com.example.library.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
