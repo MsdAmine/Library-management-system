@@ -45,7 +45,7 @@ public class BookController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // --- PRIVATE HELPER FOR MAPPING ---
+
     // In a real job, we'd use a tool like MapStruct, but learn the manual way first!
     private BookResponseDTO convertToDTO(Book book) {
         BookResponseDTO dto = new BookResponseDTO();
