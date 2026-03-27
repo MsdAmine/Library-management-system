@@ -19,7 +19,6 @@ public class BookService {
         return bookRepository.findAll();
     }
 
-    // THIS IS THE METHOD YOUR CONTROLLER IS MISSING
     public Optional<Book> getBookByIsbn(String isbn) {
         return bookRepository.findByIsbn(isbn);
     }
