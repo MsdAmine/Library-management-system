@@ -20,7 +20,6 @@ public class BookController {
 
     @GetMapping
     public ResponseEntity<List<BookResponseDTO>> getAllBooks() {
-        // We map the list of Entities to a list of DTOs
         List<BookResponseDTO> books = bookService.getAllBooks()
                 .stream()
                 .map(this::convertToDTO)
