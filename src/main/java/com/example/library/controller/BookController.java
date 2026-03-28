@@ -30,10 +30,7 @@ public class BookController {
 
     @PostMapping
     public ResponseEntity<BookResponseDTO> addBook(@Valid @RequestBody Book book) {
-        // 1. Call the service (The service handles the ISBN check)
         Book savedBook = bookService.addBook(book);
-
-
         return new ResponseEntity<>(convertToDTO(savedBook), HttpStatus.CREATED);
     }
 
