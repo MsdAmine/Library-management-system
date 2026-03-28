@@ -33,7 +33,7 @@ public class BookController {
         // 1. Call the service (The service handles the ISBN check)
         Book savedBook = bookService.addBook(book);
 
-        // 2. Convert the saved Entity to a DTO for the response
+
         return new ResponseEntity<>(convertToDTO(savedBook), HttpStatus.CREATED);
     }
 
