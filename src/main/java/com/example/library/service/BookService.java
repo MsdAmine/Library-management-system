@@ -24,12 +24,11 @@ public class BookService {
     }
 
     public Book addBook(Book book) {
-        // 1. Business Rule: Specific Exception for duplicate data
+
         if (bookRepository.findByIsbn(book.getIsbn()).isPresent()) {
             throw new ResourceAlreadyExistsException("A book with ISBN " + book.getIsbn() + " already exists.");
         }
 
-        // 2. Business Rule: Logical Data Correction
         if (book.getAvailableCopies() > book.getTotalCopies()) {
             book.setAvailableCopies(book.getTotalCopies());
         }
