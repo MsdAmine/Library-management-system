@@ -17,7 +17,6 @@ public class GlobalExceptionHandler {
         error.put("error", "Duplicate Data");
         error.put("message", ex.getMessage());
 
-        // 409 Conflict is the standard for duplicate resources
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 }
