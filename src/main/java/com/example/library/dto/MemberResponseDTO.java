@@ -9,7 +9,7 @@ public class MemberResponseDTO {
     private String lastName;
     private String email;
     private LocalDate membershipDate;
-    private String fullName; // We can add "calculated" fields here!
+    private String fullName;
 
     // Custom getter to show how DTOs can transform data
     public String getFullName() {
