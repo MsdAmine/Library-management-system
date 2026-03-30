@@ -11,7 +11,7 @@ public class MemberResponseDTO {
     private LocalDate membershipDate;
     private String fullName;
 
-    // Custom getter to show how DTOs can transform data
+
     public String getFullName() {
         return firstName + " " + lastName;
     }
