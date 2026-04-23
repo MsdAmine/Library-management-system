@@ -1,34 +1,29 @@
-# --- Build System (Maven) ---
-target/
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
-release.properties
-dependency-reduced-pom.xml
-buildNumber.properties
-.mvn/timing.properties
-.mvn/wrapper/maven-wrapper.jar
+# Backend
+library-management-system/target/
+library-management-system/.mvn/wrapper/maven-wrapper.jar
+library-management-system/.idea/
+library-management-system/*.class
+library-management-system/*.jar
+library-management-system/*.war
+library-management-system/*.ear
+library-management-system/*.log
 
-# --- IDE Specific (IntelliJ, VS Code, Eclipse) ---
-.idea/
-*.iws
-*.iml
-*.ipr
-.vscode/
-.classpath
-.project
-.settings/
-bin/
+# Frontend
+library-frontend/node_modules/
+library-frontend/dist/
+library-frontend/.env
+library-frontend/.env.local
+library-frontend/.env.development.local
+library-frontend/.env.test.local
+library-frontend/.env.production.local
+library-frontend/npm-debug.log*
+library-frontend/yarn-debug.log*
+library-frontend/yarn-error.log*
 
-# --- Operating System ---
+# OS/IDE
 .DS_Store
-Thumbs.db
-
-# --- Security & Logs ---
-*.log
-application-local.properties
-.env
-
-# --- Compiled files ---
-*.class
+.vscode/
+.idea/
+*.swp
+*.bak
+*.tmp
