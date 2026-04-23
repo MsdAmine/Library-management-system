@@ -1,6 +1,5 @@
 package com.example.library.controller;
 
-
 import com.example.library.dto.BookResponseDTO;
 import com.example.library.model.Book;
 import com.example.library.service.BookService;
@@ -11,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/books")
 @RequiredArgsConstructor
@@ -27,10 +27,30 @@ public class BookController {
         return ResponseEntity.ok(books);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<BookResponseDTO> getBookById(@PathVariable Long id) {
+        return bookService.getBookById(id)
+                .map(this::convertToDTO)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @PostMapping
     public ResponseEntity<BookResponseDTO> addBook(@Valid @RequestBody Book book) {
         Book savedBook = bookService.addBook(book);
         return new ResponseEntity<>(convertToDTO(savedBook), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<BookResponseDTO> updateBook(@PathVariable Long id, @Valid @RequestBody Book book) {
+        Book updatedBook = bookService.updateBook(id, book);
+        return ResponseEntity.ok(convertToDTO(updatedBook));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
+        bookService.deleteBook(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/isbn/{isbn}")
@@ -41,9 +61,9 @@ public class BookController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-
     private BookResponseDTO convertToDTO(Book book) {
         BookResponseDTO dto = new BookResponseDTO();
+        dto.setId(book.getId()); // Added id to DTO for easier reference
         dto.setTitle(book.getTitle());
         dto.setAuthor(book.getAuthor());
         dto.setIsbn(book.getIsbn());

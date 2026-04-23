@@ -19,12 +19,15 @@ public class BookService {
         return bookRepository.findAll();
     }
 
+    public Optional<Book> getBookById(Long id) {
+        return bookRepository.findById(id);
+    }
+
     public Optional<Book> getBookByIsbn(String isbn) {
         return bookRepository.findByIsbn(isbn);
     }
 
     public Book addBook(Book book) {
-
         if (bookRepository.findByIsbn(book.getIsbn()).isPresent()) {
             throw new ResourceAlreadyExistsException("A book with ISBN " + book.getIsbn() + " already exists.");
         }
@@ -34,5 +37,23 @@ public class BookService {
         }
 
         return bookRepository.save(book);
+    }
+
+    public void deleteBook(Long id) {
+        bookRepository.deleteById(id);
+    }
+
+    public Book updateBook(Long id, Book bookDetails) {
+        return bookRepository.findById(id)
+                .map(book -> {
+                    book.setTitle(bookDetails.getTitle());
+                    book.setAuthor(bookDetails.getAuthor());
+                    book.setIsbn(bookDetails.getIsbn());
+                    book.setGenre(bookDetails.getGenre());
+                    book.setPublicationYear(bookDetails.getPublicationYear());
+                    book.setTotalCopies(bookDetails.getTotalCopies());
+                    book.setAvailableCopies(bookDetails.getAvailableCopies());
+                    return bookRepository.save(book);
+                }).orElseThrow(() -> new RuntimeException("Book not found with id " + id));
     }
 }
