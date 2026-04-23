@@ -27,6 +27,10 @@ public class MemberService {
         return memberRepository.findByEmail(email);
     }
 
+    public List<Member> searchMembersByName(String name) {
+        return memberRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(name, name);
+    }
+
     public Member addMember(Member member) {
         if (memberRepository.findByEmail(member.getEmail()).isPresent()) {
             throw new ResourceAlreadyExistsException("A member with email " + member.getEmail() + " already exists.");

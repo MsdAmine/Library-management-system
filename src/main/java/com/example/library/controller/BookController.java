@@ -61,9 +61,30 @@ public class BookController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<BookResponseDTO>> searchBooks(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String author) {
+        
+        List<Book> books;
+        if (title != null) {
+            books = bookService.searchBooksByTitle(title);
+        } else if (author != null) {
+            books = bookService.searchBooksByAuthor(author);
+        } else {
+            books = bookService.getAllBooks();
+        }
+
+        List<BookResponseDTO> response = books.stream()
+                .map(this::convertToDTO)
+                .toList();
+        
+        return ResponseEntity.ok(response);
+    }
+
     private BookResponseDTO convertToDTO(Book book) {
         BookResponseDTO dto = new BookResponseDTO();
-        dto.setId(book.getId()); // Added id to DTO for easier reference
+        dto.setId(book.getId());
         dto.setTitle(book.getTitle());
         dto.setAuthor(book.getAuthor());
         dto.setIsbn(book.getIsbn());

@@ -53,6 +53,15 @@ public class MemberController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<MemberResponseDTO>> searchMembers(@RequestParam String name) {
+        List<MemberResponseDTO> members = memberService.searchMembersByName(name)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+        return ResponseEntity.ok(members);
+    }
+
     private MemberResponseDTO convertToDTO(Member member) {
         MemberResponseDTO dto = new MemberResponseDTO();
         dto.setId(member.getId());

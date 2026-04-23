@@ -27,6 +27,14 @@ public class BookService {
         return bookRepository.findByIsbn(isbn);
     }
 
+    public List<Book> searchBooksByTitle(String title) {
+        return bookRepository.findByTitleContainingIgnoreCase(title);
+    }
+
+    public List<Book> searchBooksByAuthor(String author) {
+        return bookRepository.findByAuthorContainingIgnoreCase(author);
+    }
+
     public Book addBook(Book book) {
         if (bookRepository.findByIsbn(book.getIsbn()).isPresent()) {
             throw new ResourceAlreadyExistsException("A book with ISBN " + book.getIsbn() + " already exists.");
