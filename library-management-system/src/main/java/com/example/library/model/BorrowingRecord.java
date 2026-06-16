@@ -2,6 +2,7 @@ package com.example.library.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -33,6 +34,8 @@ public class BorrowingRecord {
 
     @Enumerated(EnumType.STRING)
     private BorrowingStatus status;
+
+    private BigDecimal fineAmount;
 
     public enum BorrowingStatus {
         BORROWED, RETURNED, OVERDUE
