@@ -13,7 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -25,6 +27,7 @@ public class BorrowingService {
     private final MemberRepository memberRepository;
 
     public static final int MAX_ALLOWED_BOOKS = 5;
+    public static final BigDecimal FINE_PER_OVERDUE_DAY = new BigDecimal("1.50");
 
     @Transactional
     public BorrowingRecord borrowBook(Long memberId, Long bookId) {
@@ -68,8 +71,16 @@ public class BorrowingService {
         bookRepository.incrementAvailableCopies(record.getBook().getId());
 
         // Update record
-        record.setReturnDate(LocalDate.now());
+        LocalDate currentDate = LocalDate.now();
+        record.setReturnDate(currentDate);
         record.setStatus(BorrowingRecord.BorrowingStatus.RETURNED);
+
+        if (currentDate.isAfter(record.getDueDate())) {
+            long daysOverdue = ChronoUnit.DAYS.between(record.getDueDate(), currentDate);
+            record.setFineAmount(FINE_PER_OVERDUE_DAY.multiply(BigDecimal.valueOf(daysOverdue)));
+        } else {
+            record.setFineAmount(BigDecimal.ZERO);
+        }
 
         return borrowingRecordRepository.save(record);
     }
