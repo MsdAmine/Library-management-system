@@ -10,4 +10,5 @@ import java.util.List;
 public interface BorrowingRecordRepository extends JpaRepository<BorrowingRecord, Long> {
     List<BorrowingRecord> findByMemberId(Long memberId);
     List<BorrowingRecord> findByBookId(Long bookId);
+    long countByMemberIdAndStatus(Long memberId, BorrowingRecord.BorrowingStatus status);
 }
