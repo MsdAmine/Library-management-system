@@ -64,16 +64,11 @@ public class BookController {
     @GetMapping("/search")
     public ResponseEntity<List<BookResponseDTO>> searchBooks(
             @RequestParam(required = false) String title,
-            @RequestParam(required = false) String author) {
+            @RequestParam(required = false) String author,
+            @RequestParam(required = false) String genre,
+            @RequestParam(required = false) Boolean available) {
         
-        List<Book> books;
-        if (title != null) {
-            books = bookService.searchBooksByTitle(title);
-        } else if (author != null) {
-            books = bookService.searchBooksByAuthor(author);
-        } else {
-            books = bookService.getAllBooks();
-        }
+        List<Book> books = bookService.searchBooks(title, author, genre, available);
 
         List<BookResponseDTO> response = books.stream()
                 .map(this::convertToDTO)

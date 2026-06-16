@@ -3,7 +3,9 @@ package com.example.library.service;
 import com.example.library.exception.ResourceAlreadyExistsException;
 import com.example.library.model.Book;
 import com.example.library.repository.BookRepository;
+import com.example.library.repository.BookSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,6 +27,14 @@ public class BookService {
 
     public Optional<Book> getBookByIsbn(String isbn) {
         return bookRepository.findByIsbn(isbn);
+    }
+
+    public List<Book> searchBooks(String title, String author, String genre, Boolean available) {
+        Specification<Book> spec = Specification.where(BookSpecification.hasTitle(title))
+                .and(BookSpecification.hasAuthor(author))
+                .and(BookSpecification.hasGenre(genre))
+                .and(BookSpecification.isAvailable(available));
+        return bookRepository.findAll(spec);
     }
 
     public List<Book> searchBooksByTitle(String title) {
