@@ -1,6 +1,7 @@
 package com.example.library.service;
 
 import com.example.library.exception.BookNotAvailableException;
+import com.example.library.exception.BorrowingLimitExceededException;
 import com.example.library.exception.ResourceNotFoundException;
 import com.example.library.model.Book;
 import com.example.library.model.BorrowingRecord;
@@ -23,21 +24,25 @@ public class BorrowingService {
     private final BookRepository bookRepository;
     private final MemberRepository memberRepository;
 
+    public static final int MAX_ALLOWED_BOOKS = 5;
+
     @Transactional
     public BorrowingRecord borrowBook(Long memberId, Long bookId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new ResourceNotFoundException("Member not found with id " + memberId));
 
+        long activeLoans = borrowingRecordRepository.countByMemberIdAndStatus(memberId, BorrowingRecord.BorrowingStatus.BORROWED);
+        if (activeLoans >= MAX_ALLOWED_BOOKS) {
+            throw new BorrowingLimitExceededException("Member has reached the maximum allowed borrowed books limit of " + MAX_ALLOWED_BOOKS);
+        }
+
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id " + bookId));
 
-        if (book.getAvailableCopies() <= 0) {
+        int updatedRows = bookRepository.decrementAvailableCopies(bookId);
+        if (updatedRows == 0) {
             throw new BookNotAvailableException("No copies available for book: " + book.getTitle());
         }
-
-        // Update book availability
-        book.setAvailableCopies(book.getAvailableCopies() - 1);
-        bookRepository.save(book);
 
         // Create borrowing record
         BorrowingRecord record = new BorrowingRecord();
@@ -59,10 +64,8 @@ public class BorrowingService {
             throw new RuntimeException("Book already returned");
         }
 
-        // Update book availability
-        Book book = record.getBook();
-        book.setAvailableCopies(book.getAvailableCopies() + 1);
-        bookRepository.save(book);
+        // Update book availability atomically
+        bookRepository.incrementAvailableCopies(record.getBook().getId());
 
         // Update record
         record.setReturnDate(LocalDate.now());
