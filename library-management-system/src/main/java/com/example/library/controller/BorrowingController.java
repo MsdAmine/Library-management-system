@@ -1,5 +1,6 @@
 package com.example.library.controller;
 
+import com.example.library.dto.ReturnRecordResponseDTO;
 import com.example.library.model.BorrowingRecord;
 import com.example.library.service.BorrowingService;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/borrowings")
@@ -22,8 +25,9 @@ public class BorrowingController {
     }
 
     @PostMapping("/return/{recordId}")
-    public ResponseEntity<BorrowingRecord> returnBook(@PathVariable Long recordId) {
-        return ResponseEntity.ok(borrowingService.returnBook(recordId));
+    public ResponseEntity<ReturnRecordResponseDTO> returnBook(@PathVariable Long recordId) {
+        BorrowingRecord record = borrowingService.returnBook(recordId);
+        return ResponseEntity.ok(borrowingService.toReturnDTO(record));
     }
 
     @GetMapping
@@ -37,5 +41,10 @@ public class BorrowingController {
             @PathVariable Long memberId,
             @PageableDefault(size = 10, sort = "borrowDate") Pageable pageable) {
         return ResponseEntity.ok(borrowingService.getMemberHistory(memberId, pageable));
+    }
+
+    @GetMapping("/member/{memberId}/active")
+    public ResponseEntity<List<BorrowingRecord>> getActiveBorrowings(@PathVariable Long memberId) {
+        return ResponseEntity.ok(borrowingService.getActiveBorrowings(memberId));
     }
 }
