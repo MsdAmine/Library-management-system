@@ -5,10 +5,11 @@ import com.example.library.model.Book;
 import com.example.library.repository.BookRepository;
 import com.example.library.repository.BookSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -17,8 +18,8 @@ public class BookService {
 
     private final BookRepository bookRepository;
 
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
+    public Page<Book> getAllBooks(Pageable pageable) {
+        return bookRepository.findAll(pageable);
     }
 
     public Optional<Book> getBookById(Long id) {
@@ -29,20 +30,12 @@ public class BookService {
         return bookRepository.findByIsbn(isbn);
     }
 
-    public List<Book> searchBooks(String title, String author, String genre, Boolean available) {
+    public Page<Book> searchBooks(String title, String author, String genre, Boolean available, Pageable pageable) {
         Specification<Book> spec = Specification.where(BookSpecification.hasTitle(title))
                 .and(BookSpecification.hasAuthor(author))
                 .and(BookSpecification.hasGenre(genre))
                 .and(BookSpecification.isAvailable(available));
-        return bookRepository.findAll(spec);
-    }
-
-    public List<Book> searchBooksByTitle(String title) {
-        return bookRepository.findByTitleContainingIgnoreCase(title);
-    }
-
-    public List<Book> searchBooksByAuthor(String author) {
-        return bookRepository.findByAuthorContainingIgnoreCase(author);
+        return bookRepository.findAll(spec, pageable);
     }
 
     public Book addBook(Book book) {

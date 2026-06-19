@@ -5,11 +5,12 @@ import com.example.library.model.Book;
 import com.example.library.service.BookService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/books")
@@ -19,12 +20,9 @@ public class BookController {
     private final BookService bookService;
 
     @GetMapping
-    public ResponseEntity<List<BookResponseDTO>> getAllBooks() {
-        List<BookResponseDTO> books = bookService.getAllBooks()
-                .stream()
-                .map(this::convertToDTO)
-                .toList();
-        return ResponseEntity.ok(books);
+    public ResponseEntity<Page<BookResponseDTO>> getAllBooks(
+            @PageableDefault(size = 10, sort = "title") Pageable pageable) {
+        return ResponseEntity.ok(bookService.getAllBooks(pageable).map(this::convertToDTO));
     }
 
     @GetMapping("/{id}")
@@ -62,19 +60,13 @@ public class BookController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<BookResponseDTO>> searchBooks(
+    public ResponseEntity<Page<BookResponseDTO>> searchBooks(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String author,
             @RequestParam(required = false) String genre,
-            @RequestParam(required = false) Boolean available) {
-        
-        List<Book> books = bookService.searchBooks(title, author, genre, available);
-
-        List<BookResponseDTO> response = books.stream()
-                .map(this::convertToDTO)
-                .toList();
-        
-        return ResponseEntity.ok(response);
+            @RequestParam(required = false) Boolean available,
+            @PageableDefault(size = 10, sort = "title") Pageable pageable) {
+        return ResponseEntity.ok(bookService.searchBooks(title, author, genre, available, pageable).map(this::convertToDTO));
     }
 
     private BookResponseDTO convertToDTO(Book book) {
