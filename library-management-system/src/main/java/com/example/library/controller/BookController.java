@@ -69,13 +69,23 @@ public class BookController {
         return ResponseEntity.ok(bookService.searchBooks(title, author, genre, available, pageable).map(this::convertToDTO));
     }
 
+    @GetMapping("/{id}/availability")
+    public ResponseEntity<BookResponseDTO> getBookAvailability(@PathVariable Long id) {
+        return bookService.getBookById(id)
+                .map(this::convertToDTO)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     private BookResponseDTO convertToDTO(Book book) {
         BookResponseDTO dto = new BookResponseDTO();
         dto.setId(book.getId());
         dto.setTitle(book.getTitle());
         dto.setAuthor(book.getAuthor());
         dto.setIsbn(book.getIsbn());
+        dto.setTotalCopies(book.getTotalCopies());
         dto.setAvailableCopies(book.getAvailableCopies());
+        dto.setBorrowedCopies(book.getTotalCopies() - book.getAvailableCopies());
         return dto;
     }
 }
