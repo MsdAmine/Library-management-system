@@ -28,6 +28,6 @@ public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificat
     int decrementAvailableCopies(@Param("id") Long id);
 
     @Modifying
-    @Query("UPDATE Book b SET b.availableCopies = b.availableCopies + 1 WHERE b.id = :id")
+    @Query("UPDATE Book b SET b.availableCopies = b.availableCopies + 1 WHERE b.id = :id AND b.availableCopies < b.totalCopies")
     int incrementAvailableCopies(@Param("id") Long id);
 }

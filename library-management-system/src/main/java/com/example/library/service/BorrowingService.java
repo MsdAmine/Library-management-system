@@ -4,6 +4,7 @@ import com.example.library.dto.ReturnRecordResponseDTO;
 import com.example.library.exception.BookAlreadyReturnedException;
 import com.example.library.exception.BookNotAvailableException;
 import com.example.library.exception.BorrowingLimitExceededException;
+import com.example.library.exception.InventoryStateException;
 import com.example.library.exception.ResourceNotFoundException;
 import com.example.library.model.Book;
 import com.example.library.model.BorrowingRecord;
@@ -71,8 +72,13 @@ public class BorrowingService {
             throw new BookAlreadyReturnedException("Borrowing record " + recordId + " has already been returned");
         }
 
-        // Update book availability atomically
-        bookRepository.incrementAvailableCopies(record.getBook().getId());
+        int restored = bookRepository.incrementAvailableCopies(record.getBook().getId());
+        if (restored == 0) {
+            throw new InventoryStateException(
+                "Cannot restore inventory for book id " + record.getBook().getId() +
+                ": availableCopies already equals totalCopies. Data may be inconsistent."
+            );
+        }
 
         // Update record
         LocalDate currentDate = LocalDate.now();
