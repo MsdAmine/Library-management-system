@@ -1,5 +1,6 @@
 package com.example.library.service;
 
+import com.example.library.dto.ArchiveResultDTO;
 import com.example.library.dto.ReturnRecordResponseDTO;
 import com.example.library.exception.BookAlreadyReturnedException;
 import com.example.library.exception.BookNotAvailableException;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -94,7 +96,24 @@ public class BorrowingService {
     }
 
     public Page<BorrowingRecord> getMemberHistory(Long memberId, Pageable pageable) {
-        return borrowingRecordRepository.findByMemberId(memberId, pageable);
+        return borrowingRecordRepository.findByMemberIdAndArchivedFalse(memberId, pageable);
+    }
+
+    public List<BorrowingRecord> getArchivedRecords() {
+        return borrowingRecordRepository.findByArchivedTrue();
+    }
+
+    @Transactional
+    public ArchiveResultDTO archiveReturnedRecords(int retentionDays) {
+        LocalDate cutoffDate = LocalDate.now().minusDays(retentionDays);
+        LocalDateTime now = LocalDateTime.now();
+        int count = borrowingRecordRepository.archiveReturnedBefore(cutoffDate, now);
+        return ArchiveResultDTO.builder()
+                .archivedCount(count)
+                .retentionDays(retentionDays)
+                .cutoffDate(cutoffDate)
+                .archivedAt(now)
+                .build();
     }
 
     public List<BorrowingRecord> getActiveBorrowings(Long memberId) {

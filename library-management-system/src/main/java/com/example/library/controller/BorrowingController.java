@@ -1,5 +1,6 @@
 package com.example.library.controller;
 
+import com.example.library.dto.ArchiveResultDTO;
 import com.example.library.dto.ReturnRecordResponseDTO;
 import com.example.library.model.BorrowingRecord;
 import com.example.library.service.BorrowingService;
@@ -46,5 +47,16 @@ public class BorrowingController {
     @GetMapping("/member/{memberId}/active")
     public ResponseEntity<List<BorrowingRecord>> getActiveBorrowings(@PathVariable Long memberId) {
         return ResponseEntity.ok(borrowingService.getActiveBorrowings(memberId));
+    }
+
+    @PostMapping("/archive")
+    public ResponseEntity<ArchiveResultDTO> archiveHistory(
+            @RequestParam(defaultValue = "90") int retentionDays) {
+        return ResponseEntity.ok(borrowingService.archiveReturnedRecords(retentionDays));
+    }
+
+    @GetMapping("/archived")
+    public ResponseEntity<List<BorrowingRecord>> getArchivedRecords() {
+        return ResponseEntity.ok(borrowingService.getArchivedRecords());
     }
 }
