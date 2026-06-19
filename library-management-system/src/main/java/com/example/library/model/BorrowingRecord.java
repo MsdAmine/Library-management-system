@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "borrowing_records")
@@ -36,6 +37,11 @@ public class BorrowingRecord {
     private BorrowingStatus status;
 
     private BigDecimal fineAmount;
+
+    @Column(nullable = false)
+    private boolean archived = false;
+
+    private LocalDateTime archivedAt;
 
     public enum BorrowingStatus {
         BORROWED, RETURNED, OVERDUE
