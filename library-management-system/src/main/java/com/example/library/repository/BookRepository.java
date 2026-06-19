@@ -17,6 +17,12 @@ public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificat
     List<Book> findByTitleContainingIgnoreCase(String title);
     List<Book> findByAuthorContainingIgnoreCase(String author);
 
+    @Query("SELECT COALESCE(SUM(b.totalCopies), 0) FROM Book b")
+    long sumTotalCopies();
+
+    @Query("SELECT COALESCE(SUM(b.availableCopies), 0) FROM Book b")
+    long sumAvailableCopies();
+
     @Modifying
     @Query("UPDATE Book b SET b.availableCopies = b.availableCopies - 1 WHERE b.id = :id AND b.availableCopies > 0")
     int decrementAvailableCopies(@Param("id") Long id);
