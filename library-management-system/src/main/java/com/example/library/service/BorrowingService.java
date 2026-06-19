@@ -1,5 +1,7 @@
 package com.example.library.service;
 
+import com.example.library.dto.ReturnRecordResponseDTO;
+import com.example.library.exception.BookAlreadyReturnedException;
 import com.example.library.exception.BookNotAvailableException;
 import com.example.library.exception.BorrowingLimitExceededException;
 import com.example.library.exception.ResourceNotFoundException;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -65,7 +68,7 @@ public class BorrowingService {
                 .orElseThrow(() -> new ResourceNotFoundException("Borrowing record not found with id " + recordId));
 
         if (record.getStatus() == BorrowingRecord.BorrowingStatus.RETURNED) {
-            throw new RuntimeException("Book already returned");
+            throw new BookAlreadyReturnedException("Borrowing record " + recordId + " has already been returned");
         }
 
         // Update book availability atomically
@@ -92,5 +95,28 @@ public class BorrowingService {
 
     public Page<BorrowingRecord> getMemberHistory(Long memberId, Pageable pageable) {
         return borrowingRecordRepository.findByMemberId(memberId, pageable);
+    }
+
+    public List<BorrowingRecord> getActiveBorrowings(Long memberId) {
+        return borrowingRecordRepository.findByMemberIdAndStatus(memberId, BorrowingRecord.BorrowingStatus.BORROWED);
+    }
+
+    public ReturnRecordResponseDTO toReturnDTO(BorrowingRecord record) {
+        long daysOverdue = record.getFineAmount() != null && record.getFineAmount().compareTo(BigDecimal.ZERO) > 0
+                ? ChronoUnit.DAYS.between(record.getDueDate(), record.getReturnDate())
+                : 0;
+
+        return ReturnRecordResponseDTO.builder()
+                .recordId(record.getId())
+                .bookTitle(record.getBook().getTitle())
+                .bookIsbn(record.getBook().getIsbn())
+                .memberName(record.getMember().getFirstName() + " " + record.getMember().getLastName())
+                .borrowDate(record.getBorrowDate())
+                .dueDate(record.getDueDate())
+                .returnDate(record.getReturnDate())
+                .overdue(daysOverdue > 0)
+                .daysOverdue(daysOverdue)
+                .fineAmount(record.getFineAmount())
+                .build();
     }
 }
