@@ -5,11 +5,12 @@ import com.example.library.model.Member;
 import com.example.library.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/members")
@@ -19,12 +20,9 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping
-    public ResponseEntity<List<MemberResponseDTO>> getAllMembers() {
-        List<MemberResponseDTO> members = memberService.getAllMembers()
-                .stream()
-                .map(this::convertToDTO)
-                .toList();
-        return ResponseEntity.ok(members);
+    public ResponseEntity<Page<MemberResponseDTO>> getAllMembers(
+            @PageableDefault(size = 10, sort = "lastName") Pageable pageable) {
+        return ResponseEntity.ok(memberService.getAllMembers(pageable).map(this::convertToDTO));
     }
 
     @GetMapping("/{id}")
@@ -54,12 +52,10 @@ public class MemberController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<MemberResponseDTO>> searchMembers(@RequestParam String name) {
-        List<MemberResponseDTO> members = memberService.searchMembersByName(name)
-                .stream()
-                .map(this::convertToDTO)
-                .toList();
-        return ResponseEntity.ok(members);
+    public ResponseEntity<Page<MemberResponseDTO>> searchMembers(
+            @RequestParam String name,
+            @PageableDefault(size = 10, sort = "lastName") Pageable pageable) {
+        return ResponseEntity.ok(memberService.searchMembersByName(name, pageable).map(this::convertToDTO));
     }
 
     private MemberResponseDTO convertToDTO(Member member) {

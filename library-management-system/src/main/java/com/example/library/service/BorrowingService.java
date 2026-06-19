@@ -10,13 +10,14 @@ import com.example.library.repository.BookRepository;
 import com.example.library.repository.BorrowingRecordRepository;
 import com.example.library.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -85,7 +86,11 @@ public class BorrowingService {
         return borrowingRecordRepository.save(record);
     }
 
-    public List<BorrowingRecord> getMemberHistory(Long memberId) {
-        return borrowingRecordRepository.findByMemberId(memberId);
+    public Page<BorrowingRecord> getAllBorrowings(Pageable pageable) {
+        return borrowingRecordRepository.findAll(pageable);
+    }
+
+    public Page<BorrowingRecord> getMemberHistory(Long memberId, Pageable pageable) {
+        return borrowingRecordRepository.findByMemberId(memberId, pageable);
     }
 }
