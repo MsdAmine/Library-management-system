@@ -1,0 +1,8 @@
+.member-name {
+  font-weight: 600;
+}
+
+.member-email {
+  color: var(--secondary);
+  font-size: 0.9rem;
+}

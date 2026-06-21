@@ -36,10 +36,10 @@ export const bookApi = {
 };
 
 export const memberApi = {
-  getAll: () => api.get('/members'),
+  getAll: (page = 0, size = 10) => api.get('/members', { params: { page, size, sort: 'lastName' } }),
   getById: (id: number) => api.get(`/members/${id}`),
   add: (member: any) => api.post('/members', member),
-  search: (name: string) => api.get('/members/search', { params: { name } }),
+  search: (name: string, page = 0, size = 10) => api.get('/members/search', { params: { name, page, size, sort: 'lastName' } }),
   update: (id: number, member: any) => api.put(`/members/${id}`, member),
   delete: (id: number) => api.delete(`/members/${id}`),
 };
