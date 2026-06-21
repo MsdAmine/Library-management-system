@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Book, Users, LayoutDashboard, History, Library, LogOut, UserPlus } from 'lucide-react';
+import { Book, Users, LayoutDashboard, History, Library, LogOut } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import './Navbar.css';
 
@@ -37,9 +37,9 @@ const Navbar = () => {
             <span>Borrowing</span>
           </NavLink>
           {role === 'ADMIN' && (
-            <NavLink to="/register" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-              <UserPlus size={20} />
-              <span>Register Staff</span>
+            <NavLink to="/users" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+              <Users size={20} />
+              <span>Users</span>
             </NavLink>
           )}
           {role && (

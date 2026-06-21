@@ -44,6 +44,12 @@ export const memberApi = {
   delete: (id: number) => api.delete(`/members/${id}`),
 };
 
+export const userApi = {
+  getAll: () => api.get('/users'),
+  delete: (id: number) => api.delete(`/users/${id}`),
+  create: (userData: { email: string; password: string; role: string }) => api.post('/auth/register', userData),
+};
+
 export const borrowingApi = {
   getAll: (page = 0, size = 10) => api.get('/borrowings', { params: { page, size, sort: 'borrowDate,desc' } }),
   borrow: (memberId: number, bookId: number) =>
