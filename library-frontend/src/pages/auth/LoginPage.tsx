@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { authApi } from '../../services/api';
 import { Library, Mail, Lock, Loader2 } from 'lucide-react';
@@ -82,7 +82,7 @@ const LoginPage = () => {
         </form>
 
         <div className="auth-footer">
-          Don't have an account? <Link to="/register">Create one</Link>
+          Contact your administrator to create an account.
         </div>
       </div>
     </div>

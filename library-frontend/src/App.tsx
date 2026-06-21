@@ -30,7 +30,13 @@ function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+
+          {/* Admin-only: register new staff */}
+          <Route path="/register" element={
+            <RoleProtectedRoute roles={['ADMIN']}>
+              <RegisterPage />
+            </RoleProtectedRoute>
+          } />
 
           {/* Unauthorized page – accessible to any authenticated user */}
           <Route path="/unauthorized" element={

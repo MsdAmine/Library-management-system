@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { bookApi } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import { Plus, Search, Trash2, Edit, X } from 'lucide-react';
 import './Books.css';
 
@@ -36,6 +37,8 @@ const EMPTY_FORM: BookForm = {
 };
 
 const Books = () => {
+  const { role } = useAuth();
+  const isAdmin = role === 'ADMIN';
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -224,7 +227,7 @@ const Books = () => {
                     <button className="icon-btn edit" title="Edit" onClick={() => openEditModal(book)}>
                       <Edit size={18} />
                     </button>
-                    {deletingId === book.id ? (
+                    {isAdmin && (deletingId === book.id ? (
                       <>
                         <button
                           className="icon-btn delete"
@@ -242,7 +245,7 @@ const Books = () => {
                       <button className="icon-btn delete" title="Delete" onClick={() => setDeletingId(book.id)}>
                         <Trash2 size={18} />
                       </button>
-                    )}
+                    ))}
                   </td>
                 </tr>
               ))}
