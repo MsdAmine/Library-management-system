@@ -45,10 +45,12 @@ export const memberApi = {
 };
 
 export const borrowingApi = {
-  borrow: (memberId: number, bookId: number) => 
+  getAll: (page = 0, size = 10) => api.get('/borrowings', { params: { page, size, sort: 'borrowDate,desc' } }),
+  borrow: (memberId: number, bookId: number) =>
     api.post('/borrowings/borrow', null, { params: { memberId, bookId } }),
   returnBook: (recordId: number) => api.post(`/borrowings/return/${recordId}`),
-  getMemberHistory: (memberId: number) => api.get(`/borrowings/member/${memberId}`),
+  getMemberHistory: (memberId: number, page = 0, size = 10) =>
+    api.get(`/borrowings/member/${memberId}`, { params: { page, size } }),
 };
 
 export default api;
