@@ -3,6 +3,7 @@ package com.example.library.service;
 import com.example.library.dto.AuthenticationRequest;
 import com.example.library.dto.AuthenticationResponse;
 import com.example.library.dto.RegisterRequest;
+import com.example.library.exception.ResourceAlreadyExistsException;
 import com.example.library.model.Role;
 import com.example.library.model.User;
 import com.example.library.repository.UserRepository;
@@ -23,6 +24,9 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
+        if (repository.findByEmail(request.getEmail()).isPresent()) {
+            throw new ResourceAlreadyExistsException("Email is already in use");
+        }
         var user = User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
