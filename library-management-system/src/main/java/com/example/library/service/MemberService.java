@@ -49,6 +49,7 @@ public class MemberService {
                     member.setFirstName(memberDetails.getFirstName());
                     member.setLastName(memberDetails.getLastName());
                     member.setEmail(memberDetails.getEmail());
+                    member.setMembershipDate(memberDetails.getMembershipDate());
                     return memberRepository.save(member);
                 }).orElseThrow(() -> new RuntimeException("Member not found with id " + id));
     }
