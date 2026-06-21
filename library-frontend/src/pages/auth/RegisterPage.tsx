@@ -22,13 +22,9 @@ const RegisterPage = () => {
       const response = await authApi.register({ email, password, role });
       const { token: newToken, role: newRole } = response.data;
       login(newToken, newRole);
-      if (newRole === 'USER') {
-        navigate('/unauthorized');
-      } else {
-        navigate('/');
-      }
+      navigate('/');
     } catch (err: any) {
-      setError('Registration failed. Email might already be taken.');
+      setError(err.response?.data?.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }

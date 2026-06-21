@@ -27,7 +27,7 @@ const LoginPage = () => {
         navigate('/');
       }
     } catch (err: any) {
-      setError('Invalid email or password');
+      setError(err.response?.data?.message || 'Invalid email or password');
     } finally {
       setLoading(false);
     }
