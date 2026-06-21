@@ -83,6 +83,8 @@ public class BookController {
         dto.setTitle(book.getTitle());
         dto.setAuthor(book.getAuthor());
         dto.setIsbn(book.getIsbn());
+        dto.setPublicationYear(book.getPublicationYear());
+        dto.setGenre(book.getGenre());
         dto.setTotalCopies(book.getTotalCopies());
         dto.setAvailableCopies(book.getAvailableCopies());
         dto.setBorrowedCopies(book.getTotalCopies() - book.getAvailableCopies());
