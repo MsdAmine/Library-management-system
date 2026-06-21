@@ -19,8 +19,13 @@ const LoginPage = () => {
     setError('');
     try {
       const response = await authApi.login({ email, password });
-      login(response.data.token);
-      navigate('/');
+      const { token, role } = response.data;
+      login(token, role);
+      if (role === 'USER') {
+        navigate('/unauthorized');
+      } else {
+        navigate('/');
+      }
     } catch (err: any) {
       setError('Invalid email or password');
     } finally {

@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import RoleProtectedRoute from './components/auth/RoleProtectedRoute';
 import Navbar from './components/layout/Navbar';
 import Dashboard from './pages/Dashboard';
 import Books from './pages/Books';
@@ -8,6 +9,7 @@ import Members from './pages/Members';
 import Borrowings from './pages/Borrowings';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
+import UnauthorizedPage from './pages/auth/UnauthorizedPage';
 import './App.css';
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -30,26 +32,33 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
 
-          {/* Protected Routes */}
-          <Route path="/" element={
+          {/* Unauthorized page – accessible to any authenticated user */}
+          <Route path="/unauthorized" element={
             <ProtectedRoute>
-              <MainLayout><Dashboard /></MainLayout>
+              <UnauthorizedPage />
             </ProtectedRoute>
+          } />
+
+          {/* Management Routes – ADMIN and LIBRARIAN only */}
+          <Route path="/" element={
+            <RoleProtectedRoute>
+              <MainLayout><Dashboard /></MainLayout>
+            </RoleProtectedRoute>
           } />
           <Route path="/books" element={
-            <ProtectedRoute>
+            <RoleProtectedRoute>
               <MainLayout><Books /></MainLayout>
-            </ProtectedRoute>
+            </RoleProtectedRoute>
           } />
           <Route path="/members" element={
-            <ProtectedRoute>
+            <RoleProtectedRoute>
               <MainLayout><Members /></MainLayout>
-            </ProtectedRoute>
+            </RoleProtectedRoute>
           } />
           <Route path="/borrowings" element={
-            <ProtectedRoute>
+            <RoleProtectedRoute>
               <MainLayout><Borrowings /></MainLayout>
-            </ProtectedRoute>
+            </RoleProtectedRoute>
           } />
 
           {/* Redirects */}

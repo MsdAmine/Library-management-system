@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import './Navbar.css';
 
 const Navbar = () => {
-  const { logout } = useAuth();
+  const { logout, role } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -36,6 +36,20 @@ const Navbar = () => {
             <History size={20} />
             <span>Borrowing</span>
           </NavLink>
+          {role && (
+            <span style={{
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              padding: '2px 8px',
+              borderRadius: '9999px',
+              background: role === 'ADMIN' ? '#7c3aed' : '#0891b2',
+              color: '#fff',
+              textTransform: 'capitalize',
+              letterSpacing: '0.05em',
+            }}>
+              {role.toLowerCase()}
+            </span>
+          )}
           <button onClick={handleLogout} className="logout-btn">
             <LogOut size={20} />
             <span>Logout</span>
