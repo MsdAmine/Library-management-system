@@ -8,8 +8,8 @@ import Books from './pages/Books';
 import Members from './pages/Members';
 import Borrowings from './pages/Borrowings';
 import LoginPage from './pages/auth/LoginPage';
-import RegisterPage from './pages/auth/RegisterPage';
 import UnauthorizedPage from './pages/auth/UnauthorizedPage';
+import Users from './pages/Users';
 import './App.css';
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -30,13 +30,6 @@ function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<LoginPage />} />
-
-          {/* Admin-only: register new staff */}
-          <Route path="/register" element={
-            <RoleProtectedRoute roles={['ADMIN']}>
-              <RegisterPage />
-            </RoleProtectedRoute>
-          } />
 
           {/* Unauthorized page – accessible to any authenticated user */}
           <Route path="/unauthorized" element={
@@ -64,6 +57,11 @@ function App() {
           <Route path="/borrowings" element={
             <RoleProtectedRoute>
               <MainLayout><Borrowings /></MainLayout>
+            </RoleProtectedRoute>
+          } />
+          <Route path="/users" element={
+            <RoleProtectedRoute roles={['ADMIN']}>
+              <MainLayout><Users /></MainLayout>
             </RoleProtectedRoute>
           } />
 
