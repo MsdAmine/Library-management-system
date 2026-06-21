@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { memberApi } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import { Plus, Search, Trash2, Edit, X } from 'lucide-react';
 import './Members.css';
 
@@ -26,6 +27,8 @@ const EMPTY_FORM: MemberForm = {
 };
 
 const Members = () => {
+  const { role } = useAuth();
+  const isAdmin = role === 'ADMIN';
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -207,7 +210,7 @@ const Members = () => {
                     <button className="icon-btn edit" title="Edit" onClick={() => openEditModal(member)}>
                       <Edit size={18} />
                     </button>
-                    {deletingId === member.id ? (
+                    {isAdmin && (deletingId === member.id ? (
                       <>
                         <button
                           className="icon-btn delete"
@@ -225,7 +228,7 @@ const Members = () => {
                       <button className="icon-btn delete" title="Delete" onClick={() => setDeletingId(member.id)}>
                         <Trash2 size={18} />
                       </button>
-                    )}
+                    ))}
                   </td>
                 </tr>
               ))}
