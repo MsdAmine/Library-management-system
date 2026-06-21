@@ -26,10 +26,11 @@ export const authApi = {
 };
 
 export const bookApi = {
-  getAll: () => api.get('/books'),
+  getAll: (page = 0, size = 10) => api.get('/books', { params: { page, size, sort: 'title' } }),
   getByIsbn: (isbn: string) => api.get(`/books/isbn/${isbn}`),
   add: (book: any) => api.post('/books', book),
-  search: (params: { title?: string; author?: string }) => api.get('/books/search', { params }),
+  search: (params: { title?: string; author?: string; genre?: string; available?: boolean }, page = 0, size = 10) =>
+    api.get('/books/search', { params: { ...params, page, size, sort: 'title' } }),
   update: (id: number, book: any) => api.put(`/books/${id}`, book),
   delete: (id: number) => api.delete(`/books/${id}`),
 };

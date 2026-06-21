@@ -8,6 +8,8 @@ public class BookResponseDTO {
     private String title;
     private String author;
     private String isbn;
+    private int publicationYear;
+    private String genre;
     private int totalCopies;
     private int availableCopies;
     private int borrowedCopies;
