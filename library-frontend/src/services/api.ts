@@ -59,4 +59,8 @@ export const borrowingApi = {
     api.get(`/borrowings/member/${memberId}`, { params: { page, size } }),
 };
 
+export const analyticsApi = {
+  get: () => api.get('/analytics'),
+};
+
 export default api;

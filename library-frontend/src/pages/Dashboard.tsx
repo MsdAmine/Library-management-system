@@ -1,12 +1,31 @@
+import { useState, useEffect } from 'react';
 import { Book, Users, History, AlertCircle } from 'lucide-react';
+import { analyticsApi } from '../services/api';
 import './Dashboard.css';
 
+interface Analytics {
+  books: { totalTitles: number; totalCopies: number; availableCopies: number; borrowedCopies: number };
+  borrowings: { totalBorrowings: number; activeBorrowings: number; overdueBorrowings: number; totalFinesCollected: number };
+  members: { totalMembers: number; activeMembers: number };
+}
+
 const Dashboard = () => {
+  const [analytics, setAnalytics] = useState<Analytics | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    analyticsApi.get()
+      .then((res) => setAnalytics(res.data))
+      .catch(() => setError('Failed to load analytics'))
+      .finally(() => setLoading(false));
+  }, []);
+
   const stats = [
-    { title: 'Total Books', value: '1,284', icon: <Book />, color: 'blue' },
-    { title: 'Active Members', value: '452', icon: <Users />, color: 'green' },
-    { title: 'Books Borrowed', value: '86', icon: <History />, color: 'indigo' },
-    { title: 'Overdue Returns', value: '12', icon: <AlertCircle />, color: 'orange' },
+    { title: 'Total Books', value: analytics?.books.totalTitles, icon: <Book />, color: 'blue' },
+    { title: 'Active Members', value: analytics?.members.activeMembers, icon: <Users />, color: 'green' },
+    { title: 'Books Borrowed', value: analytics?.borrowings.activeBorrowings, icon: <History />, color: 'indigo' },
+    { title: 'Overdue Returns', value: analytics?.borrowings.overdueBorrowings, icon: <AlertCircle />, color: 'orange' },
   ];
 
   return (
@@ -16,13 +35,17 @@ const Dashboard = () => {
         <p>Manage your library resources and member activities.</p>
       </header>
 
+      {error && <p className="error-message">{error}</p>}
+
       <div className="stats-grid">
         {stats.map((stat, index) => (
           <div key={index} className={`stat-card ${stat.color}`}>
             <div className="stat-icon">{stat.icon}</div>
             <div className="stat-info">
               <h3>{stat.title}</h3>
-              <p className="stat-value">{stat.value}</p>
+              <p className="stat-value">
+                {loading ? '—' : stat.value?.toLocaleString() ?? '0'}
+              </p>
             </div>
           </div>
         ))}
