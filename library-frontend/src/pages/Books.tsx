@@ -41,56 +41,56 @@ const Books = () => {
   const isAdmin = role === 'ADMIN';
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [filters, setFilters] = useState({ title: '', author: '', genre: '', available: '' });
+  const [version, setVersion] = useState(0);
 
   const [showModal, setShowModal] = useState(false);
   const [editingBook, setEditingBook] = useState<Book | null>(null);
   const [form, setForm] = useState<BookForm>(EMPTY_FORM);
   const [formError, setFormError] = useState('');
   const [submitting, setSubmitting] = useState(false);
-
   const [deletingId, setDeletingId] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!searchTerm) {
-      fetchBooks(currentPage);
-    }
-  }, [currentPage]);
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const active = Object.values(filters).some(v => v !== '');
+        const response = active
+          ? await bookApi.search({
+              title: filters.title || undefined,
+              author: filters.author || undefined,
+              genre: filters.genre || undefined,
+              available: filters.available === '' ? undefined : filters.available === 'true',
+            }, currentPage)
+          : await bookApi.getAll(currentPage);
+        if (!cancelled) {
+          setBooks(response.data.content);
+          setTotalPages(response.data.totalPages);
+        }
+      } catch (err) {
+        if (!cancelled) console.error('Error loading books:', err);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }, 350);
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [filters, currentPage, version]);
 
-  const fetchBooks = async (page = 0) => {
-    setLoading(true);
-    try {
-      const response = await bookApi.getAll(page);
-      setBooks(response.data.content);
-      setTotalPages(response.data.totalPages);
-    } catch (error) {
-      console.error('Error fetching books:', error);
-    } finally {
-      setLoading(false);
-    }
+  const setFilter = (key: keyof typeof filters, value: string) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+    setCurrentPage(0);
   };
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!searchTerm.trim()) {
-      setCurrentPage(0);
-      fetchBooks(0);
-      return;
-    }
-    setLoading(true);
-    try {
-      const response = await bookApi.search({ title: searchTerm });
-      setBooks(response.data.content);
-      setTotalPages(response.data.totalPages);
-      setCurrentPage(0);
-    } catch (error) {
-      console.error('Search failed:', error);
-    } finally {
-      setLoading(false);
-    }
+  const clearFilters = () => {
+    setFilters({ title: '', author: '', genre: '', available: '' });
+    setCurrentPage(0);
   };
+
+  const hasActiveFilters = Object.values(filters).some(v => v !== '');
 
   const openAddModal = () => {
     setEditingBook(null);
@@ -146,7 +146,7 @@ const Books = () => {
         await bookApi.add(payload);
       }
       closeModal();
-      fetchBooks(currentPage);
+      setVersion(v => v + 1);
     } catch (err: any) {
       const msg = err.response?.data?.message ?? 'An error occurred. Please try again.';
       setFormError(msg);
@@ -159,9 +159,11 @@ const Books = () => {
     try {
       await bookApi.delete(id);
       setDeletingId(null);
-      const newTotal = books.length === 1 && currentPage > 0 ? currentPage - 1 : currentPage;
-      setCurrentPage(newTotal);
-      fetchBooks(newTotal);
+      if (books.length === 1 && currentPage > 0) {
+        setCurrentPage(p => p - 1);
+      } else {
+        setVersion(v => v + 1);
+      }
     } catch (err) {
       console.error('Delete failed:', err);
     }
@@ -180,16 +182,44 @@ const Books = () => {
         </button>
       </header>
 
-      <div className="table-actions">
-        <form className="search-box" onSubmit={handleSearch}>
-          <Search size={18} className="search-icon" />
+      <div className="filter-bar">
+        <div className="filter-search">
+          <Search size={16} className="filter-search-icon" />
           <input
             type="text"
-            placeholder="Search by title..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Title..."
+            value={filters.title}
+            onChange={e => setFilter('title', e.target.value)}
           />
-        </form>
+        </div>
+        <input
+          className="filter-input"
+          type="text"
+          placeholder="Author..."
+          value={filters.author}
+          onChange={e => setFilter('author', e.target.value)}
+        />
+        <input
+          className="filter-input"
+          type="text"
+          placeholder="Genre..."
+          value={filters.genre}
+          onChange={e => setFilter('genre', e.target.value)}
+        />
+        <select
+          className="filter-select"
+          value={filters.available}
+          onChange={e => setFilter('available', e.target.value)}
+        >
+          <option value="">All availability</option>
+          <option value="true">Available only</option>
+          <option value="false">Unavailable only</option>
+        </select>
+        {hasActiveFilters && (
+          <button className="clear-filters-btn" onClick={clearFilters}>
+            <X size={14} /> Clear
+          </button>
+        )}
       </div>
 
       <div className="table-container">

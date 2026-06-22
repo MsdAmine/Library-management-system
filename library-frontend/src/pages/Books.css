@@ -35,11 +35,12 @@
   top: 50%;
   transform: translateY(-50%);
   color: var(--text-muted);
+  pointer-events: none;
 }
 
 .search-box input {
   width: 100%;
-  padding: 0.75rem 1rem 0.75rem 2.75rem;
+  padding: 0.75rem 2.5rem 0.75rem 2.75rem;
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
   background: var(--bg-surface);
@@ -50,6 +51,122 @@
 .search-box input:focus {
   outline: none;
   border-color: var(--primary);
+}
+
+.search-clear {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  transition: background 0.15s, color 0.15s;
+}
+
+.search-clear:hover {
+  background: #f1f5f9;
+  color: var(--text-main);
+}
+
+/* ── Filter bar ── */
+.filter-bar {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filter-search {
+  position: relative;
+  flex: 1;
+  min-width: 160px;
+}
+
+.filter-search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.filter-search input {
+  width: 100%;
+  padding: 0.65rem 0.875rem 0.65rem 2.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+}
+
+.filter-search input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.filter-input {
+  flex: 1;
+  min-width: 130px;
+  padding: 0.65rem 0.875rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  font-size: 0.95rem;
+  color: var(--text-main);
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.filter-input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.filter-select {
+  padding: 0.65rem 0.875rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  font-size: 0.95rem;
+  color: var(--text-main);
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.clear-filters-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.65rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.clear-filters-btn:hover {
+  background: #fef2f2;
+  color: var(--danger);
+  border-color: #fecaca;
 }
 
 .table-container {
