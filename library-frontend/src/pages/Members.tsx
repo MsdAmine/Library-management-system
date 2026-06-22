@@ -34,6 +34,7 @@ const Members = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [version, setVersion] = useState(0);
 
   const [showModal, setShowModal] = useState(false);
   const [editingMember, setEditingMember] = useState<Member | null>(null);
@@ -44,42 +45,29 @@ const Members = () => {
   const [deletingId, setDeletingId] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!searchTerm) {
-      fetchMembers(currentPage);
-    }
-  }, [currentPage]);
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const response = searchTerm.trim()
+          ? await memberApi.search(searchTerm, currentPage)
+          : await memberApi.getAll(currentPage);
+        if (!cancelled) {
+          setMembers(response.data.content);
+          setTotalPages(response.data.totalPages);
+        }
+      } catch (err) {
+        if (!cancelled) console.error('Error loading members:', err);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }, 350);
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [searchTerm, currentPage, version]);
 
-  const fetchMembers = async (page = 0) => {
-    setLoading(true);
-    try {
-      const response = await memberApi.getAll(page);
-      setMembers(response.data.content);
-      setTotalPages(response.data.totalPages);
-    } catch (error) {
-      console.error('Error fetching members:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!searchTerm.trim()) {
-      setCurrentPage(0);
-      fetchMembers(0);
-      return;
-    }
-    setLoading(true);
-    try {
-      const response = await memberApi.search(searchTerm);
-      setMembers(response.data.content);
-      setTotalPages(response.data.totalPages);
-      setCurrentPage(0);
-    } catch (error) {
-      console.error('Search failed:', error);
-    } finally {
-      setLoading(false);
-    }
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(0);
   };
 
   const openAddModal = () => {
@@ -130,7 +118,7 @@ const Members = () => {
         await memberApi.add(payload);
       }
       closeModal();
-      fetchMembers(currentPage);
+      setVersion(v => v + 1);
     } catch (err: any) {
       const msg = err.response?.data?.message ?? 'An error occurred. Please try again.';
       setFormError(msg);
@@ -143,9 +131,11 @@ const Members = () => {
     try {
       await memberApi.delete(id);
       setDeletingId(null);
-      const newPage = members.length === 1 && currentPage > 0 ? currentPage - 1 : currentPage;
-      setCurrentPage(newPage);
-      fetchMembers(newPage);
+      if (members.length === 1 && currentPage > 0) {
+        setCurrentPage(p => p - 1);
+      } else {
+        setVersion(v => v + 1);
+      }
     } catch (err) {
       console.error('Delete failed:', err);
     }
@@ -172,15 +162,20 @@ const Members = () => {
       </header>
 
       <div className="table-actions">
-        <form className="search-box" onSubmit={handleSearch}>
+        <div className="search-box">
           <Search size={18} className="search-icon" />
           <input
             type="text"
             placeholder="Search by name..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={e => handleSearchChange(e.target.value)}
           />
-        </form>
+          {searchTerm && (
+            <button className="search-clear" onClick={() => handleSearchChange('')} title="Clear search">
+              <X size={14} />
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="table-container">
