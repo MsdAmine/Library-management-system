@@ -1,8 +1,10 @@
 package com.example.library.service;
 
+import com.example.library.dto.MemberRequestDTO;
 import com.example.library.exception.ResourceAlreadyExistsException;
-import com.example.library.model.Member;
-import com.example.library.repository.MemberRepository;
+import com.example.library.model.Role;
+import com.example.library.model.User;
+import com.example.library.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,42 +16,60 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MemberService {
 
-    private final MemberRepository memberRepository;
+    private final UserRepository userRepository;
 
-    public Page<Member> getAllMembers(Pageable pageable) {
-        return memberRepository.findAll(pageable);
+    public Page<User> getAllMembers(Pageable pageable) {
+        return userRepository.findAllActive(pageable);
     }
 
-    public Optional<Member> getMemberById(Long id) {
-        return memberRepository.findById(id);
+    public Optional<User> getMemberById(Long id) {
+        return userRepository.findActiveById(id);
     }
 
-    public Optional<Member> getMemberByEmail(String email) {
-        return memberRepository.findByEmail(email);
+    public Optional<User> getMemberByEmail(String email) {
+        return userRepository.findActiveByEmail(email);
     }
 
-    public Page<Member> searchMembersByName(String name, Pageable pageable) {
-        return memberRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(name, name, pageable);
+    public Page<User> searchMembersByName(String name, Pageable pageable) {
+        return userRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseAndActiveTrue(name, name, pageable);
     }
 
-    public Member addMember(Member member) {
-        if (memberRepository.findByEmail(member.getEmail()).isPresent()) {
-            throw new ResourceAlreadyExistsException("A member with email " + member.getEmail() + " already exists.");
+    public User addMember(MemberRequestDTO memberDetails) {
+        if (userRepository.findByEmail(memberDetails.getEmail()).isPresent()) {
+            throw new ResourceAlreadyExistsException("A member with email " + memberDetails.getEmail() + " already exists.");
         }
-        return memberRepository.save(member);
+        User user = User.builder()
+            .firstName(memberDetails.getFirstName())
+            .lastName(memberDetails.getLastName())
+            .email(memberDetails.getEmail())
+            .password(memberDetails.getPassword())
+            .membershipDate(memberDetails.getMembershipDate())
+            .role(Role.USER)
+            .active(true)
+            .build();
+        return userRepository.save(user);
     }
 
     public void deleteMember(Long id) {
-        memberRepository.deleteById(id);
+        userRepository.findById(id).ifPresent(user -> {
+            user.setActive(false);
+            userRepository.save(user);
+        });
     }
 
-    public Member updateMember(Long id, Member memberDetails) {
-        return memberRepository.findById(id)
-                .map(member -> {
-                    member.setFirstName(memberDetails.getFirstName());
-                    member.setLastName(memberDetails.getLastName());
-                    member.setEmail(memberDetails.getEmail());
-                    return memberRepository.save(member);
+    public User updateMember(Long id, MemberRequestDTO memberDetails) {
+        return userRepository.findActiveById(id)
+                .map(user -> {
+                    user.setFirstName(memberDetails.getFirstName());
+                    user.setLastName(memberDetails.getLastName());
+                    user.setEmail(memberDetails.getEmail());
+                    if (memberDetails.getPassword() != null && !memberDetails.getPassword().isEmpty()) {
+                        user.setPassword(memberDetails.getPassword());
+                    }
+                    if (memberDetails.getMembershipDate() != null) {
+                        user.setMembershipDate(memberDetails.getMembershipDate());
+                    }
+                    return userRepository.save(user);
                 }).orElseThrow(() -> new RuntimeException("Member not found with id " + id));
     }
 }

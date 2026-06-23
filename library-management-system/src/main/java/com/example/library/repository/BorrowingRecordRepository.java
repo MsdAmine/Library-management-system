@@ -16,18 +16,18 @@ import java.util.List;
 
 @Repository
 public interface BorrowingRecordRepository extends JpaRepository<BorrowingRecord, Long> {
-    Page<BorrowingRecord> findByMemberId(Long memberId, Pageable pageable);
-    Page<BorrowingRecord> findByMemberIdAndArchivedFalse(Long memberId, Pageable pageable);
-    List<BorrowingRecord> findByMemberIdAndStatus(Long memberId, BorrowingRecord.BorrowingStatus status);
+    Page<BorrowingRecord> findByUserId(Long userId, Pageable pageable);
+    Page<BorrowingRecord> findByUserIdAndArchivedFalse(Long userId, Pageable pageable);
+    List<BorrowingRecord> findByUserIdAndStatus(Long userId, BorrowingRecord.BorrowingStatus status);
     List<BorrowingRecord> findByBookId(Long bookId);
     List<BorrowingRecord> findByArchivedTrue();
-    long countByMemberIdAndStatus(Long memberId, BorrowingRecord.BorrowingStatus status);
+    long countByUserIdAndStatus(Long userId, BorrowingRecord.BorrowingStatus status);
     long countByStatus(BorrowingRecord.BorrowingStatus status);
 
     @Query("SELECT COUNT(r) FROM BorrowingRecord r WHERE r.status = 'BORROWED' AND r.dueDate < :today")
     long countOverdue(LocalDate today);
 
-    @Query("SELECT COUNT(DISTINCT r.member) FROM BorrowingRecord r WHERE r.status = 'BORROWED'")
+    @Query("SELECT COUNT(DISTINCT r.user) FROM BorrowingRecord r WHERE r.status = 'BORROWED'")
     long countActiveMembers();
 
     @Query("SELECT COALESCE(SUM(r.fineAmount), 0) FROM BorrowingRecord r WHERE r.status = 'RETURNED' AND r.fineAmount > 0")

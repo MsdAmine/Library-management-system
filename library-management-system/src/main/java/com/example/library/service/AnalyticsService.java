@@ -4,7 +4,7 @@ import com.example.library.dto.LibraryAnalyticsDTO;
 import com.example.library.model.BorrowingRecord;
 import com.example.library.repository.BookRepository;
 import com.example.library.repository.BorrowingRecordRepository;
-import com.example.library.repository.MemberRepository;
+import com.example.library.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ public class AnalyticsService {
 
     private final BookRepository bookRepository;
     private final BorrowingRecordRepository borrowingRecordRepository;
-    private final MemberRepository memberRepository;
+    private final UserRepository userRepository;
 
     public LibraryAnalyticsDTO getAnalytics() {
         long totalCopies = bookRepository.sumTotalCopies();
@@ -38,7 +38,7 @@ public class AnalyticsService {
                         .totalFinesCollected(borrowingRecordRepository.sumFinesCollected())
                         .build())
                 .members(LibraryAnalyticsDTO.MemberStats.builder()
-                        .totalMembers(memberRepository.count())
+                        .totalMembers(userRepository.count())
                         .activeMembers(borrowingRecordRepository.countActiveMembers())
                         .build())
                 .build();
