@@ -38,6 +38,9 @@ public class Book {
     @PositiveOrZero
     private int availableCopies;
 
+    @Column(nullable = false)
+    private boolean active = true;
+
     // --- CHALLENGE FIELDS ---
 
     @Column(updatable = false) // Once set at creation, this should never change

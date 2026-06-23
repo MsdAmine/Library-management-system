@@ -20,6 +20,9 @@ library-frontend/npm-debug.log*
 library-frontend/yarn-debug.log*
 library-frontend/yarn-error.log*
 
+# Local docs
+ARCHITECTURE.md
+
 # OS/IDE
 .DS_Store
 .vscode/

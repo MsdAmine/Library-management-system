@@ -31,6 +31,9 @@ public class Member {
     @NotNull(message = "Membership date is required")
     private LocalDate membershipDate;
 
+    @Column(nullable = false)
+    private boolean active = true;
+
     // --- Audit Fields for Professional Tracking ---
     @Column(updatable = false)
     private LocalDateTime createdAt;

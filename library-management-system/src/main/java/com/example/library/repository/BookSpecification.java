@@ -5,6 +5,10 @@ import org.springframework.data.jpa.domain.Specification;
 
 public class BookSpecification {
 
+    public static Specification<Book> isActive() {
+        return (root, query, cb) -> cb.equal(root.get("active"), true);
+    }
+
     public static Specification<Book> hasTitle(String title) {
         return (root, query, cb) -> title == null || title.isEmpty() ? null : 
                 cb.like(cb.lower(root.get("title")), "%" + title.toLowerCase() + "%");
