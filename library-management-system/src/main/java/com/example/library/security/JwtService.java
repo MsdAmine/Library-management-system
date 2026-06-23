@@ -1,6 +1,5 @@
 package com.example.library.security;
 
-import com.example.library.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -35,11 +34,12 @@ public class JwtService {
     }
 
     public String generateToken(UserDetails userDetails) {
-        Map<String, Object> extraClaims = new HashMap<>();
-        if (userDetails instanceof User user) {
-            extraClaims.put("role", user.getRole().name());
+        Map<String, Object> claims = new HashMap<>();
+        if (userDetails instanceof com.example.library.model.User user) {
+            claims.put("userId", user.getId());
+            claims.put("role", user.getRole().name());
         }
-        return generateToken(extraClaims, userDetails);
+        return generateToken(claims, userDetails);
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {

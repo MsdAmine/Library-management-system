@@ -38,16 +38,16 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @NotNull(message = "Membership date is required")
-    private LocalDate membershipDate;
-
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @NotNull(message = "Membership date is required")
+    private LocalDate membershipDate;
+
+    @Builder.Default
     @Column(nullable = false)
     private boolean active = true;
 
-    // --- Audit Fields ---
     @Column(updatable = false)
     private LocalDateTime createdAt;
 

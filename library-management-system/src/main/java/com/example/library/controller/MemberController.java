@@ -1,5 +1,6 @@
 package com.example.library.controller;
 
+import com.example.library.dto.MemberRequestDTO;
 import com.example.library.dto.MemberResponseDTO;
 import com.example.library.model.User;
 import com.example.library.service.MemberService;
@@ -10,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -35,19 +35,18 @@ public class MemberController {
     }
 
     @PostMapping
-    public ResponseEntity<MemberResponseDTO> addMember(@Valid @RequestBody User member) {
-        User savedMember = memberService.addMember(member);
-        return new ResponseEntity<>(convertToDTO(savedMember), HttpStatus.CREATED);
+    public ResponseEntity<MemberResponseDTO> addMember(@Valid @RequestBody MemberRequestDTO requestDTO) {
+        User savedUser = memberService.addMember(requestDTO);
+        return new ResponseEntity<>(convertToDTO(savedUser), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MemberResponseDTO> updateMember(@PathVariable Long id, @Valid @RequestBody User member) {
-        User updatedMember = memberService.updateMember(id, member);
-        return ResponseEntity.ok(convertToDTO(updatedMember));
+    public ResponseEntity<MemberResponseDTO> updateMember(@PathVariable Long id, @Valid @RequestBody MemberRequestDTO requestDTO) {
+        User updatedUser = memberService.updateMember(id, requestDTO);
+        return ResponseEntity.ok(convertToDTO(updatedUser));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteMember(@PathVariable Long id) {
         memberService.deleteMember(id);
         return ResponseEntity.noContent().build();

@@ -38,12 +38,12 @@ public class BorrowingService {
 
     @Transactional
     public BorrowingRecord borrowBook(Long userId, Long bookId) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findActiveById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + userId));
 
         long activeLoans = borrowingRecordRepository.countByUserIdAndStatus(userId, BorrowingRecord.BorrowingStatus.BORROWED);
         if (activeLoans >= MAX_ALLOWED_BOOKS) {
-            throw new BorrowingLimitExceededException("User has reached the maximum allowed borrowed books limit of " + MAX_ALLOWED_BOOKS);
+            throw new BorrowingLimitExceededException("Member has reached the maximum allowed borrowed books limit of " + MAX_ALLOWED_BOOKS);
         }
 
         Book book = bookRepository.findById(bookId)
