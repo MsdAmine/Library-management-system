@@ -1,7 +1,7 @@
 package com.example.library.controller;
 
 import com.example.library.dto.MemberResponseDTO;
-import com.example.library.model.Member;
+import com.example.library.model.User;
 import com.example.library.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,14 +35,14 @@ public class MemberController {
     }
 
     @PostMapping
-    public ResponseEntity<MemberResponseDTO> addMember(@Valid @RequestBody Member member) {
-        Member savedMember = memberService.addMember(member);
+    public ResponseEntity<MemberResponseDTO> addMember(@Valid @RequestBody User member) {
+        User savedMember = memberService.addMember(member);
         return new ResponseEntity<>(convertToDTO(savedMember), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MemberResponseDTO> updateMember(@PathVariable Long id, @Valid @RequestBody Member member) {
-        Member updatedMember = memberService.updateMember(id, member);
+    public ResponseEntity<MemberResponseDTO> updateMember(@PathVariable Long id, @Valid @RequestBody User member) {
+        User updatedMember = memberService.updateMember(id, member);
         return ResponseEntity.ok(convertToDTO(updatedMember));
     }
 
@@ -60,13 +60,13 @@ public class MemberController {
         return ResponseEntity.ok(memberService.searchMembersByName(name, pageable).map(this::convertToDTO));
     }
 
-    private MemberResponseDTO convertToDTO(Member member) {
+    private MemberResponseDTO convertToDTO(User user) {
         MemberResponseDTO dto = new MemberResponseDTO();
-        dto.setId(member.getId());
-        dto.setFirstName(member.getFirstName());
-        dto.setLastName(member.getLastName());
-        dto.setEmail(member.getEmail());
-        dto.setMembershipDate(member.getMembershipDate());
+        dto.setId(user.getId());
+        dto.setFirstName(user.getFirstName());
+        dto.setLastName(user.getLastName());
+        dto.setEmail(user.getEmail());
+        dto.setMembershipDate(user.getMembershipDate());
         return dto;
     }
 }

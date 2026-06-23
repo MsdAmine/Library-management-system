@@ -1,74 +1,97 @@
 package com.example.library.service;
 
 import com.example.library.exception.ResourceAlreadyExistsException;
-import com.example.library.model.Member;
-import com.example.library.repository.MemberRepository;
+import com.example.library.exception.ResourceNotFoundException;
+import com.example.library.model.Role;
+import com.example.library.model.User;
+import com.example.library.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
 
-    private final MemberRepository memberRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public Page<Member> getAllMembers(Pageable pageable) {
-        return memberRepository.findAllActive(pageable);
+    public Page<User> getAllMembers(Pageable pageable) {
+        return userRepository.findAllActive(pageable);
     }
 
-    public Optional<Member> getMemberById(Long id) {
-        return memberRepository.findActiveById(id);
+    public Optional<User> getMemberById(Long id) {
+        return userRepository.findActiveById(id);
     }
 
-    public Optional<Member> getMemberByEmail(String email) {
-        return memberRepository.findByEmail(email);
+    public Optional<User> getMemberByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
-    public Page<Member> searchMembersByName(String name, Pageable pageable) {
-        return memberRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(name, name, pageable);
+    public Page<User> searchMembersByName(String name, Pageable pageable) {
+        return userRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(name, name, pageable);
     }
 
     @Transactional
-    public Member addMember(Member member) {
-        Optional<Member> existingMemberOpt = memberRepository.findAnyByEmail(member.getEmail());
+    public User addMember(User user) {
+        Optional<User> existingUserOpt = userRepository.findAnyByEmail(user.getEmail());
         
-        if (existingMemberOpt.isPresent()) {
-            Member existingMember = existingMemberOpt.get();
-            if (existingMember.isActive()) {
-                throw new ResourceAlreadyExistsException("A member with email " + member.getEmail() + " already exists.");
+        if (existingUserOpt.isPresent()) {
+            User existingUser = existingUserOpt.get();
+            if (existingUser.isActive()) {
+                throw new ResourceAlreadyExistsException("A user with email " + user.getEmail() + " already exists.");
             } else {
-                existingMember.setFirstName(member.getFirstName());
-                existingMember.setLastName(member.getLastName());
-                existingMember.setMembershipDate(member.getMembershipDate());
-                existingMember.setActive(true);
-                return memberRepository.save(existingMember);
+                existingUser.setFirstName(user.getFirstName());
+                existingUser.setLastName(user.getLastName());
+                existingUser.setMembershipDate(user.getMembershipDate() == null ? LocalDate.now() : user.getMembershipDate());
+                if (user.getPassword() != null) {
+                    existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
+                }
+                existingUser.setRole(user.getRole() == null ? Role.USER : user.getRole());
+                existingUser.setActive(true);
+                return userRepository.save(existingUser);
             }
         }
-        return memberRepository.save(member);
+        
+        // Provide a baseline default fallback password if added manually without one
+        if (user.getPassword() == null || user.getPassword().isBlank()) {
+            user.setPassword(passwordEncoder.encode("ChangeMe123!"));
+        } else {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+        
+        if (user.getRole() == null) {
+            user.setRole(Role.USER); // Library member map standard
+        }
+        
+        return userRepository.save(user);
     }
 
     @Transactional
     public void deleteMember(Long id) {
-        memberRepository.findActiveById(id).ifPresent(member -> {
-            member.setActive(false);
-            memberRepository.save(member);
+        userRepository.findActiveById(id).ifPresent(user -> {
+            user.setActive(false);
+            userRepository.save(user);
         });
     }
 
     @Transactional
-    public Member updateMember(Long id, Member memberDetails) {
-        return memberRepository.findActiveById(id)
-                .map(member -> {
-                    member.setFirstName(memberDetails.getFirstName());
-                    member.setLastName(memberDetails.getLastName());
-                    member.setEmail(memberDetails.getEmail());
-                    member.setMembershipDate(memberDetails.getMembershipDate());
-                    return memberRepository.save(member);
-                }).orElseThrow(() -> new RuntimeException("Member not found with id " + id));
+    public User updateMember(Long id, User memberDetails) {
+        return userRepository.findActiveById(id)
+                .map(user -> {
+                    user.setFirstName(memberDetails.getFirstName());
+                    user.setLastName(memberDetails.getLastName());
+                    user.setEmail(memberDetails.getEmail());
+                    if (memberDetails.getMembershipDate() != null) {
+                        user.setMembershipDate(memberDetails.getMembershipDate());
+                    }
+                    return userRepository.save(user);
+                }).orElseThrow(() -> new ResourceNotFoundException("Member not found with id " + id));
     }
 }
