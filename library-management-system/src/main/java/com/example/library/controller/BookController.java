@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -46,6 +47,7 @@ public class BookController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
         bookService.deleteBook(id);
         return ResponseEntity.noContent().build();
@@ -83,6 +85,8 @@ public class BookController {
         dto.setTitle(book.getTitle());
         dto.setAuthor(book.getAuthor());
         dto.setIsbn(book.getIsbn());
+        dto.setPublicationYear(book.getPublicationYear());
+        dto.setGenre(book.getGenre());
         dto.setTotalCopies(book.getTotalCopies());
         dto.setAvailableCopies(book.getAvailableCopies());
         dto.setBorrowedCopies(book.getTotalCopies() - book.getAvailableCopies());

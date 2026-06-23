@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -50,6 +51,7 @@ public class BorrowingController {
     }
 
     @PostMapping("/archive")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ArchiveResultDTO> archiveHistory(
             @RequestParam(defaultValue = "90") int retentionDays) {
         return ResponseEntity.ok(borrowingService.archiveReturnedRecords(retentionDays));
