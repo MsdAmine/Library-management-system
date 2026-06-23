@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -19,11 +20,11 @@ public class BookService {
     private final BookRepository bookRepository;
 
     public Page<Book> getAllBooks(Pageable pageable) {
-        return bookRepository.findAll(pageable);
+        return bookRepository.findAllActive(pageable);
     }
 
     public Optional<Book> getBookById(Long id) {
-        return bookRepository.findById(id);
+        return bookRepository.findActiveById(id);
     }
 
     public Optional<Book> getBookByIsbn(String isbn) {
@@ -31,16 +32,32 @@ public class BookService {
     }
 
     public Page<Book> searchBooks(String title, String author, String genre, Boolean available, Pageable pageable) {
-        Specification<Book> spec = Specification.where(BookSpecification.hasTitle(title))
+        Specification<Book> spec = Specification.where(BookSpecification.isActive())
+                .and(BookSpecification.hasTitle(title))
                 .and(BookSpecification.hasAuthor(author))
                 .and(BookSpecification.hasGenre(genre))
                 .and(BookSpecification.isAvailable(available));
         return bookRepository.findAll(spec, pageable);
     }
 
+    @Transactional
     public Book addBook(Book book) {
-        if (bookRepository.findByIsbn(book.getIsbn()).isPresent()) {
-            throw new ResourceAlreadyExistsException("A book with ISBN " + book.getIsbn() + " already exists.");
+        Optional<Book> existingBookOpt = bookRepository.findAnyByIsbn(book.getIsbn());
+        
+        if (existingBookOpt.isPresent()) {
+            Book existingBook = existingBookOpt.get();
+            if (existingBook.isActive()) {
+                throw new ResourceAlreadyExistsException("A book with ISBN " + book.getIsbn() + " already exists.");
+            } else {
+                existingBook.setTitle(book.getTitle());
+                existingBook.setAuthor(book.getAuthor());
+                existingBook.setGenre(book.getGenre());
+                existingBook.setPublicationYear(book.getPublicationYear());
+                existingBook.setTotalCopies(book.getTotalCopies());
+                existingBook.setAvailableCopies(book.getAvailableCopies());
+                existingBook.setActive(true);
+                return bookRepository.save(existingBook);
+            }
         }
 
         if (book.getAvailableCopies() > book.getTotalCopies()) {
@@ -50,12 +67,17 @@ public class BookService {
         return bookRepository.save(book);
     }
 
+    @Transactional
     public void deleteBook(Long id) {
-        bookRepository.deleteById(id);
+        bookRepository.findActiveById(id).ifPresent(book -> {
+            book.setActive(false);
+            bookRepository.save(book);
+        });
     }
 
+    @Transactional
     public Book updateBook(Long id, Book bookDetails) {
-        return bookRepository.findById(id)
+        return bookRepository.findActiveById(id)
                 .map(book -> {
                     book.setTitle(bookDetails.getTitle());
                     book.setAuthor(bookDetails.getAuthor());
