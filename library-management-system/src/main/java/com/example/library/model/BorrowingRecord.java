@@ -2,7 +2,10 @@ package com.example.library.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "borrowing_records")
@@ -31,4 +34,20 @@ public class BorrowingRecord {
 
     @Column(nullable = false)
     private LocalDate dueDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BorrowingStatus status;
+
+    private BigDecimal fineAmount;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean archived = false;
+
+    private LocalDateTime archivedAt;
+
+    public enum BorrowingStatus {
+        BORROWED, RETURNED, OVERDUE
+    }
 }
