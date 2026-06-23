@@ -9,10 +9,10 @@ import com.example.library.exception.InventoryStateException;
 import com.example.library.exception.ResourceNotFoundException;
 import com.example.library.model.Book;
 import com.example.library.model.BorrowingRecord;
-import com.example.library.model.Member;
+import com.example.library.model.User;
 import com.example.library.repository.BookRepository;
 import com.example.library.repository.BorrowingRecordRepository;
-import com.example.library.repository.MemberRepository;
+import com.example.library.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,19 +31,19 @@ public class BorrowingService {
 
     private final BorrowingRecordRepository borrowingRecordRepository;
     private final BookRepository bookRepository;
-    private final MemberRepository memberRepository;
+    private final UserRepository userRepository;
 
     public static final int MAX_ALLOWED_BOOKS = 5;
     public static final BigDecimal FINE_PER_OVERDUE_DAY = new BigDecimal("1.50");
 
     @Transactional
-    public BorrowingRecord borrowBook(Long memberId, Long bookId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new ResourceNotFoundException("Member not found with id " + memberId));
+    public BorrowingRecord borrowBook(Long userId, Long bookId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + userId));
 
-        long activeLoans = borrowingRecordRepository.countByMemberIdAndStatus(memberId, BorrowingRecord.BorrowingStatus.BORROWED);
+        long activeLoans = borrowingRecordRepository.countByUserIdAndStatus(userId, BorrowingRecord.BorrowingStatus.BORROWED);
         if (activeLoans >= MAX_ALLOWED_BOOKS) {
-            throw new BorrowingLimitExceededException("Member has reached the maximum allowed borrowed books limit of " + MAX_ALLOWED_BOOKS);
+            throw new BorrowingLimitExceededException("User has reached the maximum allowed borrowed books limit of " + MAX_ALLOWED_BOOKS);
         }
 
         Book book = bookRepository.findById(bookId)
@@ -56,7 +56,7 @@ public class BorrowingService {
 
         // Create borrowing record
         BorrowingRecord record = new BorrowingRecord();
-        record.setMember(member);
+        record.setUser(user);
         record.setBook(book);
         record.setBorrowDate(LocalDate.now());
         record.setDueDate(LocalDate.now().plusDays(14)); // 2 weeks loan period
@@ -101,8 +101,8 @@ public class BorrowingService {
         return borrowingRecordRepository.findAll(pageable);
     }
 
-    public Page<BorrowingRecord> getMemberHistory(Long memberId, Pageable pageable) {
-        return borrowingRecordRepository.findByMemberIdAndArchivedFalse(memberId, pageable);
+    public Page<BorrowingRecord> getMemberHistory(Long userId, Pageable pageable) {
+        return borrowingRecordRepository.findByUserIdAndArchivedFalse(userId, pageable);
     }
 
     public List<BorrowingRecord> getArchivedRecords() {
@@ -122,8 +122,8 @@ public class BorrowingService {
                 .build();
     }
 
-    public List<BorrowingRecord> getActiveBorrowings(Long memberId) {
-        return borrowingRecordRepository.findByMemberIdAndStatus(memberId, BorrowingRecord.BorrowingStatus.BORROWED);
+    public List<BorrowingRecord> getActiveBorrowings(Long userId) {
+        return borrowingRecordRepository.findByUserIdAndStatus(userId, BorrowingRecord.BorrowingStatus.BORROWED);
     }
 
     public ReturnRecordResponseDTO toReturnDTO(BorrowingRecord record) {
@@ -135,7 +135,7 @@ public class BorrowingService {
                 .recordId(record.getId())
                 .bookTitle(record.getBook().getTitle())
                 .bookIsbn(record.getBook().getIsbn())
-                .memberName(record.getMember().getFirstName() + " " + record.getMember().getLastName())
+                .memberName(record.getUser().getFirstName() + " " + record.getUser().getLastName())
                 .borrowDate(record.getBorrowDate())
                 .dueDate(record.getDueDate())
                 .returnDate(record.getReturnDate())

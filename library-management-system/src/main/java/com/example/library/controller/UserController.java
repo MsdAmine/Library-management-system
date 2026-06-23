@@ -26,8 +26,12 @@ public class UserController {
                 .map(u -> {
                     Map<String, Object> map = new HashMap<>();
                     map.put("id", u.getId());
+                    map.put("firstName", u.getFirstName());
+                    map.put("lastName", u.getLastName());
                     map.put("email", u.getEmail());
                     map.put("role", u.getRole() != null ? u.getRole().name() : "USER");
+                    map.put("active", u.isActive());
+                    map.put("membershipDate", u.getMembershipDate());
                     return map;
                 })
                 .toList();
@@ -38,7 +42,9 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        userRepository.delete(user);
+        // Using soft-delete state toggle
+        user.setActive(false);
+        userRepository.save(user);
         return ResponseEntity.noContent().build();
     }
 }
