@@ -27,3 +27,4 @@ library-frontend/yarn-error.log*
 *.swp
 *.bak
 *.tmp
+ARCHITECTURE.md
