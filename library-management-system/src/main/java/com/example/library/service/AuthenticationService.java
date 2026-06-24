@@ -29,7 +29,7 @@ public class AuthenticationService {
 
     @Transactional
     public AuthenticationResponse register(RegisterRequest request) {
-        Optional<User> existingUserOpt = repository.findAnyByEmail(request.getEmail());
+        Optional<User> existingUserOpt = repository.findByEmail(request.getEmail());
         
         if (existingUserOpt.isPresent()) {
             User existingUser = existingUserOpt.get();
