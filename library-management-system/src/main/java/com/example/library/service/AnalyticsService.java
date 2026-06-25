@@ -14,33 +14,35 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class AnalyticsService {
 
-    private final BookRepository bookRepository;
-    private final BorrowingRecordRepository borrowingRecordRepository;
-    private final UserRepository userRepository;
+        private final BookRepository bookRepository;
+        private final BorrowingRecordRepository borrowingRecordRepository;
+        private final UserRepository userRepository;
 
-    public LibraryAnalyticsDTO getAnalytics() {
-        long totalCopies = bookRepository.sumTotalCopies();
-        long availableCopies = bookRepository.sumAvailableCopies();
+        public LibraryAnalyticsDTO getAnalytics() {
+                long totalCopies = bookRepository.sumTotalCopies();
+                long availableCopies = bookRepository.sumAvailableCopies();
 
-        long activeBorrowings = borrowingRecordRepository.countByStatus(BorrowingRecord.BorrowingStatus.BORROWED);
+                long activeBorrowings = borrowingRecordRepository
+                                .countByStatus(BorrowingRecord.BorrowingStatus.BORROWED);
 
-        return LibraryAnalyticsDTO.builder()
-                .books(LibraryAnalyticsDTO.BookStats.builder()
-                        .totalTitles(bookRepository.count())
-                        .totalCopies(totalCopies)
-                        .availableCopies(availableCopies)
-                        .borrowedCopies(totalCopies - availableCopies)
-                        .build())
-                .borrowings(LibraryAnalyticsDTO.BorrowingStats.builder()
-                        .totalBorrowings(borrowingRecordRepository.count())
-                        .activeBorrowings(activeBorrowings)
-                        .overdueBorrowings(borrowingRecordRepository.countOverdue(LocalDate.now()))
-                        .totalFinesCollected(borrowingRecordRepository.sumFinesCollected())
-                        .build())
-                .members(LibraryAnalyticsDTO.MemberStats.builder()
-                        .totalMembers(userRepository.count())
-                        .activeMembers(borrowingRecordRepository.countActiveMembers())
-                        .build())
-                .build();
-    }
+                return LibraryAnalyticsDTO.builder()
+                                .books(LibraryAnalyticsDTO.BookStats.builder()
+                                                .totalTitles(bookRepository.count())
+                                                .totalCopies(totalCopies)
+                                                .availableCopies(availableCopies)
+                                                .borrowedCopies(totalCopies - availableCopies)
+                                                .build())
+                                .borrowings(LibraryAnalyticsDTO.BorrowingStats.builder()
+                                                .totalBorrowings(borrowingRecordRepository.count())
+                                                .activeBorrowings(activeBorrowings)
+                                                .overdueBorrowings(
+                                                                borrowingRecordRepository.countOverdue(LocalDate.now()))
+                                                .totalFinesCollected(borrowingRecordRepository.sumFinesCollected())
+                                                .build())
+                                .members(LibraryAnalyticsDTO.MemberStats.builder()
+                                                .totalMembers(userRepository.count())
+                                                .activeMembers(borrowingRecordRepository.countActiveMembers())
+                                                .build())
+                                .build();
+        }
 }
