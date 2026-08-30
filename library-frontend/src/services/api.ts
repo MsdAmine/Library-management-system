@@ -1,27 +1,8 @@
-import axios from 'axios';
-
-const API_BASE_URL = 'http://localhost:8080/api/v1';
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Request interceptor to add the token
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-}, (error) => {
-  return Promise.reject(error);
-});
+import api from '../api/axios';
 
 export const authApi = {
-  login: (credentials: any) => api.post('/auth/authenticate', credentials),
+  login: (credentials: { email?: string; password?: string }) =>
+    api.post('/auth/authenticate', credentials),
   register: (userData: any) => api.post('/auth/register', userData),
 };
 

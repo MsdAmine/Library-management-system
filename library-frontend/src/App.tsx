@@ -1,71 +1,52 @@
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import ProtectedRoute from './components/auth/ProtectedRoute';
-import RoleProtectedRoute from './components/auth/RoleProtectedRoute';
-import Navbar from './components/layout/Navbar';
+import ProtectedRoute from './routes/ProtectedRoute';
+import AppLayout from './routes/AppLayout';
+import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Books from './pages/Books';
 import Members from './pages/Members';
 import Borrowings from './pages/Borrowings';
-import LoginPage from './pages/auth/LoginPage';
-import UnauthorizedPage from './pages/auth/UnauthorizedPage';
+import Analytics from './pages/Analytics';
 import Users from './pages/Users';
-import './App.css';
-
-const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="app-container">
-    <Navbar />
-    <main className="main-content">
-      <div className="container">
-        {children}
-      </div>
-    </main>
-  </div>
-);
+import UnauthorizedPage from './pages/auth/UnauthorizedPage';
 
 function App() {
   return (
     <AuthProvider>
       <Router>
         <Routes>
-          {/* Public Routes */}
-          <Route path="/login" element={<LoginPage />} />
+          {/* Public Auth Routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-          {/* Unauthorized page – accessible to any authenticated user */}
-          <Route path="/unauthorized" element={
-            <ProtectedRoute>
-              <UnauthorizedPage />
-            </ProtectedRoute>
-          } />
+          {/* Protected Application Routes with Common Layout */}
+          <Route
+            element={
+              <ProtectedRoute>
+                <AppLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/catalog" element={<Books />} />
+            <Route path="/books" element={<Navigate to="/catalog" replace />} />
+            <Route path="/members" element={<Members />} />
+            <Route path="/loans" element={<Borrowings />} />
+            <Route path="/borrowings" element={<Navigate to="/loans" replace />} />
+            <Route path="/analytics" element={<Analytics />} />
+            <Route
+              path="/users"
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN']}>
+                  <Users />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
 
-          {/* Management Routes – ADMIN and LIBRARIAN only */}
-          <Route path="/" element={
-            <RoleProtectedRoute>
-              <MainLayout><Dashboard /></MainLayout>
-            </RoleProtectedRoute>
-          } />
-          <Route path="/books" element={
-            <RoleProtectedRoute>
-              <MainLayout><Books /></MainLayout>
-            </RoleProtectedRoute>
-          } />
-          <Route path="/members" element={
-            <RoleProtectedRoute>
-              <MainLayout><Members /></MainLayout>
-            </RoleProtectedRoute>
-          } />
-          <Route path="/borrowings" element={
-            <RoleProtectedRoute>
-              <MainLayout><Borrowings /></MainLayout>
-            </RoleProtectedRoute>
-          } />
-          <Route path="/users" element={
-            <RoleProtectedRoute roles={['ADMIN']}>
-              <MainLayout><Users /></MainLayout>
-            </RoleProtectedRoute>
-          } />
-
-          {/* Redirects */}
+          {/* Fallback Route */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
