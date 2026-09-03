@@ -5,7 +5,7 @@ import ProtectedRoute from './routes/ProtectedRoute';
 import AppLayout from './routes/AppLayout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
-import Books from './pages/Books';
+import BookList from './pages/Catalog/BookList';
 import Members from './pages/Members';
 import Borrowings from './pages/Borrowings';
 import Analytics from './pages/Analytics';
@@ -30,7 +30,7 @@ function App() {
             }
           >
             <Route path="/" element={<Dashboard />} />
-            <Route path="/catalog" element={<Books />} />
+            <Route path="/catalog" element={<BookList />} />
             <Route path="/books" element={<Navigate to="/catalog" replace />} />
             <Route path="/members" element={<Members />} />
             <Route path="/loans" element={<Borrowings />} />
