@@ -6,7 +6,7 @@ import AppLayout from './routes/AppLayout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import BookList from './pages/Catalog/BookList';
-import Members from './pages/Members';
+import MemberList from './pages/Members/MemberList';
 import Borrowings from './pages/Borrowings';
 import Analytics from './pages/Analytics';
 import Users from './pages/Users';
@@ -32,7 +32,7 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/catalog" element={<BookList />} />
             <Route path="/books" element={<Navigate to="/catalog" replace />} />
-            <Route path="/members" element={<Members />} />
+            <Route path="/members" element={<MemberList />} />
             <Route path="/loans" element={<Borrowings />} />
             <Route path="/borrowings" element={<Navigate to="/loans" replace />} />
             <Route path="/analytics" element={<Analytics />} />
