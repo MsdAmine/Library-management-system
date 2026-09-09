@@ -185,17 +185,17 @@ const MemberList = () => {
       {/* Toast Notification Alert */}
       {toastMessage && (
         <div 
-          className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl border shadow-xl backdrop-blur-xl animate-in slide-in-from-bottom-5 duration-300 ${
+          className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-2xl border shadow-xl backdrop-blur-xl animate-in slide-in-from-bottom-5 duration-300 ${
             toastMessage.type === 'info'
-              ? 'bg-slate-900/95 border-cyan-500/40 text-cyan-300 shadow-cyan-950/40'
-              : 'bg-slate-900/95 border-emerald-500/40 text-emerald-300 shadow-emerald-950/40'
+              ? 'bg-white/95 border-cyan-200 text-cyan-800 shadow-slate-900/10'
+              : 'bg-white/95 border-emerald-200 text-emerald-800 shadow-slate-900/10'
           }`}
         >
-          <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" />
+          <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0" />
           <p className="text-xs font-semibold">{toastMessage.message}</p>
           <button 
             onClick={() => setToastMessage(null)}
-            className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors ml-2 cursor-pointer"
+            className="p-1 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100 transition-colors ml-2 cursor-pointer"
           >
             <X className="h-3.5 w-3.5" />
           </button>
@@ -203,19 +203,19 @@ const MemberList = () => {
       )}
 
       {/* Header Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-900/90 via-slate-900/70 to-indigo-950/40 border border-slate-800/80 p-6 rounded-2xl shadow-xl backdrop-blur-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white border border-slate-200/90 p-6 sm:p-7 rounded-3xl shadow-xs">
         <div className="space-y-1.5">
-          <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-            <UserCheck className="h-3 w-3" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+            <UserCheck className="h-3.5 w-3.5" />
             <span>Membership Directory &amp; Records</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
             Member Management
-            <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+            <span className="text-xs font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
               {totalElements} {totalElements === 1 ? 'Member' : 'Members'}
             </span>
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 max-w-xl">
+          <p className="text-xs sm:text-sm text-slate-500 max-w-xl font-medium">
             Manage registered library patrons, track membership dates, and administer user records.
           </p>
         </div>
@@ -224,17 +224,17 @@ const MemberList = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={() => fetchMembers()}
-            className="p-2.5 rounded-xl text-slate-400 hover:text-white bg-slate-800/60 hover:bg-slate-800 border border-slate-700/80 transition-all cursor-pointer"
+            className="p-2.5 rounded-xl text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-100 border border-slate-200 transition-all cursor-pointer shadow-xs"
             title="Refresh member list"
           >
-            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin text-indigo-400' : ''}`} />
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin text-indigo-600' : ''}`} />
           </button>
 
           {canManageMembers && (
             <button
               onClick={openAddModal}
               id="add-member-btn"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 shadow-lg shadow-indigo-600/25 hover:shadow-indigo-600/40 border border-indigo-500/50 transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 shadow-md shadow-indigo-600/25 ring-1 ring-indigo-500/30 transition-all cursor-pointer"
             >
               <UserPlus className="h-4 w-4" />
               <span>Add Member</span>
@@ -245,55 +245,55 @@ const MemberList = () => {
 
       {/* Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-sm flex items-center gap-4">
-          <div className="h-12 w-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shrink-0">
+        <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex items-center gap-4">
+          <div className="h-12 w-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shrink-0 shadow-xs">
             <Users className="h-6 w-6" />
           </div>
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Total Registered</p>
-            <p className="text-xl font-bold text-white tracking-tight">{totalElements}</p>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Total Registered</p>
+            <p className="text-2xl font-extrabold text-slate-900 tracking-tight">{totalElements}</p>
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-sm flex items-center gap-4">
-          <div className="h-12 w-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+        <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex items-center gap-4">
+          <div className="h-12 w-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0 shadow-xs">
             <ShieldCheck className="h-6 w-6" />
           </div>
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Directory Status</p>
-            <p className="text-xl font-bold text-emerald-400 tracking-tight">Active &amp; Verified</p>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Directory Status</p>
+            <p className="text-2xl font-extrabold text-emerald-700 tracking-tight">Active &amp; Verified</p>
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-sm flex items-center gap-4">
-          <div className="h-12 w-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 shrink-0">
+        <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex items-center gap-4">
+          <div className="h-12 w-12 rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600 shrink-0 shadow-xs">
             <Sparkles className="h-6 w-6" />
           </div>
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Access Level</p>
-            <p className="text-xl font-bold text-purple-400 tracking-tight">{role || 'Standard'}</p>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Access Level</p>
+            <p className="text-2xl font-extrabold text-purple-700 tracking-tight">{role || 'Standard'}</p>
           </div>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 shadow-lg backdrop-blur-sm space-y-4">
+      <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
           {/* Search Bar */}
           <div className="w-full sm:max-w-md relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 pointer-events-none" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
             <input
               type="text"
               id="member-search-input"
               placeholder="Search by first or last name..."
               value={searchTerm}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="w-full pl-10 pr-9 py-2.5 bg-slate-950/80 border border-slate-800 rounded-xl text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition-all"
+              className="w-full pl-10 pr-9 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15 transition-all font-medium"
             />
             {searchTerm && (
               <button
                 onClick={clearSearch}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 p-1"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1"
                 title="Clear search"
               >
                 <X className="h-3 w-3" />
@@ -303,13 +303,13 @@ const MemberList = () => {
 
           {/* View Toggle & Clear */}
           <div className="flex items-center gap-2 self-end sm:self-auto">
-            <div className="flex items-center bg-slate-950/80 border border-slate-800 rounded-xl p-1 text-xs">
+            <div className="flex items-center bg-slate-100 border border-slate-200 rounded-xl p-1 text-xs">
               <button
                 onClick={() => setViewMode('table')}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg transition-all cursor-pointer ${
                   viewMode === 'table'
-                    ? 'bg-indigo-600 text-white shadow-sm font-medium'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-white text-indigo-700 shadow-xs font-bold border border-slate-200/80'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
                 title="Table view"
               >
@@ -318,10 +318,10 @@ const MemberList = () => {
               </button>
               <button
                 onClick={() => setViewMode('grid')}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg transition-all cursor-pointer ${
                   viewMode === 'grid'
-                    ? 'bg-indigo-600 text-white shadow-sm font-medium'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-white text-indigo-700 shadow-xs font-bold border border-slate-200/80'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
                 title="Cards grid view"
               >
@@ -333,7 +333,7 @@ const MemberList = () => {
             {searchTerm && (
               <button
                 onClick={clearSearch}
-                className="flex items-center gap-1 text-xs text-rose-400 hover:text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 px-2.5 py-1.5 rounded-xl transition-colors cursor-pointer"
+                className="flex items-center gap-1 text-xs font-semibold text-rose-700 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 border border-rose-200 px-3 py-1.5 rounded-xl transition-colors cursor-pointer"
               >
                 <X className="h-3 w-3" />
                 <span>Reset</span>
@@ -345,15 +345,15 @@ const MemberList = () => {
 
       {/* Error State Banner */}
       {fetchError && (
-        <div className="flex items-start gap-3 p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm">
-          <AlertCircle className="h-5 w-5 text-rose-400 shrink-0 mt-0.5" />
+        <div className="flex items-start gap-3 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-sm">
+          <AlertCircle className="h-5 w-5 text-rose-600 shrink-0 mt-0.5" />
           <div className="flex-1">
-            <h4 className="font-semibold text-rose-200">Failed to load member directory</h4>
-            <p className="text-xs text-rose-300/80 mt-0.5">{fetchError}</p>
+            <h4 className="font-bold text-rose-900">Failed to load member directory</h4>
+            <p className="text-xs text-rose-700 mt-0.5">{fetchError}</p>
           </div>
           <button
             onClick={fetchMembers}
-            className="px-3 py-1 bg-rose-500/20 hover:bg-rose-500/30 rounded-lg text-xs font-semibold text-rose-200 transition-colors cursor-pointer"
+            className="px-3 py-1 bg-rose-100 hover:bg-rose-200 rounded-lg text-xs font-semibold text-rose-800 transition-colors cursor-pointer"
           >
             Retry
           </button>
@@ -362,31 +362,31 @@ const MemberList = () => {
 
       {/* Main Content Area */}
       {loading ? (
-        <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 overflow-hidden">
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 overflow-hidden shadow-xs">
           <div className="space-y-4">
-            <div className="h-10 bg-slate-800/40 rounded-xl animate-pulse"></div>
+            <div className="h-10 bg-slate-100 rounded-xl animate-pulse"></div>
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="flex items-center gap-4 py-3.5 border-b border-slate-800/40">
-                <div className="h-10 w-10 bg-slate-800/60 rounded-xl animate-pulse shrink-0"></div>
+              <div key={i} className="flex items-center gap-4 py-3.5 border-b border-slate-100">
+                <div className="h-10 w-10 bg-slate-100 rounded-xl animate-pulse shrink-0"></div>
                 <div className="space-y-2 flex-1">
-                  <div className="h-4 w-1/3 bg-slate-800/60 rounded animate-pulse"></div>
-                  <div className="h-3 w-1/4 bg-slate-800/40 rounded animate-pulse"></div>
+                  <div className="h-4 w-1/3 bg-slate-200 rounded animate-pulse"></div>
+                  <div className="h-3 w-1/4 bg-slate-100 rounded animate-pulse"></div>
                 </div>
-                <div className="h-6 w-24 bg-slate-800/50 rounded-full animate-pulse"></div>
-                <div className="h-6 w-16 bg-slate-800/50 rounded-full animate-pulse"></div>
+                <div className="h-6 w-24 bg-slate-100 rounded-full animate-pulse"></div>
+                <div className="h-6 w-16 bg-slate-100 rounded-full animate-pulse"></div>
               </div>
             ))}
           </div>
         </div>
       ) : members.length === 0 ? (
         /* Empty State */
-        <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-12 text-center flex flex-col items-center justify-center space-y-4">
-          <div className="h-16 w-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shadow-inner">
+        <div className="bg-white border border-slate-200/90 rounded-3xl p-12 text-center flex flex-col items-center justify-center space-y-4 shadow-xs">
+          <div className="h-16 w-16 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-xs">
             <Users className="h-8 w-8" />
           </div>
           <div className="space-y-1 max-w-md">
-            <h3 className="text-lg font-bold text-white tracking-tight">No members found</h3>
-            <p className="text-xs text-slate-400">
+            <h3 className="text-lg font-bold text-slate-900 tracking-tight">No members found</h3>
+            <p className="text-xs text-slate-500">
               {searchTerm
                 ? `No library members match "${searchTerm}". Check the spelling or clear the filter.`
                 : 'The member directory is currently empty. Register a new member to begin.'}
@@ -395,14 +395,14 @@ const MemberList = () => {
           {searchTerm ? (
             <button
               onClick={clearSearch}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-indigo-400 hover:text-white bg-indigo-500/10 hover:bg-indigo-600 border border-indigo-500/30 transition-all cursor-pointer"
+              className="px-4 py-2 rounded-xl text-xs font-semibold text-indigo-700 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-all cursor-pointer"
             >
               Clear Search Query
             </button>
           ) : canManageMembers ? (
             <button
               onClick={openAddModal}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-600/20 transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-600/20 transition-all cursor-pointer"
             >
               <UserPlus className="h-4 w-4" />
               <span>Register First Member</span>
@@ -411,11 +411,11 @@ const MemberList = () => {
         </div>
       ) : viewMode === 'table' ? (
         /* Data Table View */
-        <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl shadow-xl overflow-hidden backdrop-blur-sm">
+        <div className="bg-white border border-slate-200/90 rounded-2xl shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-slate-800/80 bg-slate-950/60 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                <tr className="border-b border-slate-200 bg-slate-50/90 text-[11px] font-bold uppercase tracking-wider text-slate-600">
                   <th className="py-3.5 px-4 sm:px-6">Member Details</th>
                   <th className="py-3.5 px-4">Email</th>
                   <th className="py-3.5 px-4">Membership Date</th>
@@ -423,26 +423,26 @@ const MemberList = () => {
                   <th className="py-3.5 px-4 sm:px-6 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/50 text-xs">
+              <tbody className="divide-y divide-slate-100 text-xs">
                 {members.map((member) => {
                   const isActive = member.active !== false; // Default active
 
                   return (
                     <tr 
                       key={member.id}
-                      className="hover:bg-slate-800/30 transition-colors group"
+                      className="hover:bg-slate-50/80 transition-colors group"
                     >
                       {/* Member Details */}
                       <td className="py-4 px-4 sm:px-6">
                         <div className="flex items-center gap-3.5">
-                          <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-900 to-violet-800 border border-indigo-500/30 flex items-center justify-center font-bold text-white shrink-0 group-hover:border-indigo-400/60 transition-colors shadow-md text-xs">
+                          <div className="h-10 w-10 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center font-bold text-indigo-700 shrink-0 group-hover:border-indigo-400 transition-colors shadow-xs text-xs">
                             {getInitials(member.firstName, member.lastName)}
                           </div>
                           <div className="flex flex-col">
-                            <span className="font-bold text-white group-hover:text-indigo-300 transition-colors text-sm">
+                            <span className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors text-sm">
                               {member.firstName} {member.lastName}
                             </span>
-                            <span className="text-[11px] text-slate-400 font-mono">
+                            <span className="text-[11px] text-slate-500 font-mono font-medium">
                               ID: #{member.id}
                             </span>
                           </div>
@@ -454,24 +454,24 @@ const MemberList = () => {
                         <div className="inline-flex items-center gap-1.5">
                           <button
                             onClick={() => handleCopyEmail(member.email)}
-                            className="group/email inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-slate-950/60 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-[11px] text-slate-300 transition-colors cursor-pointer"
+                            className="group/email inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200/80 border border-slate-200 text-[11px] text-slate-700 transition-colors cursor-pointer"
                             title="Click to copy email address"
                           >
-                            <Mail className="h-3 w-3 text-slate-500 group-hover/email:text-indigo-400 shrink-0" />
+                            <Mail className="h-3 w-3 text-slate-400 group-hover/email:text-indigo-600 shrink-0" />
                             <span>{member.email}</span>
                             {copiedEmail === member.email ? (
-                              <Check className="h-3 w-3 text-emerald-400 shrink-0" />
+                              <Check className="h-3 w-3 text-emerald-600 shrink-0" />
                             ) : (
-                              <Copy className="h-3 w-3 text-slate-500 group-hover/email:text-indigo-400 shrink-0" />
+                              <Copy className="h-3 w-3 text-slate-400 group-hover/email:text-indigo-600 shrink-0" />
                             )}
                           </button>
                         </div>
                       </td>
 
                       {/* Membership Date */}
-                      <td className="py-4 px-4 text-slate-300">
+                      <td className="py-4 px-4 text-slate-700 font-medium">
                         <div className="flex items-center gap-1.5 text-xs">
-                          <Calendar className="h-3.5 w-3.5 text-slate-500" />
+                          <Calendar className="h-3.5 w-3.5 text-slate-400" />
                           <span>{formatDate(member.membershipDate)}</span>
                         </div>
                       </td>
@@ -481,13 +481,13 @@ const MemberList = () => {
                         <span
                           className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border shadow-xs ${
                             isActive
-                              ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30 ring-1 ring-emerald-500/20'
-                              : 'bg-rose-500/15 text-rose-400 border-rose-500/30 ring-1 ring-rose-500/20'
+                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200 ring-1 ring-emerald-100'
+                              : 'bg-rose-50 text-rose-700 border-rose-200 ring-1 ring-rose-100'
                           }`}
                         >
                           <span 
                             className={`h-1.5 w-1.5 rounded-full ${
-                              isActive ? 'bg-emerald-400' : 'bg-rose-400'
+                              isActive ? 'bg-emerald-500' : 'bg-rose-500'
                             }`} 
                           />
                           {isActive ? 'Active' : 'Inactive'}
@@ -501,7 +501,7 @@ const MemberList = () => {
                           {canManageMembers && (
                             <button
                               onClick={() => openEditModal(member)}
-                              className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-300 hover:bg-indigo-500/10 transition-colors cursor-pointer"
+                              className="p-1.5 rounded-lg text-slate-500 hover:text-indigo-700 hover:bg-indigo-50 transition-colors cursor-pointer"
                               title="Edit Member"
                             >
                               <Edit3 className="h-4 w-4" />
@@ -512,7 +512,7 @@ const MemberList = () => {
                           {canDeleteMembers && (
                             <button
                               onClick={() => openDeleteModal(member)}
-                              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                              className="p-1.5 rounded-lg text-slate-500 hover:text-rose-700 hover:bg-rose-50 transition-colors cursor-pointer"
                               title="Deactivate / Delete Member"
                             >
                               <Trash2 className="h-4 w-4" />
@@ -536,67 +536,67 @@ const MemberList = () => {
             return (
               <div
                 key={member.id}
-                className="bg-slate-900/60 border border-slate-800/80 hover:border-slate-700/80 rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-200 flex flex-col justify-between group backdrop-blur-sm"
+                className="bg-white border border-slate-200/90 hover:border-indigo-300 rounded-2xl p-5 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between group"
               >
                 <div>
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <div className="h-11 w-11 rounded-xl bg-gradient-to-tr from-indigo-900 to-violet-800 border border-indigo-500/30 flex items-center justify-center font-bold text-white text-sm shadow-md">
+                      <div className="h-11 w-11 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center font-bold text-indigo-700 text-sm shadow-xs">
                         {getInitials(member.firstName, member.lastName)}
                       </div>
                       <div>
-                        <h3 className="font-bold text-white group-hover:text-indigo-300 transition-colors text-sm">
+                        <h3 className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors text-sm">
                           {member.firstName} {member.lastName}
                         </h3>
-                        <span className="text-[11px] text-slate-500 font-mono">ID: #{member.id}</span>
+                        <span className="text-[11px] text-slate-500 font-mono font-medium">ID: #{member.id}</span>
                       </div>
                     </div>
 
                     <span
-                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
                         isActive
-                          ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
-                          : 'bg-rose-500/15 text-rose-400 border-rose-500/30'
+                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                          : 'bg-rose-50 text-rose-700 border-rose-200'
                       }`}
                     >
-                      <span className={`h-1.5 w-1.5 rounded-full ${isActive ? 'bg-emerald-400' : 'bg-rose-400'}`} />
+                      <span className={`h-1.5 w-1.5 rounded-full ${isActive ? 'bg-emerald-500' : 'bg-rose-500'}`} />
                       {isActive ? 'Active' : 'Inactive'}
                     </span>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-slate-800/60 space-y-2 text-xs">
-                    <div className="flex items-center justify-between text-slate-300">
-                      <span className="text-slate-500 flex items-center gap-1.5">
-                        <Mail className="h-3.5 w-3.5 text-slate-500" />
+                  <div className="mt-4 pt-3 border-t border-slate-100 space-y-2 text-xs">
+                    <div className="flex items-center justify-between text-slate-700">
+                      <span className="text-slate-500 flex items-center gap-1.5 font-medium">
+                        <Mail className="h-3.5 w-3.5 text-slate-400" />
                         Email:
                       </span>
                       <button
                         onClick={() => handleCopyEmail(member.email)}
-                        className="font-mono text-[11px] text-slate-300 hover:text-indigo-300 transition-colors truncate max-w-[160px] cursor-pointer"
+                        className="font-mono text-[11px] text-slate-700 hover:text-indigo-600 font-semibold transition-colors truncate max-w-[160px] cursor-pointer"
                         title="Click to copy email"
                       >
                         {member.email}
                       </button>
                     </div>
 
-                    <div className="flex items-center justify-between text-slate-300">
-                      <span className="text-slate-500 flex items-center gap-1.5">
-                        <Calendar className="h-3.5 w-3.5 text-slate-500" />
+                    <div className="flex items-center justify-between text-slate-700">
+                      <span className="text-slate-500 flex items-center gap-1.5 font-medium">
+                        <Calendar className="h-3.5 w-3.5 text-slate-400" />
                         Member Since:
                       </span>
-                      <span className="text-[11px]">{formatDate(member.membershipDate)}</span>
+                      <span className="text-[11px] font-semibold">{formatDate(member.membershipDate)}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Card Footer Actions */}
-                <div className="mt-5 pt-3 border-t border-slate-800/60 flex items-center justify-between">
-                  <span className="text-[11px] text-slate-500">Patron Record</span>
+                <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between">
+                  <span className="text-[11px] text-slate-500 font-medium">Patron Record</span>
                   <div className="flex items-center gap-1">
                     {canManageMembers && (
                       <button
                         onClick={() => openEditModal(member)}
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-300 hover:bg-indigo-500/10 transition-colors cursor-pointer"
+                        className="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-colors cursor-pointer"
                         title="Edit Member"
                       >
                         <Edit3 className="h-4 w-4" />
@@ -605,7 +605,7 @@ const MemberList = () => {
                     {canDeleteMembers && (
                       <button
                         onClick={() => openDeleteModal(member)}
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                        className="p-1.5 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                         title="Delete Member"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -621,24 +621,24 @@ const MemberList = () => {
 
       {/* Pagination Controls */}
       {totalPages > 0 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 shadow-md">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white border border-slate-200/90 rounded-2xl p-4 shadow-xs">
           {/* Summary & Page Size Selector */}
-          <div className="flex items-center gap-3 text-xs text-slate-400">
+          <div className="flex items-center gap-3 text-xs text-slate-600">
             <span>
-              Showing <span className="font-semibold text-slate-200">{members.length === 0 ? 0 : currentPage * pageSize + 1}</span> to{' '}
-              <span className="font-semibold text-slate-200">{Math.min((currentPage + 1) * pageSize, totalElements)}</span> of{' '}
-              <span className="font-semibold text-slate-200">{totalElements}</span> members
+              Showing <span className="font-bold text-slate-900">{members.length === 0 ? 0 : currentPage * pageSize + 1}</span> to{' '}
+              <span className="font-bold text-slate-900">{Math.min((currentPage + 1) * pageSize, totalElements)}</span> of{' '}
+              <span className="font-bold text-slate-900">{totalElements}</span> members
             </span>
 
-            <div className="flex items-center gap-1.5 pl-3 border-l border-slate-800">
-              <span className="text-[11px]">Per page:</span>
+            <div className="flex items-center gap-1.5 pl-3 border-l border-slate-200">
+              <span className="text-[11px] font-medium text-slate-500">Per page:</span>
               <select
                 value={pageSize}
                 onChange={(e) => {
                   setPageSize(Number(e.target.value));
                   setCurrentPage(0);
                 }}
-                className="bg-slate-950 border border-slate-800 rounded-lg px-2 py-1 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer"
+                className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-xs text-slate-800 focus:bg-white focus:outline-none focus:border-indigo-500 cursor-pointer font-medium"
               >
                 <option value={5}>5</option>
                 <option value={10}>10</option>
@@ -653,7 +653,7 @@ const MemberList = () => {
             <button
               onClick={() => setCurrentPage(0)}
               disabled={currentPage === 0 || loading}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white bg-slate-950/60 hover:bg-slate-800 border border-slate-800 disabled:opacity-40 disabled:pointer-events-none transition-all cursor-pointer"
+              className="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-100 border border-slate-200 disabled:opacity-40 disabled:pointer-events-none transition-all cursor-pointer shadow-xs"
               title="First page"
             >
               <ChevronsLeft className="h-4 w-4" />
@@ -662,22 +662,22 @@ const MemberList = () => {
             <button
               onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
               disabled={currentPage === 0 || loading}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white bg-slate-950/60 hover:bg-slate-800 border border-slate-800 disabled:opacity-40 disabled:pointer-events-none transition-all cursor-pointer"
+              className="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-100 border border-slate-200 disabled:opacity-40 disabled:pointer-events-none transition-all cursor-pointer shadow-xs"
               title="Previous page"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
 
             {/* Page indicator */}
-            <div className="px-3 py-1 bg-slate-950/80 border border-slate-800 rounded-lg text-xs font-semibold text-slate-300">
-              Page <span className="text-indigo-400 font-bold">{currentPage + 1}</span> of{' '}
-              <span className="text-slate-200">{Math.max(1, totalPages)}</span>
+            <div className="px-3 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700">
+              Page <span className="text-indigo-600 font-bold">{currentPage + 1}</span> of{' '}
+              <span className="text-slate-900 font-bold">{Math.max(1, totalPages)}</span>
             </div>
 
             <button
               onClick={() => setCurrentPage((p) => Math.min(totalPages - 1, p + 1))}
               disabled={currentPage >= totalPages - 1 || loading}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white bg-slate-950/60 hover:bg-slate-800 border border-slate-800 disabled:opacity-40 disabled:pointer-events-none transition-all cursor-pointer"
+              className="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-100 border border-slate-200 disabled:opacity-40 disabled:pointer-events-none transition-all cursor-pointer shadow-xs"
               title="Next page"
             >
               <ChevronRight className="h-4 w-4" />
@@ -686,7 +686,7 @@ const MemberList = () => {
             <button
               onClick={() => setCurrentPage(totalPages - 1)}
               disabled={currentPage >= totalPages - 1 || loading}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white bg-slate-950/60 hover:bg-slate-800 border border-slate-800 disabled:opacity-40 disabled:pointer-events-none transition-all cursor-pointer"
+              className="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-100 border border-slate-200 disabled:opacity-40 disabled:pointer-events-none transition-all cursor-pointer shadow-xs"
               title="Last page"
             >
               <ChevronsRight className="h-4 w-4" />
@@ -715,3 +715,4 @@ const MemberList = () => {
 };
 
 export default MemberList;
+

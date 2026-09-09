@@ -206,23 +206,23 @@ const BorrowingList = () => {
     switch (status) {
       case 'RETURNED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-            <CheckCircle2 className="h-3.5 w-3.5" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-xs">
+            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
             Returned
           </span>
         );
       case 'OVERDUE':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-500/15 text-rose-400 border border-rose-500/30 animate-pulse">
-            <BadgeAlert className="h-3.5 w-3.5" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 shadow-xs animate-pulse">
+            <BadgeAlert className="h-3.5 w-3.5 text-rose-600" />
             Overdue
           </span>
         );
       case 'BORROWED':
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-cyan-500/15 text-cyan-400 border border-cyan-500/30">
-            <Clock className="h-3.5 w-3.5" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200 shadow-xs">
+            <Clock className="h-3.5 w-3.5 text-indigo-600" />
             Active Loan
           </span>
         );
@@ -234,20 +234,20 @@ const BorrowingList = () => {
       {/* Toast Alert */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-bottom-5 duration-200">
-          <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border shadow-2xl backdrop-blur-md ${
+          <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border shadow-xl backdrop-blur-md ${
             toastMessage.type === 'error'
-              ? 'bg-rose-950/90 border-rose-500/40 text-rose-200'
-              : 'bg-emerald-950/90 border-emerald-500/40 text-emerald-200'
+              ? 'bg-rose-50 border-rose-200 text-rose-800'
+              : 'bg-emerald-50 border-emerald-200 text-emerald-800'
           }`}>
             {toastMessage.type === 'error' ? (
-              <AlertCircle className="h-5 w-5 text-rose-400 flex-shrink-0" />
+              <AlertCircle className="h-5 w-5 text-rose-600 flex-shrink-0" />
             ) : (
-              <CheckCircle2 className="h-5 w-5 text-emerald-400 flex-shrink-0" />
+              <CheckCircle2 className="h-5 w-5 text-emerald-600 flex-shrink-0" />
             )}
-            <span className="text-sm font-medium">{toastMessage.message}</span>
+            <span className="text-sm font-semibold">{toastMessage.message}</span>
             <button
               onClick={() => setToastMessage(null)}
-              className="p-1 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white"
+              className="p-1 rounded-lg hover:bg-black/5 text-slate-400 hover:text-slate-700 transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
@@ -256,15 +256,15 @@ const BorrowingList = () => {
       )}
 
       {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900/60 p-6 rounded-2xl border border-slate-800/80 backdrop-blur-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs">
         <div className="space-y-1">
           <div className="flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+            <div className="h-10 w-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-xs">
               <ArrowLeftRight className="h-5 w-5" />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight text-white">Circulation & Loan Operations</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Circulation & Loan Operations</h1>
           </div>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-slate-500">
             Track book loans, process returns with automated fine calculation, and monitor member borrowing quotas.
           </p>
         </div>
@@ -273,8 +273,9 @@ const BorrowingList = () => {
         <div className="flex items-center gap-2.5 flex-wrap">
           {canManageCirculation && (
             <button
+              id="new-loan-btn"
               onClick={() => setIsCheckoutModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 shadow-lg shadow-indigo-600/25 transition-all duration-200 active:scale-95"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-600/20 transition-all duration-200 active:scale-95 cursor-pointer"
             >
               <Plus className="h-4 w-4" />
               <span>New Loan Checkout</span>
@@ -284,7 +285,7 @@ const BorrowingList = () => {
           {isAdmin && (
             <button
               onClick={() => setIsArchiveModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-purple-300 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 transition-all duration-200 active:scale-95"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 transition-all duration-200 active:scale-95 cursor-pointer"
             >
               <Archive className="h-4 w-4" />
               <span>Archive Records</span>
@@ -294,10 +295,10 @@ const BorrowingList = () => {
           <button
             onClick={fetchBorrowings}
             disabled={loading}
-            className="p-2.5 rounded-xl text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700/80 border border-slate-700 transition-colors"
+            className="p-2.5 rounded-xl text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-50 border border-slate-200 shadow-xs transition-colors cursor-pointer"
             title="Refresh list"
           >
-            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin text-indigo-400' : ''}`} />
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin text-indigo-600' : ''}`} />
           </button>
         </div>
       </div>
@@ -305,7 +306,7 @@ const BorrowingList = () => {
       {/* Tabs & Filter Bar */}
       <div className="space-y-4">
         {/* Navigation Tabs */}
-        <div className="flex items-center justify-between border-b border-slate-800">
+        <div className="flex items-center justify-between border-b border-slate-200">
           <div className="flex items-center gap-2">
             {TABS.filter(tab => !tab.adminOnly || isAdmin).map((tab) => {
               const Icon = tab.icon;
@@ -317,21 +318,21 @@ const BorrowingList = () => {
                     setActiveTab(tab.id);
                     setCurrentPage(0);
                   }}
-                  className={`relative flex items-center gap-2 px-4 py-3 text-sm font-medium transition-all ${
+                  className={`relative flex items-center gap-2 px-4 py-3 text-sm transition-all cursor-pointer ${
                     isActive
-                      ? 'text-indigo-400 border-b-2 border-indigo-500 font-semibold'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/30'
+                      ? 'text-indigo-600 border-b-2 border-indigo-600 font-bold'
+                      : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50 font-medium rounded-t-lg'
                   }`}
                 >
-                  <Icon className={`h-4 w-4 ${isActive ? 'text-indigo-400' : 'text-slate-500'}`} />
+                  <Icon className={`h-4 w-4 ${isActive ? 'text-indigo-600' : 'text-slate-400'}`} />
                   <span>{tab.label}</span>
                 </button>
               );
             })}
           </div>
 
-          <div className="text-xs text-slate-400 hidden sm:block">
-            Showing <strong className="text-slate-200">{filteredRecords.length}</strong> records
+          <div className="text-xs text-slate-500 hidden sm:block">
+            Showing <strong className="text-slate-800">{filteredRecords.length}</strong> records
           </div>
         </div>
 
@@ -347,12 +348,12 @@ const BorrowingList = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search by member name, book title, author, or Record ID..."
-              className="w-full pl-10 pr-10 py-2 bg-slate-900/80 border border-slate-800 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
+              className="w-full pl-10 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 shadow-xs transition-all"
             />
             {searchTerm && (
               <button
                 onClick={() => setSearchTerm('')}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-200"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -367,7 +368,7 @@ const BorrowingList = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full pl-10 pr-8 py-2 bg-slate-900/80 border border-slate-800 rounded-xl text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all appearance-none cursor-pointer"
+              className="w-full pl-10 pr-8 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 shadow-xs transition-all appearance-none cursor-pointer"
             >
               <option value="ALL">All Loan Statuses</option>
               <option value="BORROWED">Active Loans Only</option>
@@ -380,14 +381,14 @@ const BorrowingList = () => {
 
       {/* Error Alert */}
       {fetchError && (
-        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm flex items-center justify-between">
+        <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <AlertCircle className="h-5 w-5 text-rose-400 flex-shrink-0" />
-            <span>{fetchError}</span>
+            <AlertCircle className="h-5 w-5 text-rose-600 flex-shrink-0" />
+            <span className="font-medium">{fetchError}</span>
           </div>
           <button
             onClick={fetchBorrowings}
-            className="px-3 py-1 bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 rounded-lg text-xs font-semibold"
+            className="px-3 py-1 bg-rose-100 hover:bg-rose-200 text-rose-800 rounded-lg text-xs font-semibold transition-colors"
           >
             Retry
           </button>
@@ -395,10 +396,10 @@ const BorrowingList = () => {
       )}
 
       {/* Main Table */}
-      <div className="bg-slate-900/70 border border-slate-800 rounded-2xl overflow-hidden shadow-xl backdrop-blur-sm">
+      <div className="bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-slate-200 divide-y divide-slate-800">
-            <thead className="bg-slate-950/60 text-[11px] uppercase tracking-wider font-semibold text-slate-400">
+          <table className="w-full text-left text-sm text-slate-900 divide-y divide-slate-200">
+            <thead className="bg-slate-50 text-[11px] uppercase tracking-wider font-semibold text-slate-500">
               <tr>
                 <th className="px-5 py-3.5">ID</th>
                 <th className="px-5 py-3.5">Member</th>
@@ -411,30 +412,30 @@ const BorrowingList = () => {
                 {canManageCirculation && <th className="px-5 py-3.5 text-right">Actions</th>}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60 font-normal">
+            <tbody className="divide-y divide-slate-100 font-normal">
               {loading ? (
                 // Skeletons
                 Array.from({ length: 5 }).map((_, idx) => (
                   <tr key={idx} className="animate-pulse">
-                    <td className="px-5 py-4"><div className="h-4 w-8 bg-slate-800 rounded"></div></td>
-                    <td className="px-5 py-4"><div className="h-4 w-28 bg-slate-800 rounded mb-1"></div><div className="h-3 w-36 bg-slate-800/60 rounded"></div></td>
-                    <td className="px-5 py-4"><div className="h-4 w-32 bg-slate-800 rounded mb-1"></div><div className="h-3 w-20 bg-slate-800/60 rounded"></div></td>
-                    <td className="px-5 py-4"><div className="h-4 w-20 bg-slate-800 rounded"></div></td>
-                    <td className="px-5 py-4"><div className="h-4 w-20 bg-slate-800 rounded"></div></td>
-                    <td className="px-5 py-4"><div className="h-4 w-20 bg-slate-800 rounded"></div></td>
-                    <td className="px-5 py-4"><div className="h-6 w-20 bg-slate-800 rounded-full"></div></td>
-                    <td className="px-5 py-4"><div className="h-4 w-12 bg-slate-800 rounded"></div></td>
-                    {canManageCirculation && <td className="px-5 py-4 text-right"><div className="h-8 w-24 bg-slate-800 rounded-lg ml-auto"></div></td>}
+                    <td className="px-5 py-4"><div className="h-4 w-8 bg-slate-100 rounded"></div></td>
+                    <td className="px-5 py-4"><div className="h-4 w-28 bg-slate-100 rounded mb-1"></div><div className="h-3 w-36 bg-slate-100 rounded"></div></td>
+                    <td className="px-5 py-4"><div className="h-4 w-32 bg-slate-100 rounded mb-1"></div><div className="h-3 w-20 bg-slate-100 rounded"></div></td>
+                    <td className="px-5 py-4"><div className="h-4 w-20 bg-slate-100 rounded"></div></td>
+                    <td className="px-5 py-4"><div className="h-4 w-20 bg-slate-100 rounded"></div></td>
+                    <td className="px-5 py-4"><div className="h-4 w-20 bg-slate-100 rounded"></div></td>
+                    <td className="px-5 py-4"><div className="h-6 w-20 bg-slate-100 rounded-full"></div></td>
+                    <td className="px-5 py-4"><div className="h-4 w-12 bg-slate-100 rounded"></div></td>
+                    {canManageCirculation && <td className="px-5 py-4 text-right"><div className="h-8 w-24 bg-slate-100 rounded-lg ml-auto"></div></td>}
                   </tr>
                 ))
               ) : filteredRecords.length === 0 ? (
                 <tr>
-                  <td colSpan={canManageCirculation ? 9 : 8} className="px-5 py-12 text-center text-slate-400">
+                  <td colSpan={canManageCirculation ? 9 : 8} className="px-5 py-12 text-center text-slate-500">
                     <div className="flex flex-col items-center justify-center space-y-3">
-                      <div className="h-12 w-12 rounded-2xl bg-slate-800 flex items-center justify-center text-slate-500">
+                      <div className="h-12 w-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400">
                         <ArrowLeftRight className="h-6 w-6" />
                       </div>
-                      <p className="text-base font-semibold text-slate-300">No circulation records found</p>
+                      <p className="text-base font-semibold text-slate-800">No circulation records found</p>
                       <p className="text-xs text-slate-500 max-w-sm">
                         {searchTerm || statusFilter !== 'ALL'
                           ? 'No results match the active search and filter criteria.'
@@ -443,7 +444,7 @@ const BorrowingList = () => {
                       {canManageCirculation && (
                         <button
                           onClick={() => setIsCheckoutModalOpen(true)}
-                          className="mt-2 inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30"
+                          className="mt-2 inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-colors cursor-pointer"
                         >
                           <Plus className="h-3.5 w-3.5" /> Checkout First Book
                         </button>
@@ -460,53 +461,53 @@ const BorrowingList = () => {
                   return (
                     <tr 
                       key={record.id} 
-                      className="hover:bg-slate-800/40 transition-colors group"
+                      className="hover:bg-slate-50/80 transition-colors group"
                     >
                       {/* Record ID */}
-                      <td className="px-5 py-4 text-xs font-mono text-slate-400">
+                      <td className="px-5 py-4 text-xs font-mono text-slate-500">
                         #{record.id}
                       </td>
 
                       {/* Member */}
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-2.5">
-                          <div className="h-7 w-7 rounded-lg bg-indigo-500/15 text-indigo-400 font-semibold flex items-center justify-center text-xs">
+                          <div className="h-7 w-7 rounded-lg bg-indigo-50 text-indigo-700 font-bold border border-indigo-100 flex items-center justify-center text-xs">
                             {record.user?.firstName?.[0] || 'U'}{record.user?.lastName?.[0] || ''}
                           </div>
                           <div>
-                            <p className="font-medium text-slate-100">
+                            <p className="font-semibold text-slate-900">
                               {record.user ? `${record.user.firstName} ${record.user.lastName}` : 'Unknown Member'}
                             </p>
-                            <p className="text-xs text-slate-400">{record.user?.email || '—'}</p>
+                            <p className="text-xs text-slate-500">{record.user?.email || '—'}</p>
                           </div>
                         </div>
                       </td>
 
                       {/* Book */}
                       <td className="px-5 py-4">
-                        <p className="font-medium text-slate-100 max-w-xs truncate" title={record.book?.title}>
+                        <p className="font-semibold text-slate-900 max-w-xs truncate" title={record.book?.title}>
                           {record.book?.title || 'Unknown Book'}
                         </p>
-                        <p className="text-xs text-slate-400">
+                        <p className="text-xs text-slate-500">
                           {record.book?.author ? `by ${record.book.author}` : ''} {record.book?.isbn ? `· ISBN: ${record.book.isbn}` : ''}
                         </p>
                       </td>
 
                       {/* Borrow Date */}
-                      <td className="px-5 py-4 text-xs text-slate-300">
+                      <td className="px-5 py-4 text-xs text-slate-600 font-medium">
                         {formatDate(record.borrowDate)}
                       </td>
 
                       {/* Due Date */}
                       <td className="px-5 py-4 text-xs">
-                        <span className={status === 'OVERDUE' ? 'font-semibold text-rose-400' : 'text-slate-300'}>
+                        <span className={status === 'OVERDUE' ? 'font-bold text-rose-600' : 'text-slate-600 font-medium'}>
                           {formatDate(record.dueDate)}
                         </span>
                       </td>
 
                       {/* Return Date */}
-                      <td className="px-5 py-4 text-xs text-slate-400">
-                        {record.returnDate ? formatDate(record.returnDate) : <span className="text-slate-600">—</span>}
+                      <td className="px-5 py-4 text-xs text-slate-500">
+                        {record.returnDate ? formatDate(record.returnDate) : <span className="text-slate-400">—</span>}
                       </td>
 
                       {/* Status */}
@@ -517,11 +518,11 @@ const BorrowingList = () => {
                       {/* Fine */}
                       <td className="px-5 py-4 text-xs">
                         {Number(fine) > 0 ? (
-                          <span className="font-semibold text-rose-400 flex items-center gap-0.5">
+                          <span className="font-bold text-rose-600 flex items-center gap-0.5">
                             ${fine}
                           </span>
                         ) : (
-                          <span className="text-slate-500">$0.00</span>
+                          <span className="text-slate-400 font-medium">$0.00</span>
                         )}
                       </td>
 
@@ -534,13 +535,13 @@ const BorrowingList = () => {
                                 setSelectedReturnRecord(record);
                                 setIsReturnModalOpen(true);
                               }}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 transition-all active:scale-95 shadow-sm"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-all active:scale-95 shadow-xs cursor-pointer"
                             >
                               <RotateCcw className="h-3.5 w-3.5" />
                               <span>Process Return</span>
                             </button>
                           ) : (
-                            <span className="text-xs text-slate-600 italic">Completed</span>
+                            <span className="text-xs text-slate-400 font-medium italic">Completed</span>
                           )}
                         </td>
                       )}
@@ -554,7 +555,7 @@ const BorrowingList = () => {
 
         {/* Pagination Controls (for 'all' tab) */}
         {activeTab === 'all' && totalPages > 1 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-slate-800 bg-slate-950/40 text-xs text-slate-400">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-slate-200 bg-slate-50/60 text-xs text-slate-500">
             <div className="flex items-center gap-3">
               <span>Rows per page:</span>
               <select
@@ -563,14 +564,14 @@ const BorrowingList = () => {
                   setPageSize(Number(e.target.value));
                   setCurrentPage(0);
                 }}
-                className="bg-slate-800 border border-slate-700 text-slate-200 rounded-lg px-2.5 py-1 focus:outline-none"
+                className="bg-white border border-slate-200 text-slate-800 rounded-lg px-2.5 py-1 focus:outline-none focus:ring-1 focus:ring-indigo-500 shadow-xs"
               >
                 <option value={10}>10</option>
                 <option value={25}>25</option>
                 <option value={50}>50</option>
               </select>
               <span>
-                Page <strong className="text-slate-200">{currentPage + 1}</strong> of <strong className="text-slate-200">{totalPages}</strong> ({totalElements} items)
+                Page <strong className="text-slate-900">{currentPage + 1}</strong> of <strong className="text-slate-900">{totalPages}</strong> ({totalElements} items)
               </span>
             </div>
 
@@ -578,7 +579,7 @@ const BorrowingList = () => {
               <button
                 onClick={() => setCurrentPage(0)}
                 disabled={currentPage === 0 || loading}
-                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:hover:bg-slate-800 text-slate-300"
+                className="p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-white text-slate-600 shadow-xs cursor-pointer"
                 title="First page"
               >
                 <ChevronsLeft className="h-4 w-4" />
@@ -586,18 +587,18 @@ const BorrowingList = () => {
               <button
                 onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
                 disabled={currentPage === 0 || loading}
-                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:hover:bg-slate-800 text-slate-300"
+                className="p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-white text-slate-600 shadow-xs cursor-pointer"
                 title="Previous page"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
-              <span className="px-2 font-medium text-slate-300">
+              <span className="px-2 font-semibold text-slate-800">
                 {currentPage + 1}
               </span>
               <button
                 onClick={() => setCurrentPage((p) => Math.min(totalPages - 1, p + 1))}
                 disabled={currentPage >= totalPages - 1 || loading}
-                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:hover:bg-slate-800 text-slate-300"
+                className="p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-white text-slate-600 shadow-xs cursor-pointer"
                 title="Next page"
               >
                 <ChevronRight className="h-4 w-4" />
@@ -605,7 +606,7 @@ const BorrowingList = () => {
               <button
                 onClick={() => setCurrentPage(totalPages - 1)}
                 disabled={currentPage >= totalPages - 1 || loading}
-                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:hover:bg-slate-800 text-slate-300"
+                className="p-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-white text-slate-600 shadow-xs cursor-pointer"
                 title="Last page"
               >
                 <ChevronsRight className="h-4 w-4" />

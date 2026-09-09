@@ -218,25 +218,25 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200">
       <div 
-        className="relative w-full max-w-2xl bg-slate-900 border border-slate-800/90 rounded-2xl shadow-2xl shadow-indigo-950/40 overflow-hidden text-slate-100 transform transition-all"
+        className="relative w-full max-w-2xl bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden text-slate-900 transform transition-all"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Glowing Top Accent Bar */}
-        <div className="h-1.5 w-full bg-gradient-to-r from-indigo-500 via-cyan-500 to-emerald-500"></div>
+        <div className="h-1.5 w-full bg-gradient-to-r from-indigo-500 via-indigo-600 to-violet-600"></div>
 
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-800 bg-slate-900/80">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 bg-slate-50/70">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shadow-inner">
+            <div className="h-10 w-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-xs">
               <BookOpen className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+              <h2 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
                 {editingBook ? 'Edit Book Metadata' : 'Add New Book to Catalog'}
               </h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500 font-medium">
                 {editingBook ? `Updating #${editingBook.id} - ${editingBook.title}` : 'Fill in the book details and inventory parameters.'}
               </p>
             </div>
@@ -244,7 +244,7 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-2 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            className="rounded-xl p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
             aria-label="Close modal"
           >
             <X className="h-5 w-5" />
@@ -255,11 +255,11 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
         <form onSubmit={handleSubmit} noValidate className="p-6 space-y-5">
           {/* Server Error Alert */}
           {serverError && (
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm animate-in fade-in">
-              <AlertCircle className="h-5 w-5 text-rose-400 shrink-0 mt-0.5" />
+            <div className="flex items-start gap-3 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm animate-in fade-in">
+              <AlertCircle className="h-5 w-5 text-rose-600 shrink-0 mt-0.5" />
               <div className="flex-1">
-                <p className="font-semibold text-rose-200">Unable to save book</p>
-                <p className="text-xs text-rose-300/90 mt-0.5">{serverError}</p>
+                <p className="font-bold text-rose-900">Unable to save book</p>
+                <p className="text-xs text-rose-700 mt-0.5">{serverError}</p>
               </div>
             </div>
           )}
@@ -267,9 +267,9 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Title (Full Width) */}
             <div className="sm:col-span-2 space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                <Bookmark className="h-3.5 w-3.5 text-indigo-400" />
-                Book Title <span className="text-rose-400 font-bold">*</span>
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                <Bookmark className="h-3.5 w-3.5 text-indigo-600" />
+                Book Title <span className="text-rose-500 font-bold">*</span>
               </label>
               <input
                 type="text"
@@ -277,15 +277,15 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
                 value={formData.title}
                 onChange={handleChange}
                 placeholder="e.g. Clean Code: A Handbook of Agile Software Craftsmanship"
-                className={`w-full px-3.5 py-2.5 rounded-xl bg-slate-950/80 border text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 transition-all ${
+                className={`w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 transition-all font-medium ${
                   errors.title
-                    ? 'border-rose-500/80 focus:ring-rose-500/30 bg-rose-950/10'
-                    : 'border-slate-800 focus:border-indigo-500 focus:ring-indigo-500/20'
+                    ? 'border-rose-400 focus:ring-rose-500/20 bg-rose-50/50'
+                    : 'border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/15'
                 }`}
                 required
               />
               {errors.title && (
-                <p className="text-xs text-rose-400 flex items-center gap-1 mt-1">
+                <p className="text-xs text-rose-600 font-medium flex items-center gap-1 mt-1">
                   <AlertCircle className="h-3 w-3" /> {errors.title}
                 </p>
               )}
@@ -293,9 +293,9 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
 
             {/* Author (Full Width or Half) */}
             <div className="sm:col-span-2 space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                <User className="h-3.5 w-3.5 text-indigo-400" />
-                Author <span className="text-rose-400 font-bold">*</span>
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                <User className="h-3.5 w-3.5 text-indigo-600" />
+                Author <span className="text-rose-500 font-bold">*</span>
               </label>
               <input
                 type="text"
@@ -303,15 +303,15 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
                 value={formData.author}
                 onChange={handleChange}
                 placeholder="e.g. Robert C. Martin"
-                className={`w-full px-3.5 py-2.5 rounded-xl bg-slate-950/80 border text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 transition-all ${
+                className={`w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 transition-all font-medium ${
                   errors.author
-                    ? 'border-rose-500/80 focus:ring-rose-500/30 bg-rose-950/10'
-                    : 'border-slate-800 focus:border-indigo-500 focus:ring-indigo-500/20'
+                    ? 'border-rose-400 focus:ring-rose-500/20 bg-rose-50/50'
+                    : 'border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/15'
                 }`}
                 required
               />
               {errors.author && (
-                <p className="text-xs text-rose-400 flex items-center gap-1 mt-1">
+                <p className="text-xs text-rose-600 font-medium flex items-center gap-1 mt-1">
                   <AlertCircle className="h-3 w-3" /> {errors.author}
                 </p>
               )}
@@ -319,12 +319,12 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
 
             {/* ISBN */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center justify-between">
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
-                  <Hash className="h-3.5 w-3.5 text-indigo-400" />
+                  <Hash className="h-3.5 w-3.5 text-indigo-600" />
                   ISBN (10 or 13)
                 </span>
-                <span className="text-[10px] text-slate-500 normal-case">Format: 978-0-13-468599-1</span>
+                <span className="text-[10px] text-slate-500 normal-case font-medium">Format: 978-0-13-468599-1</span>
               </label>
               <input
                 type="text"
@@ -332,14 +332,14 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
                 value={formData.isbn}
                 onChange={handleChange}
                 placeholder="e.g. 978-0132350884"
-                className={`w-full px-3.5 py-2.5 rounded-xl bg-slate-950/80 border text-sm font-mono text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 transition-all ${
+                className={`w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border text-sm font-mono text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 transition-all ${
                   errors.isbn
-                    ? 'border-rose-500/80 focus:ring-rose-500/30 bg-rose-950/10'
-                    : 'border-slate-800 focus:border-indigo-500 focus:ring-indigo-500/20'
+                    ? 'border-rose-400 focus:ring-rose-500/20 bg-rose-50/50'
+                    : 'border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/15'
                 }`}
               />
               {errors.isbn && (
-                <p className="text-xs text-rose-400 flex items-center gap-1 mt-1">
+                <p className="text-xs text-rose-600 font-medium flex items-center gap-1 mt-1">
                   <AlertCircle className="h-3 w-3" /> {errors.isbn}
                 </p>
               )}
@@ -347,9 +347,9 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
 
             {/* Publication Year */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                <Calendar className="h-3.5 w-3.5 text-indigo-400" />
-                Publication Year <span className="text-rose-400 font-bold">*</span>
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                <Calendar className="h-3.5 w-3.5 text-indigo-600" />
+                Publication Year <span className="text-rose-500 font-bold">*</span>
               </label>
               <input
                 type="number"
@@ -359,15 +359,15 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
                 value={formData.publicationYear}
                 onChange={handleChange}
                 placeholder="e.g. 2008"
-                className={`w-full px-3.5 py-2.5 rounded-xl bg-slate-950/80 border text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 transition-all ${
+                className={`w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 transition-all font-medium ${
                   errors.publicationYear
-                    ? 'border-rose-500/80 focus:ring-rose-500/30 bg-rose-950/10'
-                    : 'border-slate-800 focus:border-indigo-500 focus:ring-indigo-500/20'
+                    ? 'border-rose-400 focus:ring-rose-500/20 bg-rose-50/50'
+                    : 'border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/15'
                 }`}
                 required
               />
               {errors.publicationYear && (
-                <p className="text-xs text-rose-400 flex items-center gap-1 mt-1">
+                <p className="text-xs text-rose-600 font-medium flex items-center gap-1 mt-1">
                   <AlertCircle className="h-3 w-3" /> {errors.publicationYear}
                 </p>
               )}
@@ -375,8 +375,8 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
 
             {/* Genre Selector */}
             <div className="sm:col-span-2 space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                <Tag className="h-3.5 w-3.5 text-indigo-400" />
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                <Tag className="h-3.5 w-3.5 text-indigo-600" />
                 Genre / Category
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -384,14 +384,14 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
                   name="genreSelect"
                   value={useCustomGenre ? 'Custom' : formData.genre}
                   onChange={handleChange}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15 font-medium"
                 >
                   {PRESET_GENRES.map((g) => (
-                    <option key={g} value={g} className="bg-slate-900 text-slate-100">
+                    <option key={g} value={g} className="bg-white text-slate-800">
                       {g}
                     </option>
                   ))}
-                  <option value="Custom" className="bg-slate-900 text-indigo-300 font-semibold">
+                  <option value="Custom" className="bg-white text-indigo-600 font-bold">
                     + Other / Custom Category...
                   </option>
                 </select>
@@ -403,16 +403,16 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
                     value={formData.customGenre}
                     onChange={handleChange}
                     placeholder="Enter custom genre name"
-                    className={`w-full px-3.5 py-2.5 rounded-xl bg-slate-950/80 border text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 transition-all ${
+                    className={`w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 transition-all font-medium ${
                       errors.customGenre
-                        ? 'border-rose-500/80 focus:ring-rose-500/30'
-                        : 'border-indigo-500/60 focus:border-indigo-500 focus:ring-indigo-500/20'
+                        ? 'border-rose-400 focus:ring-rose-500/20'
+                        : 'border-indigo-300 focus:border-indigo-500 focus:ring-indigo-500/15'
                     }`}
                   />
                 )}
               </div>
               {errors.customGenre && (
-                <p className="text-xs text-rose-400 flex items-center gap-1 mt-1">
+                <p className="text-xs text-rose-600 font-medium flex items-center gap-1 mt-1">
                   <AlertCircle className="h-3 w-3" /> {errors.customGenre}
                 </p>
               )}
@@ -420,12 +420,12 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
 
             {/* Total Copies */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center justify-between">
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
-                  <Layers className="h-3.5 w-3.5 text-indigo-400" />
-                  Total Copies <span className="text-rose-400 font-bold">*</span>
+                  <Layers className="h-3.5 w-3.5 text-indigo-600" />
+                  Total Copies <span className="text-rose-500 font-bold">*</span>
                 </span>
-                <span className="text-[10px] text-slate-500">Physical Stock</span>
+                <span className="text-[10px] text-slate-500 font-medium">Physical Stock</span>
               </label>
               <input
                 type="number"
@@ -433,15 +433,15 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
                 min="0"
                 value={formData.totalCopies}
                 onChange={handleChange}
-                className={`w-full px-3.5 py-2.5 rounded-xl bg-slate-950/80 border text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 transition-all ${
+                className={`w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 transition-all font-medium ${
                   errors.totalCopies
-                    ? 'border-rose-500/80 focus:ring-rose-500/30 bg-rose-950/10'
-                    : 'border-slate-800 focus:border-indigo-500 focus:ring-indigo-500/20'
+                    ? 'border-rose-400 focus:ring-rose-500/20 bg-rose-50/50'
+                    : 'border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/15'
                 }`}
                 required
               />
               {errors.totalCopies && (
-                <p className="text-xs text-rose-400 flex items-center gap-1 mt-1">
+                <p className="text-xs text-rose-600 font-medium flex items-center gap-1 mt-1">
                   <AlertCircle className="h-3 w-3" /> {errors.totalCopies}
                 </p>
               )}
@@ -449,12 +449,12 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
 
             {/* Available Copies */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center justify-between">
+              <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-                  Available Copies <span className="text-rose-400 font-bold">*</span>
+                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+                  Available Copies <span className="text-rose-500 font-bold">*</span>
                 </span>
-                <span className="text-[10px] text-slate-500">&le; Total Copies</span>
+                <span className="text-[10px] text-slate-500 font-medium">&le; Total Copies</span>
               </label>
               <input
                 type="number"
@@ -463,15 +463,15 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
                 max={formData.totalCopies || 9999}
                 value={formData.availableCopies}
                 onChange={handleChange}
-                className={`w-full px-3.5 py-2.5 rounded-xl bg-slate-950/80 border text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 transition-all ${
+                className={`w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 transition-all font-medium ${
                   errors.availableCopies
-                    ? 'border-rose-500/80 focus:ring-rose-500/30 bg-rose-950/10'
-                    : 'border-slate-800 focus:border-indigo-500 focus:ring-indigo-500/20'
+                    ? 'border-rose-400 focus:ring-rose-500/20 bg-rose-50/50'
+                    : 'border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/15'
                 }`}
                 required
               />
               {errors.availableCopies && (
-                <p className="text-xs text-rose-400 flex items-center gap-1 mt-1">
+                <p className="text-xs text-rose-600 font-medium flex items-center gap-1 mt-1">
                   <AlertCircle className="h-3 w-3" /> {errors.availableCopies}
                 </p>
               )}
@@ -479,19 +479,19 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
           </div>
 
           {/* Form Actions Footer */}
-          <div className="flex items-center justify-end gap-3 pt-5 border-t border-slate-800">
+          <div className="flex items-center justify-end gap-3 pt-5 border-t border-slate-100">
             <button
               type="button"
               onClick={onClose}
               disabled={submitting}
-              className="px-4 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 border border-transparent transition-all cursor-pointer disabled:opacity-50"
+              className="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 transition-all cursor-pointer disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 shadow-lg shadow-indigo-500/25 ring-1 ring-white/10 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
+              className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 shadow-md shadow-indigo-600/25 ring-1 ring-indigo-500/30 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
             >
               {submitting ? (
                 <>
@@ -513,3 +513,4 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
 };
 
 export default BookModal;
+
