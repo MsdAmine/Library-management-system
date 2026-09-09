@@ -208,26 +208,26 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
       <div 
-        className="relative w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
+        className="relative w-full max-w-2xl bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-800 bg-slate-900/90">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-200 bg-slate-50/70">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+            <div className="h-10 w-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-xs">
               <ArrowLeftRight className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-white">New Loan Checkout</h2>
-              <p className="text-xs text-slate-400">Issue a book loan to an active library member</p>
+              <h2 className="text-lg font-bold text-slate-900">New Loan Checkout</h2>
+              <p className="text-xs text-slate-500">Issue a book loan to an active library member</p>
             </div>
           </div>
           <button
             onClick={onClose}
             disabled={submitting}
-            className="rounded-lg p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"
+            className="rounded-lg p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
           >
             <X className="h-5 w-5" />
           </button>
@@ -236,10 +236,10 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
         {/* Modal Body / Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto flex-1">
           {formError && (
-            <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-3 text-rose-300 text-sm">
-              <AlertTriangle className="h-5 w-5 text-rose-400 flex-shrink-0 mt-0.5" />
+            <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 flex items-start gap-3 text-rose-800 text-sm">
+              <AlertTriangle className="h-5 w-5 text-rose-600 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <span className="font-semibold block text-rose-200">Checkout Error</span>
+                <span className="font-bold block text-rose-900">Checkout Error</span>
                 {formError}
               </div>
             </div>
@@ -247,13 +247,13 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
 
           {/* 1. Member Selection */}
           <div className="space-y-2" ref={memberDropdownRef}>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300">
-              1. Select Member <span className="text-rose-400">*</span>
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+              1. Select Member <span className="text-rose-500">*</span>
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                 {isSearchingMembers ? (
-                  <Loader2 className="h-4 w-4 animate-spin text-indigo-400" />
+                  <Loader2 className="h-4 w-4 animate-spin text-indigo-600" />
                 ) : (
                   <UserIcon className="h-4 w-4" />
                 )}
@@ -269,7 +269,7 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
                   if (memberOptions.length > 0) setShowMemberDropdown(true);
                 }}
                 placeholder="Search member by first name, last name, or email..."
-                className="w-full pl-10 pr-10 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
+                className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-xs"
               />
               {selectedMember && (
                 <button
@@ -279,7 +279,7 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
                     setMemberQuery('');
                     setMemberActiveLoans([]);
                   }}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-200"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-700"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -289,22 +289,22 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
             {/* Member Dropdown Results */}
             {showMemberDropdown && memberOptions.length > 0 && (
               <div className="relative z-30">
-                <ul className="absolute left-0 right-0 mt-1 max-h-52 overflow-y-auto bg-slate-800 border border-slate-700 rounded-xl shadow-xl divide-y divide-slate-700/50">
+                <ul className="absolute left-0 right-0 mt-1 max-h-52 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-xl divide-y divide-slate-100">
                   {memberOptions.map((m) => (
                     <li
                       key={m.id}
                       onClick={() => handleSelectMember(m)}
-                      className="p-3 hover:bg-slate-700/70 cursor-pointer flex items-center justify-between text-sm transition-colors"
+                      className="p-3 hover:bg-slate-50 cursor-pointer flex items-center justify-between text-sm transition-colors"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-lg bg-indigo-500/20 text-indigo-300 font-semibold flex items-center justify-center text-xs">
+                        <div className="h-8 w-8 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-100 font-bold flex items-center justify-center text-xs">
                           {m.firstName?.[0]}{m.lastName?.[0]}
                         </div>
                         <div>
-                          <p className="font-medium text-slate-100">
+                          <p className="font-semibold text-slate-900">
                             {m.firstName} {m.lastName}
                           </p>
-                          <p className="text-xs text-slate-400">{m.email}</p>
+                          <p className="text-xs text-slate-500">{m.email}</p>
                         </div>
                       </div>
                       <span className="text-xs text-slate-400 font-mono">ID #{m.id}</span>
@@ -318,29 +318,29 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
             {selectedMember && (
               <div className={`p-4 rounded-xl border transition-all ${
                 isQuotaExceeded 
-                  ? 'bg-rose-500/10 border-rose-500/30' 
-                  : 'bg-slate-800/60 border-slate-700/60'
+                  ? 'bg-rose-50 border-rose-200' 
+                  : 'bg-slate-50 border-slate-200'
               }`}>
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <UserIcon className="h-4 w-4 text-indigo-400" />
-                    <span className="text-sm font-semibold text-slate-200">
+                    <UserIcon className="h-4 w-4 text-indigo-600" />
+                    <span className="text-sm font-semibold text-slate-900">
                       {selectedMember.firstName} {selectedMember.lastName}
                     </span>
-                    <span className="text-xs text-slate-400">({selectedMember.email})</span>
+                    <span className="text-xs text-slate-500">({selectedMember.email})</span>
                   </div>
                   <div className="flex items-center gap-1.5 text-xs">
                     {isLoadingQuota ? (
-                      <span className="flex items-center gap-1 text-slate-400">
-                        <Loader2 className="h-3 w-3 animate-spin" /> Checking quota...
+                      <span className="flex items-center gap-1 text-slate-500">
+                        <Loader2 className="h-3 w-3 animate-spin text-indigo-600" /> Checking quota...
                       </span>
                     ) : (
-                      <span className={`px-2.5 py-1 rounded-full font-semibold ${
+                      <span className={`px-2.5 py-1 rounded-full font-bold shadow-xs ${
                         isQuotaExceeded
-                          ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
+                          ? 'bg-rose-100 text-rose-800 border border-rose-200'
                           : activeLoanCount >= 4
-                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-                          : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                          ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                          : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
                       }`}>
                         {activeLoanCount} / {MAX_QUOTA} Active Loans
                       </span>
@@ -349,21 +349,21 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
                 </div>
 
                 {/* Quota Progress Bar */}
-                <div className="w-full bg-slate-700/60 rounded-full h-2 overflow-hidden">
+                <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
                   <div 
                     className={`h-full transition-all duration-300 ${
                       isQuotaExceeded 
-                        ? 'bg-rose-500' 
+                        ? 'bg-rose-600' 
                         : activeLoanCount >= 4 
                         ? 'bg-amber-500' 
-                        : 'bg-indigo-500'
+                        : 'bg-indigo-600'
                     }`}
                     style={{ width: `${Math.min((activeLoanCount / MAX_QUOTA) * 100, 100)}%` }}
                   />
                 </div>
 
                 {isQuotaExceeded && (
-                  <p className="text-xs text-rose-400 mt-2 flex items-center gap-1.5 font-medium">
+                  <p className="text-xs text-rose-700 mt-2 flex items-center gap-1.5 font-semibold">
                     <ShieldAlert className="h-4 w-4 flex-shrink-0" />
                     Member has reached max loan limit ({MAX_QUOTA}). Return an existing loan before checking out.
                   </p>
@@ -374,13 +374,13 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
 
           {/* 2. Book Selection */}
           <div className="space-y-2" ref={bookDropdownRef}>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300">
-              2. Select Book <span className="text-rose-400">*</span>
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+              2. Select Book <span className="text-rose-500">*</span>
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                 {isSearchingBooks ? (
-                  <Loader2 className="h-4 w-4 animate-spin text-indigo-400" />
+                  <Loader2 className="h-4 w-4 animate-spin text-indigo-600" />
                 ) : (
                   <BookOpen className="h-4 w-4" />
                 )}
@@ -396,7 +396,7 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
                   if (bookOptions.length > 0) setShowBookDropdown(true);
                 }}
                 placeholder="Search catalog by book title or author..."
-                className="w-full pl-10 pr-10 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
+                className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-xs"
               />
               {selectedBook && (
                 <button
@@ -405,7 +405,7 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
                     setSelectedBook(null);
                     setBookQuery('');
                   }}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-200"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-700"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -415,7 +415,7 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
             {/* Book Dropdown Results */}
             {showBookDropdown && bookOptions.length > 0 && (
               <div className="relative z-20">
-                <ul className="absolute left-0 right-0 mt-1 max-h-52 overflow-y-auto bg-slate-800 border border-slate-700 rounded-xl shadow-xl divide-y divide-slate-700/50">
+                <ul className="absolute left-0 right-0 mt-1 max-h-52 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-xl divide-y divide-slate-100">
                   {bookOptions.map((b) => {
                     const available = (b.availableCopies ?? 0) > 0;
                     return (
@@ -424,24 +424,24 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
                         onClick={() => handleSelectBook(b)}
                         className={`p-3 flex items-center justify-between text-sm transition-colors ${
                           available 
-                            ? 'hover:bg-slate-700/70 cursor-pointer' 
-                            : 'opacity-60 bg-slate-800/50 cursor-pointer'
+                            ? 'hover:bg-slate-50 cursor-pointer' 
+                            : 'opacity-60 bg-slate-50 cursor-pointer'
                         }`}
                       >
                         <div className="flex items-center gap-3">
-                          <div className="h-8 w-8 rounded-lg bg-cyan-500/15 text-cyan-300 font-semibold flex items-center justify-center">
+                          <div className="h-8 w-8 rounded-lg bg-indigo-50 text-indigo-600 border border-indigo-100 font-bold flex items-center justify-center">
                             <BookOpen className="h-4 w-4" />
                           </div>
                           <div>
-                            <p className="font-medium text-slate-100">{b.title}</p>
-                            <p className="text-xs text-slate-400">by {b.author} · ISBN: {b.isbn}</p>
+                            <p className="font-semibold text-slate-900">{b.title}</p>
+                            <p className="text-xs text-slate-500">by {b.author} · ISBN: {b.isbn}</p>
                           </div>
                         </div>
                         <div className="text-right">
-                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                          <span className={`text-xs px-2.5 py-0.5 rounded-full font-bold shadow-xs ${
                             available 
-                              ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' 
-                              : 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                              : 'bg-rose-50 text-rose-700 border border-rose-200'
                           }`}>
                             {b.availableCopies} available
                           </span>
@@ -457,23 +457,23 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
             {selectedBook && (
               <div className={`p-4 rounded-xl border flex items-center justify-between ${
                 isBookUnavailable 
-                  ? 'bg-rose-500/10 border-rose-500/30' 
-                  : 'bg-slate-800/60 border-slate-700/60'
+                  ? 'bg-rose-50 border-rose-200' 
+                  : 'bg-slate-50 border-slate-200'
               }`}>
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center">
+                  <div className="h-10 w-10 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center">
                     <BookOpen className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-slate-200">{selectedBook.title}</p>
-                    <p className="text-xs text-slate-400">by {selectedBook.author} · ISBN: {selectedBook.isbn}</p>
+                    <p className="text-sm font-bold text-slate-900">{selectedBook.title}</p>
+                    <p className="text-xs text-slate-500">by {selectedBook.author} · ISBN: {selectedBook.isbn}</p>
                   </div>
                 </div>
                 <div>
-                  <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${
+                  <span className={`text-xs px-2.5 py-1 rounded-full font-bold shadow-xs ${
                     isBookUnavailable
-                      ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
-                      : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                      ? 'bg-rose-100 text-rose-800 border border-rose-200'
+                      : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
                   }`}>
                     {selectedBook.availableCopies} in stock
                   </span>
@@ -483,35 +483,35 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
           </div>
 
           {/* 3. Loan Period & Policy Summary */}
-          <div className="p-4 rounded-xl bg-slate-800/40 border border-slate-700/60 space-y-3">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-              <Clock className="h-3.5 w-3.5 text-indigo-400" />
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+              <Clock className="h-3.5 w-3.5 text-indigo-600" />
               Loan Period & Terms
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800 flex items-center justify-between">
-                <span className="text-slate-400">Checkout Date:</span>
-                <span className="font-semibold text-slate-200">{formatDate(today)}</span>
+              <div className="p-2.5 rounded-lg bg-white border border-slate-200 flex items-center justify-between shadow-xs">
+                <span className="text-slate-500 font-medium">Checkout Date:</span>
+                <span className="font-bold text-slate-900">{formatDate(today)}</span>
               </div>
-              <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800 flex items-center justify-between">
-                <span className="text-slate-400">Due Date (14 Days):</span>
-                <span className="font-semibold text-indigo-300">{formatDate(dueDate)}</span>
+              <div className="p-2.5 rounded-lg bg-white border border-slate-200 flex items-center justify-between shadow-xs">
+                <span className="text-slate-500 font-medium">Due Date (14 Days):</span>
+                <span className="font-bold text-indigo-600">{formatDate(dueDate)}</span>
               </div>
             </div>
-            <div className="flex items-center gap-2 text-[11px] text-slate-400 pt-1">
-              <Info className="h-3.5 w-3.5 text-amber-400 flex-shrink-0" />
+            <div className="flex items-center gap-2 text-[11px] text-slate-500 pt-1">
+              <Info className="h-3.5 w-3.5 text-amber-500 flex-shrink-0" />
               <span>Standard circulation policy: 14 days duration. Overdue fine rate is <strong>$1.50 per day</strong>.</span>
             </div>
           </div>
         </form>
 
         {/* Modal Footer */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-800 bg-slate-900/90">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 bg-slate-50/70">
           <button
             type="button"
             onClick={onClose}
             disabled={submitting}
-            className="px-4 py-2.5 text-sm font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700/80 rounded-xl border border-slate-700 transition-colors"
+            className="px-4 py-2.5 text-sm font-semibold text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-100 rounded-xl border border-slate-200 shadow-xs transition-colors cursor-pointer"
           >
             Cancel
           </button>
@@ -519,7 +519,7 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
             type="button"
             onClick={handleSubmit}
             disabled={submitting || !selectedMember || !selectedBook || isQuotaExceeded || isBookUnavailable}
-            className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 rounded-xl shadow-lg shadow-indigo-600/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95"
+            className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-md shadow-indigo-600/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 cursor-pointer"
           >
             {submitting ? (
               <>
