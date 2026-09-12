@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { BookOpen, ShieldAlert, LogOut, ArrowLeft } from 'lucide-react';
+import { ShieldAlert, LogOut, ArrowLeft } from 'lucide-react';
 
 const UnauthorizedPage = () => {
   const { logout, user, role } = useAuth();
