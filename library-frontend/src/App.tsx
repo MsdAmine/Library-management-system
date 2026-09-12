@@ -35,7 +35,14 @@ function App() {
             <Route path="/members" element={<MemberList />} />
             <Route path="/loans" element={<Borrowings />} />
             <Route path="/borrowings" element={<Navigate to="/loans" replace />} />
-            <Route path="/analytics" element={<Analytics />} />
+            <Route
+              path="/analytics"
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN', 'LIBRARIAN']}>
+                  <Analytics />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/users"
               element={
