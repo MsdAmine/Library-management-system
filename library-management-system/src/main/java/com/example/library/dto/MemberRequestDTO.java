@@ -20,7 +20,6 @@ public class MemberRequestDTO {
     @NotBlank(message = "Email is required")
     private String email;
 
-    @NotBlank(message = "Password is required")
     private String password;
 
     @NotNull(message = "Membership date is required")

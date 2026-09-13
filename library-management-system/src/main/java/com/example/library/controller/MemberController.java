@@ -66,6 +66,7 @@ public class MemberController {
         dto.setLastName(user.getLastName());
         dto.setEmail(user.getEmail());
         dto.setMembershipDate(user.getMembershipDate());
+        dto.setActive(user.isActive());
         return dto;
     }
 }

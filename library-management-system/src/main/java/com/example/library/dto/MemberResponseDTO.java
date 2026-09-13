@@ -10,4 +10,5 @@ public class MemberResponseDTO {
     private String lastName;
     private String email;
     private LocalDate membershipDate;
+    private boolean active;
 }
