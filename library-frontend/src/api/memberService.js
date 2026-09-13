@@ -47,7 +47,7 @@ export const memberService = {
       lastName: memberData.lastName?.trim(),
       email: memberData.email?.trim(),
       membershipDate: memberData.membershipDate,
-      password: memberData.password || 'Member123!',
+      password: memberData.password && memberData.password.trim() ? memberData.password.trim() : 'Library2026!',
     };
     const response = await api.post('/members', payload);
     return response.data;
@@ -67,9 +67,6 @@ export const memberService = {
     };
     if (memberData.password && memberData.password.trim()) {
       payload.password = memberData.password.trim();
-    } else {
-      // Backend DTO validation requires password field if not optional
-      payload.password = 'Member123!';
     }
     const response = await api.put(`/members/${id}`, payload);
     return response.data;

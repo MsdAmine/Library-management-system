@@ -22,7 +22,11 @@ import {
   Calendar, 
   Mail, 
   ShieldCheck,
-  UserPlus
+  UserPlus,
+  Lock,
+  Eye,
+  EyeOff,
+  KeyRound
 } from 'lucide-react';
 import memberService from '../../api/memberService';
 import { useAuth } from '../../context/AuthContext';
@@ -66,6 +70,11 @@ const MemberList = () => {
 
   // Copied Email feedback state
   const [copiedEmail, setCopiedEmail] = useState(null);
+
+  // Created Member credentials display state
+  const [createdCredentials, setCreatedCredentials] = useState(null);
+  const [copiedPassword, setCopiedPassword] = useState(false);
+  const [showCredentialPassword, setShowCredentialPassword] = useState(false);
 
   // Debounce search input
   useEffect(() => {
@@ -136,6 +145,13 @@ const MemberList = () => {
     setTimeout(() => setCopiedEmail(null), 2000);
   };
 
+  const handleCopyPassword = (pwd) => {
+    if (!pwd) return;
+    navigator.clipboard.writeText(pwd);
+    setCopiedPassword(true);
+    setTimeout(() => setCopiedPassword(false), 2000);
+  };
+
   const openAddModal = () => {
     setEditingMember(null);
     setIsMemberModalOpen(true);
@@ -151,8 +167,18 @@ const MemberList = () => {
     setIsDeleteModalOpen(true);
   };
 
-  const handleMemberSaved = () => {
-    showToast(editingMember ? 'Member profile updated successfully.' : 'New member registered successfully.');
+  const handleMemberSaved = (result) => {
+    if (result && !result.isEdit && result.temporaryPassword) {
+      setCreatedCredentials({
+        fullName: result.fullName || `${result.member?.firstName} ${result.member?.lastName}`,
+        email: result.email || result.member?.email,
+        temporaryPassword: result.temporaryPassword,
+        membershipDate: result.member?.membershipDate,
+      });
+      showToast(`Member profile and user account created for ${result.email}.`, 'success');
+    } else {
+      showToast('Member profile updated successfully.', 'success');
+    }
     fetchMembers();
   };
 
@@ -242,6 +268,116 @@ const MemberList = () => {
           )}
         </div>
       </div>
+
+      {/* Created Member Credentials Alert Banner */}
+      {createdCredentials && (
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-500/10 via-indigo-500/10 to-purple-500/10 border-2 border-emerald-500/40 p-5 sm:p-6 shadow-lg shadow-emerald-500/5 animate-in slide-in-from-top-4 duration-300">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex items-start gap-4">
+              <div className="h-12 w-12 rounded-2xl bg-emerald-100 border border-emerald-200 flex items-center justify-center text-emerald-700 shrink-0 shadow-xs mt-0.5">
+                <KeyRound className="h-6 w-6" />
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+                    Member Login Account Created
+                  </span>
+                  <span className="text-xs font-bold text-slate-900">
+                    {createdCredentials.fullName}
+                  </span>
+                </div>
+                <h3 className="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight">
+                  Spring Security User Credentials
+                </h3>
+                <p className="text-xs text-slate-600 font-medium max-w-xl">
+                  A corresponding user authentication profile has been synchronized with role <span className="font-semibold text-slate-800">ROLE_USER</span>. Provide these login credentials to the member:
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setCreatedCredentials(null)}
+              className="self-end md:self-start p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-white/80 border border-transparent hover:border-slate-200 transition-colors cursor-pointer"
+              title="Dismiss credentials banner"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+
+          {/* Credentials Container */}
+          <div className="mt-4 pt-4 border-t border-emerald-200/60 grid grid-cols-1 sm:grid-cols-2 gap-3 bg-white/90 backdrop-blur-xs p-4 rounded-2xl border border-emerald-100">
+            {/* Email / Username */}
+            <div className="space-y-1">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                <Mail className="h-3.5 w-3.5 text-slate-400" />
+                Login Email / Username
+              </span>
+              <div className="flex items-center justify-between gap-2 bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl">
+                <span className="font-mono text-xs font-bold text-slate-800 truncate">
+                  {createdCredentials.email}
+                </span>
+                <button
+                  onClick={() => handleCopyEmail(createdCredentials.email)}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-semibold transition-colors cursor-pointer shrink-0"
+                  title="Copy Email"
+                >
+                  {copiedEmail === createdCredentials.email ? (
+                    <>
+                      <Check className="h-3.5 w-3.5 text-emerald-600" />
+                      <span className="text-emerald-700 text-[11px]">Copied</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-3.5 w-3.5" />
+                      <span className="text-[11px]">Copy</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Temporary Password */}
+            <div className="space-y-1">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                <Lock className="h-3.5 w-3.5 text-slate-400" />
+                Temporary Login Password
+              </span>
+              <div className="flex items-center justify-between gap-2 bg-slate-50 border border-slate-200 px-3 py-2 rounded-xl">
+                <span className="font-mono text-xs font-bold text-emerald-800 tracking-wider">
+                  {showCredentialPassword ? createdCredentials.temporaryPassword : '••••••••••••'}
+                </span>
+                <div className="flex items-center gap-1 shrink-0">
+                  <button
+                    onClick={() => setShowCredentialPassword(!showCredentialPassword)}
+                    className="p-1 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-200/60 transition-colors cursor-pointer"
+                    title={showCredentialPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showCredentialPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5 text-slate-400" />}
+                  </button>
+                  <button
+                    onClick={() => handleCopyPassword(createdCredentials.temporaryPassword)}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-semibold transition-colors cursor-pointer"
+                    title="Copy Temporary Password"
+                  >
+                    {copiedPassword ? (
+                      <>
+                        <Check className="h-3.5 w-3.5 text-emerald-600" />
+                        <span className="text-[11px]">Copied</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-3.5 w-3.5" />
+                        <span className="text-[11px]">Copy</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

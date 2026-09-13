@@ -4,16 +4,18 @@ import {
   User, 
   Mail, 
   Calendar, 
-  KeyRound, 
   Sparkles, 
   AlertCircle, 
   CheckCircle2,
   Loader2,
-  Lock
+  Lock,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import memberService from '../../api/memberService';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const DEFAULT_PASSWORD = 'Library2026!';
 
 const INITIAL_FORM_STATE = {
   firstName: '',
@@ -28,6 +30,7 @@ const INITIAL_FORM_STATE = {
  */
 const MemberModal = ({ isOpen, onClose, onSuccess, editingMember = null }) => {
   const [formData, setFormData] = useState(INITIAL_FORM_STATE);
+  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -37,6 +40,7 @@ const MemberModal = ({ isOpen, onClose, onSuccess, editingMember = null }) => {
     if (isOpen) {
       setServerError('');
       setErrors({});
+      setShowPassword(false);
       if (editingMember) {
         setFormData({
           firstName: editingMember.firstName || '',
@@ -120,24 +124,38 @@ const MemberModal = ({ isOpen, onClose, onSuccess, editingMember = null }) => {
 
     try {
       if (editingMember) {
-        await memberService.updateMember(editingMember.id, {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
+        const payload = {
+          firstName: formData.firstName.trim(),
+          lastName: formData.lastName.trim(),
+          email: formData.email.trim(),
           membershipDate: formData.membershipDate,
-          ...(formData.password ? { password: formData.password } : {}),
+          ...(formData.password && formData.password.trim() ? { password: formData.password.trim() } : {}),
+        };
+        const updated = await memberService.updateMember(editingMember.id, payload);
+        onSuccess?.({
+          member: updated,
+          isEdit: true,
+          email: formData.email.trim(),
+          fullName: `${formData.firstName.trim()} ${formData.lastName.trim()}`,
         });
       } else {
-        await memberService.createMember({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
+        const temporaryPassword = formData.password.trim() || DEFAULT_PASSWORD;
+        const created = await memberService.createMember({
+          firstName: formData.firstName.trim(),
+          lastName: formData.lastName.trim(),
+          email: formData.email.trim(),
           membershipDate: formData.membershipDate,
-          password: formData.password || 'Member123!',
+          password: temporaryPassword,
+        });
+        onSuccess?.({
+          member: created,
+          isEdit: false,
+          email: formData.email.trim(),
+          temporaryPassword,
+          fullName: `${formData.firstName.trim()} ${formData.lastName.trim()}`,
         });
       }
 
-      onSuccess?.();
       onClose();
     } catch (err) {
       console.error('Failed to save member:', err);
@@ -171,7 +189,7 @@ const MemberModal = ({ isOpen, onClose, onSuccess, editingMember = null }) => {
               <p className="text-xs text-slate-500 font-medium">
                 {editingMember 
                   ? `Update contact and membership details for #${editingMember.id}`
-                  : 'Add a new member profile to the library directory.'}
+                  : 'Add a new member profile and user login account to the library directory.'}
               </p>
             </div>
           </div>
@@ -278,7 +296,7 @@ const MemberModal = ({ isOpen, onClose, onSuccess, editingMember = null }) => {
                 {errors.email}
               </p>
             ) : (
-              <p className="text-[11px] text-slate-500 font-medium">Must be a unique, valid email address used for member communications.</p>
+              <p className="text-[11px] text-slate-500 font-medium">Must be a unique, valid email address used for patron login.</p>
             )}
           </div>
 
@@ -308,23 +326,34 @@ const MemberModal = ({ isOpen, onClose, onSuccess, editingMember = null }) => {
               )}
             </div>
 
-            {/* Password (Optional / Initial default) */}
+            {/* Set Account Password Field with Show/Hide Toggle */}
             <div className="space-y-1.5">
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                Account Password {!editingMember && <span className="text-slate-400 font-normal">(optional)</span>}
+                Set Account Password {!editingMember && <span className="text-slate-400 font-normal lowercase">(optional)</span>}
               </label>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
                 <input
-                  type="password"
-                  placeholder={editingMember ? 'Leave blank to keep current' : 'Default: Member123!'}
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder={editingMember ? 'Leave blank to keep current' : `Default: ${DEFAULT_PASSWORD}`}
                   value={formData.password}
                   onChange={(e) => handleInputChange('password', e.target.value)}
-                  className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/15 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none transition-all font-medium"
+                  className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/15 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none transition-all font-medium"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1 cursor-pointer transition-colors"
+                  title={showPassword ? 'Hide password' : 'Show password'}
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4 text-slate-400" />}
+                </button>
               </div>
               <p className="text-[11px] text-slate-500 font-medium">
-                {editingMember ? 'Update only if resetting password.' : 'Default password assigned if blank.'}
+                {editingMember 
+                  ? 'Leave blank to retain member\'s existing password.' 
+                  : `If left blank, default temporary password (${DEFAULT_PASSWORD}) is assigned.`}
               </p>
             </div>
           </div>
@@ -364,4 +393,3 @@ const MemberModal = ({ isOpen, onClose, onSuccess, editingMember = null }) => {
 };
 
 export default MemberModal;
-
