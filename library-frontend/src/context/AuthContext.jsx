@@ -87,11 +87,17 @@ export const AuthProvider = ({ children }) => {
       const userRole = receivedRole || decoded?.role || 'USER';
 
       const userData = {
-        email: decoded?.sub || email,
+        email: response.data.email || decoded?.sub || email,
         role: userRole,
-        id: decoded?.userId || null,
+        id: response.data.userId || decoded?.userId || null,
+        firstName: response.data.firstName || decoded?.firstName || '',
+        lastName: response.data.lastName || decoded?.lastName || '',
         ...(decoded || {}),
       };
+
+      if (userData.id) {
+        localStorage.setItem('userId', String(userData.id));
+      }
 
       setToken(receivedToken);
       setUser(userData);
@@ -105,6 +111,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
+    localStorage.removeItem('userId');
     setToken(null);
     setUser(null);
   };
