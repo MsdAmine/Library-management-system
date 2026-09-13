@@ -48,6 +48,10 @@ public class AuthenticationService {
                 return AuthenticationResponse.builder()
                         .token(jwtToken)
                         .role(existingUser.getRole().name())
+                        .userId(existingUser.getId())
+                        .email(existingUser.getEmail())
+                        .firstName(existingUser.getFirstName())
+                        .lastName(existingUser.getLastName())
                         .build();
             }
         }
@@ -67,6 +71,10 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .role(user.getRole().name())
+                .userId(user.getId())
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
                 .build();
     }
 
@@ -83,6 +91,10 @@ public class AuthenticationService {
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .role(user.getRole().name())
+                .userId(user.getId())
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
                 .build();
     }
 }

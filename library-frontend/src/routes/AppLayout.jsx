@@ -26,13 +26,23 @@ const AppLayout = () => {
     navigate('/login', { replace: true });
   };
 
-  const navItems = [
-    { name: 'Dashboard', path: '/', icon: Layers },
-    { name: 'Catalog', path: '/catalog', icon: BookOpen },
-    { name: 'Members', path: '/members', icon: Users },
-    { name: 'Loans', path: '/loans', icon: ArrowLeftRight },
-    { name: 'Analytics', path: '/analytics', icon: BarChart3 },
-  ];
+  const isUser = role === 'USER';
+  const isAdmin = role === 'ADMIN';
+  const isLibrarian = role === 'LIBRARIAN';
+
+  const navItems = isUser
+    ? [
+        { name: 'My Loans & Portal', path: '/', icon: Layers },
+        { name: 'Browse Catalog', path: '/catalog', icon: BookOpen },
+      ]
+    : [
+        { name: 'Dashboard', path: '/', icon: Layers },
+        { name: 'Catalog', path: '/catalog', icon: BookOpen },
+        { name: 'Members', path: '/members', icon: Users },
+        { name: 'Circulation & Loans', path: '/loans', icon: ArrowLeftRight },
+        { name: 'Analytics', path: '/analytics', icon: BarChart3 },
+        ...(isAdmin ? [{ name: 'Users', path: '/users', icon: ShieldCheck }] : []),
+      ];
 
   // Refined role badges using modern high-contrast pastels
   const getRoleBadgeClasses = (userRole) => {
