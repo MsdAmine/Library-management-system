@@ -9,7 +9,6 @@ import {
   Menu, 
   X, 
   ShieldCheck, 
-  Sparkles,
   User as UserIcon,
   Layers
 } from 'lucide-react';
@@ -211,12 +210,8 @@ const AppLayout = () => {
 
       {/* Modern subtle footer */}
       <footer className="border-t border-slate-200/80 bg-white/60 py-4 text-center text-xs text-slate-500 backdrop-blur-xs">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <div className="max-w-7xl mx-auto px-4 flex items-center justify-center">
           <span className="font-medium text-slate-500">Library Management System &copy; {new Date().getFullYear()}</span>
-          <span className="flex items-center gap-1.5 text-slate-500">
-            <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
-            Vite &bull; Tailwind CSS &bull; Spring Boot REST API
-          </span>
         </div>
       </footer>
     </div>
