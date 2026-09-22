@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useTransition } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   BookOpen, 
   Search, 
@@ -22,9 +22,14 @@ import {
   RefreshCw, 
   BookMarked,
   SlidersHorizontal,
-  Info
+  Info,
+  BookmarkPlus,
+  BookmarkCheck,
+  Clock,
+  Loader2
 } from 'lucide-react';
 import bookService from '../../api/bookService';
+import reservationService from '../../api/reservationService';
 import { useAuth } from '../../context/AuthContext';
 import BookModal from './BookModal';
 import DeleteBookModal from './DeleteBookModal';
@@ -90,6 +95,28 @@ const BookList = () => {
 
   // Copied ISBN feedback state
   const [copiedIsbn, setCopiedIsbn] = useState(null);
+
+  // Book holds state
+  const [myHolds, setMyHolds] = useState([]);
+  const [holdingBookId, setHoldingBookId] = useState(null);
+
+  // Fetch current user's active holds
+  const fetchMyHolds = useCallback(async () => {
+    if (user) {
+      try {
+        const data = await reservationService.getMyHolds();
+        setMyHolds(Array.isArray(data) ? data.filter(h => h.status === 'PENDING') : []);
+      } catch (err) {
+        console.warn('Could not load user holds:', err);
+      }
+    } else {
+      setMyHolds([]);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    fetchMyHolds();
+  }, [fetchMyHolds]);
 
   // Debounce search query changes
   useEffect(() => {
@@ -171,6 +198,28 @@ const BookList = () => {
     navigator.clipboard.writeText(isbn);
     setCopiedIsbn(isbn);
     setTimeout(() => setCopiedIsbn(null), 2000);
+  };
+
+  const handlePlaceHold = async (book) => {
+    if (!user) {
+      showToast('Please log in to your library account to place a hold.', 'error');
+      return;
+    }
+
+    setHoldingBookId(book.id);
+    try {
+      const response = await reservationService.placeHold(book.id);
+      showToast(
+        `Hold placed for "${book.title}"! You are #${response.queuePosition || 1} in the reservation queue.`,
+        'success'
+      );
+      fetchMyHolds();
+      fetchBooks();
+    } catch (err) {
+      showToast(reservationService.getErrorMessage(err), 'error');
+    } finally {
+      setHoldingBookId(null);
+    }
   };
 
   const openAddModal = () => {
@@ -480,6 +529,8 @@ const BookList = () => {
                 {books.map((book) => {
                   const isAvailable = book.availableCopies > 0;
                   const isLowStock = isAvailable && book.availableCopies <= 2;
+                  const myHold = myHolds.find((h) => h.bookId === book.id);
+                  const isReservedByMe = !!myHold;
 
                   return (
                     <tr 
@@ -571,9 +622,33 @@ const BookList = () => {
                         </div>
                       </td>
 
-                      {/* Role-Based Action Buttons */}
+                      {/* Role-Based Action Buttons & Hold Reservation CTA */}
                       <td className="py-4 px-4 sm:px-6 text-right">
-                        <div className="inline-flex items-center justify-end gap-1.5">
+                        <div className="inline-flex items-center justify-end gap-2">
+                          {/* Reserve / Hold Action for 0 copies */}
+                          {!isAvailable && (
+                            isReservedByMe ? (
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-purple-50 text-purple-700 border border-purple-200 text-xs font-bold shadow-xs">
+                                <BookmarkCheck className="h-3.5 w-3.5 text-purple-600" />
+                                <span>Hold #{myHold.queuePosition || 1}</span>
+                              </span>
+                            ) : (
+                              <button
+                                onClick={() => handlePlaceHold(book)}
+                                disabled={holdingBookId === book.id}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 shadow-sm shadow-purple-500/25 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+                                title="Place a hold on this book (Waitlist Queue)"
+                              >
+                                {holdingBookId === book.id ? (
+                                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                ) : (
+                                  <BookmarkPlus className="h-3.5 w-3.5" />
+                                )}
+                                <span>Reserve / Hold</span>
+                              </button>
+                            )
+                          )}
+
                           {/* Edit Button (ADMIN & LIBRARIAN only) */}
                           {canManageBooks && (
                             <button
@@ -596,10 +671,10 @@ const BookList = () => {
                             </button>
                           )}
 
-                          {/* For standard USER with no mutation permissions */}
-                          {!canManageBooks && !canDeleteBooks && (
-                            <span className="text-[11px] text-slate-400 italic pr-2 font-medium">
-                              Read-Only
+                          {/* For standard USER with available stock (In Stock view) */}
+                          {!canManageBooks && !canDeleteBooks && isAvailable && (
+                            <span className="text-[11px] text-emerald-600 font-semibold pr-2">
+                              In Stock
                             </span>
                           )}
                         </div>
@@ -617,6 +692,8 @@ const BookList = () => {
           {books.map((book) => {
             const isAvailable = book.availableCopies > 0;
             const isLowStock = isAvailable && book.availableCopies <= 2;
+            const myHold = myHolds.find((h) => h.bookId === book.id);
+            const isReservedByMe = !!myHold;
 
             return (
               <div
@@ -664,6 +741,36 @@ const BookList = () => {
                       </span>
                     )}
                   </div>
+
+                  {/* Out of Stock Hold Banner / Button in Card View */}
+                  {!isAvailable && (
+                    <div className="mt-4 pt-3 border-t border-slate-100">
+                      {isReservedByMe ? (
+                        <div className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-purple-50 text-purple-700 border border-purple-200 text-xs font-bold shadow-xs">
+                          <BookmarkCheck className="h-4 w-4 text-purple-600" />
+                          <span>Hold Placed &bull; Waitlist #{myHold.queuePosition || 1}</span>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => handlePlaceHold(book)}
+                          disabled={holdingBookId === book.id}
+                          className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 shadow-md shadow-purple-600/20 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-50"
+                        >
+                          {holdingBookId === book.id ? (
+                            <>
+                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                              <span>Placing Hold...</span>
+                            </>
+                          ) : (
+                            <>
+                              <BookmarkPlus className="h-3.5 w-3.5" />
+                              <span>Reserve / Place Hold</span>
+                            </>
+                          )}
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* Card Footer Actions */}

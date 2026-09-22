@@ -25,6 +25,11 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import com.example.library.model.Reservation;
+import com.example.library.model.ReservationStatus;
+import com.example.library.repository.ReservationRepository;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class BorrowingService {
@@ -32,6 +37,7 @@ public class BorrowingService {
     private final BorrowingRecordRepository borrowingRecordRepository;
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
+    private final ReservationRepository reservationRepository;
 
     public static final int MAX_ALLOWED_BOOKS = 5;
     public static final BigDecimal FINE_PER_OVERDUE_DAY = new BigDecimal("1.50");
@@ -131,17 +137,37 @@ public class BorrowingService {
                 ? ChronoUnit.DAYS.between(record.getDueDate(), record.getReturnDate())
                 : 0;
 
+        Long bookId = record.getBook() != null ? record.getBook().getId() : null;
+        long pendingHolds = (bookId != null && reservationRepository != null)
+                ? reservationRepository.countByBookIdAndStatus(bookId, ReservationStatus.PENDING)
+                : 0;
+
+        String nextMemberName = null;
+        if (pendingHolds > 0) {
+            Optional<Reservation> nextHold = reservationRepository.findFirstByBookIdAndStatusOrderByReservationDateAsc(
+                    bookId, ReservationStatus.PENDING
+            );
+            if (nextHold.isPresent() && nextHold.get().getMember() != null) {
+                User m = nextHold.get().getMember();
+                nextMemberName = (m.getFirstName() + " " + m.getLastName()).trim();
+            }
+        }
+
         return ReturnRecordResponseDTO.builder()
                 .recordId(record.getId())
-                .bookTitle(record.getBook().getTitle())
-                .bookIsbn(record.getBook().getIsbn())
-                .memberName(record.getUser().getFirstName() + " " + record.getUser().getLastName())
+                .bookId(bookId)
+                .bookTitle(record.getBook() != null ? record.getBook().getTitle() : null)
+                .bookIsbn(record.getBook() != null ? record.getBook().getIsbn() : null)
+                .memberName(record.getUser() != null ? record.getUser().getFirstName() + " " + record.getUser().getLastName() : null)
                 .borrowDate(record.getBorrowDate())
                 .dueDate(record.getDueDate())
                 .returnDate(record.getReturnDate())
                 .overdue(daysOverdue > 0)
                 .daysOverdue(daysOverdue)
                 .fineAmount(record.getFineAmount())
+                .hasPendingHolds(pendingHolds > 0)
+                .pendingHoldsCount(pendingHolds)
+                .nextQueuedMemberName(nextMemberName)
                 .build();
     }
 }

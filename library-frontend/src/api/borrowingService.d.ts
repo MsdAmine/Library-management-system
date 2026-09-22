@@ -25,6 +25,7 @@ export interface BorrowingRecord {
 
 export interface ReturnRecordResponseDTO {
   recordId: number;
+  bookId?: number;
   bookTitle: string;
   bookIsbn: string;
   memberName: string;
@@ -34,6 +35,9 @@ export interface ReturnRecordResponseDTO {
   overdue: boolean;
   daysOverdue: number;
   fineAmount: number;
+  hasPendingHolds?: boolean;
+  pendingHoldsCount?: number;
+  nextQueuedMemberName?: string | null;
 }
 
 export interface ArchiveResultDTO {

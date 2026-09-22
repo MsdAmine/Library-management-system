@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @Builder
 public class ReturnRecordResponseDTO {
     private final Long recordId;
+    private final Long bookId;
     private final String bookTitle;
     private final String bookIsbn;
     private final String memberName;
@@ -19,4 +20,7 @@ public class ReturnRecordResponseDTO {
     private final boolean overdue;
     private final long daysOverdue;
     private final BigDecimal fineAmount;
+    private final boolean hasPendingHolds;
+    private final long pendingHoldsCount;
+    private final String nextQueuedMemberName;
 }
