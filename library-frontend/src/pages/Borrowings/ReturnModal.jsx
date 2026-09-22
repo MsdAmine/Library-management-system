@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   X, 
   RotateCcw, 
@@ -11,15 +11,39 @@ import {
   Loader2, 
   Clock,
   ShieldCheck,
-  Receipt
+  Receipt,
+  BookmarkCheck,
+  Sparkles,
+  Users
 } from 'lucide-react';
 import borrowingService from '../../api/borrowingService';
+import reservationService from '../../api/reservationService';
 
 const DAILY_FINE_RATE = 1.50;
 
 const ReturnModal = ({ isOpen, onClose, record, onSuccess }) => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [holdQueue, setHoldQueue] = useState([]);
+  const [loadingQueue, setLoadingQueue] = useState(false);
+
+  useEffect(() => {
+    if (isOpen && record?.book?.id) {
+      setLoadingQueue(true);
+      reservationService.getBookHoldQueue(record.book.id)
+        .then((data) => {
+          setHoldQueue(Array.isArray(data) ? data : []);
+        })
+        .catch((err) => {
+          console.warn('Could not fetch book hold queue in ReturnModal:', err);
+        })
+        .finally(() => {
+          setLoadingQueue(false);
+        });
+    } else {
+      setHoldQueue([]);
+    }
+  }, [isOpen, record]);
 
   if (!isOpen || !record) return null;
 
@@ -52,8 +76,17 @@ const ReturnModal = ({ isOpen, onClose, record, onSuccess }) => {
 
     try {
       const response = await borrowingService.returnBook(record.id);
+      
+      let successMsg = `Book "${record.book?.title || 'Book'}" has been successfully returned.`;
+      if (response.hasPendingHolds || holdQueue.length > 0) {
+        const nextPatron = response.nextQueuedMemberName || (holdQueue[0]?.memberName);
+        if (nextPatron) {
+          successMsg += ` ⚡ Next patron on waitlist is ready: ${nextPatron}.`;
+        }
+      }
+
       onSuccess?.({
-        message: `Book "${record.book?.title || 'Book'}" has been successfully returned.`,
+        message: successMsg,
         returnDTO: response,
       });
       onClose();
@@ -121,6 +154,28 @@ const ReturnModal = ({ isOpen, onClose, record, onSuccess }) => {
               </div>
             </div>
           </div>
+
+          {/* Pending Holds Queue Indicator */}
+          {holdQueue.length > 0 && (
+            <div className="p-4 rounded-2xl bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 shadow-xs space-y-2.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-purple-900 font-bold text-xs sm:text-sm">
+                  <Sparkles className="h-4 w-4 text-purple-600" />
+                  <span>Pending Holds Queue Alert</span>
+                </div>
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-200/80 text-purple-900 border border-purple-300">
+                  {holdQueue.length} {holdQueue.length === 1 ? 'Patron Waiting' : 'Patrons Waiting'}
+                </span>
+              </div>
+              <p className="text-xs text-purple-900 leading-relaxed font-medium">
+                Returning this copy will restore availability for the waitlist. Next queued member:{' '}
+                <strong className="font-extrabold text-purple-950 underline decoration-purple-300">
+                  {holdQueue[0].memberName || 'Member'}
+                </strong>{' '}
+                (Position #1 in Queue).
+              </p>
+            </div>
+          )}
 
           {/* Dates Comparison Grid */}
           <div className="grid grid-cols-2 gap-3 text-xs">

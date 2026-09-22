@@ -19,10 +19,17 @@ import {
   Search,
   ExternalLink,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  BookmarkPlus,
+  BookmarkCheck,
+  BookmarkX,
+  Trash2,
+  Loader2,
+  Users
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import borrowingService from '../../api/borrowingService';
+import reservationService from '../../api/reservationService';
 
 const MAX_QUOTA = 5;
 const FINE_PER_DAY = 1.50;
@@ -34,21 +41,24 @@ const MemberPortal = () => {
   const { user, role } = useAuth();
   const memberId = user?.id || user?.userId || localStorage.getItem('userId');
 
-  // Tab navigation
-  const [activeTab, setActiveTab] = useState('active'); // 'active' | 'history'
+  // Tab navigation: 'active' | 'holds' | 'history'
+  const [activeTab, setActiveTab] = useState('active');
 
   // Data states
   const [activeLoans, setActiveLoans] = useState([]);
+  const [holds, setHolds] = useState([]);
   const [historyRecords, setHistoryRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [actionSuccess, setActionSuccess] = useState('');
+  const [cancellingHoldId, setCancellingHoldId] = useState(null);
 
   // Pagination for history
   const [historyPage, setHistoryPage] = useState(0);
   const [historyTotalPages, setHistoryTotalPages] = useState(0);
   const [historyTotalElements, setHistoryTotalElements] = useState(0);
 
-  // Fetch Member's Active Loans and History
+  // Fetch Member's Active Loans, Holds, and History
   const fetchMemberData = useCallback(async () => {
     if (!memberId) {
       setLoading(false);
@@ -63,7 +73,15 @@ const MemberPortal = () => {
       const activeData = await borrowingService.getMemberActiveBorrowings(memberId);
       setActiveLoans(Array.isArray(activeData) ? activeData : []);
 
-      // 2. Fetch history records
+      // 2. Fetch member holds
+      try {
+        const holdsData = await reservationService.getMyHolds();
+        setHolds(Array.isArray(holdsData) ? holdsData : []);
+      } catch (holdErr) {
+        console.warn('Failed to load holds:', holdErr);
+      }
+
+      // 3. Fetch history records
       const historyData = await borrowingService.getMemberHistory(memberId, {
         page: historyPage,
         size: 10,
@@ -88,6 +106,10 @@ const MemberPortal = () => {
   const activeCount = activeLoans.length;
   const quotaPercentage = Math.min(100, Math.round((activeCount / MAX_QUOTA) * 100));
   const remainingQuota = Math.max(0, MAX_QUOTA - activeCount);
+
+  // Compute Hold Metrics
+  const pendingHolds = holds.filter((h) => h.status === 'PENDING');
+  const pendingHoldsCount = pendingHolds.length;
 
   // Helper for overdue calculation
   const getOverdueDetails = (dueDateStr) => {
@@ -138,11 +160,44 @@ const MemberPortal = () => {
 
   const formatDate = (dateStr) => {
     if (!dateStr) return '—';
-    return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', {
+    return new Date(dateStr).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
     });
+  };
+
+  const formatDateTime = (dateTimeStr) => {
+    if (!dateTimeStr) return '—';
+    return new Date(dateTimeStr).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  // Handle Cancel Hold
+  const handleCancelHold = async (reservation) => {
+    if (!window.confirm(`Are you sure you want to cancel your hold for "${reservation.bookTitle || 'this book'}"?`)) {
+      return;
+    }
+
+    setCancellingHoldId(reservation.id);
+    setError('');
+    setActionSuccess('');
+
+    try {
+      await reservationService.cancelHold(reservation.id);
+      setActionSuccess(`Hold request for "${reservation.bookTitle || 'Book'}" has been successfully cancelled.`);
+      await fetchMemberData();
+      setTimeout(() => setActionSuccess(''), 4500);
+    } catch (err) {
+      setError(reservationService.getErrorMessage(err));
+    } finally {
+      setCancellingHoldId(null);
+    }
   };
 
   return (
@@ -160,7 +215,7 @@ const MemberPortal = () => {
               Welcome, {user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : user?.email?.split('@')[0] || 'Patron'}!
             </h1>
             <p className="text-indigo-100 text-xs sm:text-sm max-w-xl font-medium">
-              View your current book checkouts, check upcoming return dates, track borrowing history, and explore new library titles.
+              View your current book checkouts, manage waitlist holds, track borrowing history, and explore new library titles.
             </p>
           </div>
 
@@ -186,7 +241,7 @@ const MemberPortal = () => {
       </div>
 
       {/* Account Status & Quota KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {/* Card 1: Active Loan Quota Gauge */}
         <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4">
           <div className="flex items-start justify-between gap-2">
@@ -231,15 +286,49 @@ const MemberPortal = () => {
             </div>
             <p className="text-[11px] text-slate-500 font-medium">
               {activeCount === 0
-                ? 'No active loans. You can check out up to 5 books.'
+                ? 'No active loans. You can borrow up to 5 books.'
                 : activeCount >= MAX_QUOTA
-                ? 'Maximum borrowing limit reached. Please return a book to borrow more.'
-                : `You can borrow ${remainingQuota} more ${remainingQuota === 1 ? 'book' : 'books'}.`}
+                ? 'Limit reached. Return a book to borrow more.'
+                : `You can borrow ${remainingQuota} more.`}
             </p>
           </div>
         </div>
 
-        {/* Card 2: Return Status & Overdue Alerts */}
+        {/* Card 2: Active Holds / Waitlist */}
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex items-center gap-3">
+              <div className="h-11 w-11 rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600 shrink-0 shadow-xs">
+                <BookmarkCheck className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Waitlist Holds</p>
+                <p className="text-2xl font-extrabold text-slate-900 tracking-tight mt-0.5">
+                  {pendingHoldsCount}
+                </p>
+              </div>
+            </div>
+            <span
+              className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full border ${
+                pendingHoldsCount > 0
+                  ? 'bg-purple-50 text-purple-700 border-purple-200'
+                  : 'bg-slate-100 text-slate-600 border-slate-200'
+              }`}
+            >
+              {pendingHoldsCount > 0 ? 'Active Holds' : 'No Holds'}
+            </span>
+          </div>
+
+          <div className="pt-2 border-t border-slate-100">
+            <p className="text-[11px] text-slate-500 font-medium">
+              {pendingHoldsCount > 0
+                ? `${pendingHoldsCount} ${pendingHoldsCount === 1 ? 'book reservation' : 'book reservations'} in queue.`
+                : 'No pending waitlist reservations.'}
+            </p>
+          </div>
+        </div>
+
+        {/* Card 3: Return Status & Overdue Alerts */}
         <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4">
           <div className="flex items-start justify-between gap-2">
             <div className="flex items-center gap-3">
@@ -268,15 +357,15 @@ const MemberPortal = () => {
           <div className="pt-2 border-t border-slate-100">
             <p className="text-[11px] text-slate-500 font-medium">
               {overdueLoansCount > 0
-                ? 'Please return overdue items to the library desk to avoid additional fines.'
+                ? 'Please return overdue items to the library desk.'
                 : activeCount > 0
-                ? 'All borrowed titles are currently within their standard 14-day loan window.'
+                ? 'All borrowed titles are within 14-day window.'
                 : 'No books currently due.'}
             </p>
           </div>
         </div>
 
-        {/* Card 3: Personal Fine Summary */}
+        {/* Card 4: Personal Fine Summary */}
         <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4">
           <div className="flex items-start justify-between gap-2">
             <div className="flex items-center gap-3">
@@ -299,7 +388,7 @@ const MemberPortal = () => {
             <p className="text-[11px] text-slate-500 font-medium">
               {totalEstimatedFines > 0
                 ? 'Estimated overdue fees accrued on current unreturned loans.'
-                : 'Zero accumulated fines. Your account is in good standing!'}
+                : 'Zero accumulated fines.'}
             </p>
           </div>
         </div>
@@ -323,6 +412,18 @@ const MemberPortal = () => {
             </button>
 
             <button
+              onClick={() => setActiveTab('holds')}
+              className={`flex items-center gap-2 px-4 py-3 border-b-2 font-semibold text-xs sm:text-sm transition-all cursor-pointer ${
+                activeTab === 'holds'
+                  ? 'border-purple-600 text-purple-600 font-bold bg-white rounded-t-xl shadow-xs'
+                  : 'border-transparent text-slate-500 hover:text-slate-900'
+              }`}
+            >
+              <BookmarkCheck className="h-4 w-4" />
+              <span>My Holds &amp; Reservations ({pendingHoldsCount})</span>
+            </button>
+
+            <button
               onClick={() => setActiveTab('history')}
               className={`flex items-center gap-2 px-4 py-3 border-b-2 font-semibold text-xs sm:text-sm transition-all cursor-pointer ${
                 activeTab === 'history'
@@ -338,11 +439,18 @@ const MemberPortal = () => {
 
         {/* Tab Content */}
         <div className="p-6">
+          {actionSuccess && (
+            <div className="mb-6 flex items-start gap-3 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm">
+              <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+              <div className="flex-1 font-semibold">{actionSuccess}</div>
+            </div>
+          )}
+
           {error && (
             <div className="mb-6 flex items-start gap-3 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs sm:text-sm">
               <AlertCircle className="h-5 w-5 text-rose-600 shrink-0 mt-0.5" />
               <div className="flex-1">
-                <span className="font-bold">Error loading loans: </span>
+                <span className="font-bold">Error: </span>
                 <span>{error}</span>
               </div>
             </div>
@@ -448,9 +556,9 @@ const MemberPortal = () => {
                               <span
                                 className={`h-1.5 w-1.5 rounded-full ${
                                   overdue.isOverdue
-                                    ? 'bg-rose-500 animate-pulse'
+                                    ? 'bg-rose-500'
                                     : overdue.isDueToday
-                                    ? 'bg-amber-500'
+                                    ? 'bg-amber-500 animate-pulse'
                                     : 'bg-emerald-500'
                                 }`}
                               />
@@ -458,12 +566,150 @@ const MemberPortal = () => {
                             </span>
                           </td>
 
-                          {/* Estimated Fine */}
+                          {/* Est. Fine */}
                           <td className="py-4 px-4 sm:px-6 text-right font-mono font-bold">
                             {overdue.isOverdue ? (
-                              <span className="text-rose-600">${overdue.estimatedFine}</span>
+                              <span className="text-rose-600 font-extrabold">${overdue.estimatedFine}</span>
                             ) : (
-                              <span className="text-slate-400">$0.00</span>
+                              <span className="text-slate-400 font-medium">$0.00</span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )
+          ) : activeTab === 'holds' ? (
+            /* My Holds & Reservations Tab */
+            holds.length === 0 ? (
+              <div className="py-12 text-center flex flex-col items-center justify-center space-y-4">
+                <div className="h-16 w-16 rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600 shadow-xs">
+                  <BookmarkPlus className="h-8 w-8" />
+                </div>
+                <div className="space-y-1 max-w-sm">
+                  <h3 className="text-base font-bold text-slate-900">No active book holds</h3>
+                  <p className="text-xs text-slate-500">
+                    You have not placed any holds. When a book you want is out of stock, place a hold to secure your spot in the waitlist queue!
+                  </p>
+                </div>
+                <Link
+                  to="/catalog"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 shadow-md shadow-purple-600/20 transition-all cursor-pointer"
+                >
+                  <Search className="h-4 w-4" />
+                  <span>Browse Catalog for Books</span>
+                </Link>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-slate-200 bg-slate-50/90 text-[11px] font-bold uppercase tracking-wider text-slate-600">
+                      <th className="py-3.5 px-4 sm:px-6">Reserved Book</th>
+                      <th className="py-3.5 px-4">Date Placed</th>
+                      <th className="py-3.5 px-4 text-center">Waitlist Queue Position</th>
+                      <th className="py-3.5 px-4 text-center">Status</th>
+                      <th className="py-3.5 px-4 sm:px-6 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 text-xs">
+                    {holds.map((hold) => {
+                      const isPending = hold.status === 'PENDING';
+                      const isFulfilled = hold.status === 'FULFILLED';
+                      const isCancelled = hold.status === 'CANCELLED';
+                      const isExpired = hold.status === 'EXPIRED';
+
+                      return (
+                        <tr key={hold.id} className="hover:bg-slate-50/80 transition-colors group">
+                          {/* Book Details */}
+                          <td className="py-4 px-4 sm:px-6">
+                            <div className="flex items-center gap-3.5">
+                              <div className="h-11 w-11 rounded-xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-600 shrink-0 group-hover:border-purple-400 transition-colors shadow-xs">
+                                <BookOpen className="h-5 w-5" />
+                              </div>
+                              <div className="flex flex-col">
+                                <span className="font-bold text-slate-900 group-hover:text-purple-600 transition-colors text-sm">
+                                  {hold.bookTitle || 'Unknown Title'}
+                                </span>
+                                <span className="text-[11px] text-slate-500 font-medium">
+                                  by {hold.bookAuthor || 'Unknown Author'} &bull;{' '}
+                                  <span className="font-mono text-[10px] text-slate-400">ISBN: {hold.bookIsbn || 'N/A'}</span>
+                                </span>
+                              </div>
+                            </div>
+                          </td>
+
+                          {/* Date Placed */}
+                          <td className="py-4 px-4 text-slate-700 font-medium">
+                            <div className="flex items-center gap-1.5">
+                              <Calendar className="h-3.5 w-3.5 text-slate-400" />
+                              <span>{formatDateTime(hold.reservationDate)}</span>
+                            </div>
+                          </td>
+
+                          {/* Queue Position */}
+                          <td className="py-4 px-4 text-center">
+                            {isPending ? (
+                              <span
+                                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border shadow-xs ${
+                                  hold.queuePosition === 1
+                                    ? 'bg-amber-50 text-amber-800 border-amber-300 ring-1 ring-amber-200'
+                                    : 'bg-purple-50 text-purple-700 border-purple-200'
+                                }`}
+                              >
+                                {hold.queuePosition === 1 ? (
+                                  <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+                                ) : (
+                                  <Users className="h-3.5 w-3.5 text-purple-500" />
+                                )}
+                                <span>
+                                  {hold.queuePosition === 1 ? '⚡ Next in Line (#1)' : `Position #${hold.queuePosition} in Queue`}
+                                </span>
+                              </span>
+                            ) : (
+                              <span className="text-slate-400 font-medium">—</span>
+                            )}
+                          </td>
+
+                          {/* Status Badge */}
+                          <td className="py-4 px-4 text-center">
+                            <span
+                              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold border shadow-xs ${
+                                isPending
+                                  ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                                  : isFulfilled
+                                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                  : isCancelled
+                                  ? 'bg-slate-100 text-slate-600 border-slate-200'
+                                  : 'bg-rose-50 text-rose-700 border-rose-200'
+                              }`}
+                            >
+                              {isPending && <Clock className="h-3 w-3" />}
+                              {isFulfilled && <CheckCircle2 className="h-3 w-3 text-emerald-600" />}
+                              <span>{hold.status}</span>
+                            </span>
+                          </td>
+
+                          {/* Cancel Action */}
+                          <td className="py-4 px-4 sm:px-6 text-right">
+                            {isPending ? (
+                              <button
+                                onClick={() => handleCancelHold(hold)}
+                                disabled={cancellingHoldId === hold.id}
+                                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold text-rose-700 hover:text-white bg-rose-50 hover:bg-rose-600 border border-rose-200 transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                                title="Cancel this hold request"
+                              >
+                                {cancellingHoldId === hold.id ? (
+                                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                ) : (
+                                  <BookmarkX className="h-3.5 w-3.5" />
+                                )}
+                                <span>Cancel Hold</span>
+                              </button>
+                            ) : (
+                              <span className="text-slate-400 text-[11px] font-medium italic">Completed</span>
                             )}
                           </td>
                         </tr>
@@ -474,16 +720,18 @@ const MemberPortal = () => {
               </div>
             )
           ) : (
-            /* History View */
+            /* Borrowing History View */
             historyRecords.length === 0 ? (
-              <div className="py-12 text-center flex flex-col items-center justify-center space-y-3">
-                <div className="h-14 w-14 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400">
-                  <History className="h-7 w-7" />
+              <div className="py-12 text-center flex flex-col items-center justify-center space-y-4">
+                <div className="h-16 w-16 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 shadow-xs">
+                  <History className="h-8 w-8" />
                 </div>
-                <h3 className="text-base font-bold text-slate-900">No borrowing history yet</h3>
-                <p className="text-xs text-slate-500 max-w-sm">
-                  Once you borrow and return library books, past circulation records will appear here.
-                </p>
+                <div className="space-y-1 max-w-sm">
+                  <h3 className="text-base font-bold text-slate-900">No borrowing history yet</h3>
+                  <p className="text-xs text-slate-500">
+                    Past returned books and completed loan transactions will be recorded here for your review.
+                  </p>
+                </div>
               </div>
             ) : (
               <div className="space-y-4">
@@ -496,7 +744,7 @@ const MemberPortal = () => {
                         <th className="py-3.5 px-4">Due Date</th>
                         <th className="py-3.5 px-4">Return Date</th>
                         <th className="py-3.5 px-4 text-center">Status</th>
-                        <th className="py-3.5 px-4 sm:px-6 text-right">Fine</th>
+                        <th className="py-3.5 px-4 sm:px-6 text-right">Fine Paid</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 text-xs">
