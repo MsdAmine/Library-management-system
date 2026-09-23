@@ -1,5 +1,6 @@
 package com.example.library.controller;
 
+import com.example.library.dto.BookRequestDTO;
 import com.example.library.dto.BookResponseDTO;
 import com.example.library.model.Book;
 import com.example.library.service.BookService;
@@ -35,14 +36,16 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<BookResponseDTO> addBook(@Valid @RequestBody Book book) {
-        Book savedBook = bookService.addBook(book);
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
+    public ResponseEntity<BookResponseDTO> addBook(@Valid @RequestBody BookRequestDTO bookRequest) {
+        Book savedBook = bookService.addBook(bookRequest);
         return new ResponseEntity<>(convertToDTO(savedBook), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BookResponseDTO> updateBook(@PathVariable Long id, @Valid @RequestBody Book book) {
-        Book updatedBook = bookService.updateBook(id, book);
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
+    public ResponseEntity<BookResponseDTO> updateBook(@PathVariable Long id, @Valid @RequestBody BookRequestDTO bookRequest) {
+        Book updatedBook = bookService.updateBook(id, bookRequest);
         return ResponseEntity.ok(convertToDTO(updatedBook));
     }
 
