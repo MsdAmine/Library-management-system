@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,12 +22,14 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     public ResponseEntity<Page<MemberResponseDTO>> getAllMembers(
             @PageableDefault(size = 10, sort = "lastName") Pageable pageable) {
         return ResponseEntity.ok(memberService.getAllMembers(pageable).map(this::convertToDTO));
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN') or (authentication.principal != null and authentication.principal.id == #id)")
     public ResponseEntity<MemberResponseDTO> getMemberById(@PathVariable Long id) {
         return memberService.getMemberById(id)
                 .map(this::convertToDTO)
@@ -35,24 +38,28 @@ public class MemberController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     public ResponseEntity<MemberResponseDTO> addMember(@Valid @RequestBody MemberRequestDTO requestDTO) {
         User savedUser = memberService.addMember(requestDTO);
         return new ResponseEntity<>(convertToDTO(savedUser), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN') or (authentication.principal != null and authentication.principal.id == #id)")
     public ResponseEntity<MemberResponseDTO> updateMember(@PathVariable Long id, @Valid @RequestBody MemberRequestDTO requestDTO) {
         User updatedUser = memberService.updateMember(id, requestDTO);
         return ResponseEntity.ok(convertToDTO(updatedUser));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteMember(@PathVariable Long id) {
         memberService.deleteMember(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/search")
+    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     public ResponseEntity<Page<MemberResponseDTO>> searchMembers(
             @RequestParam String name,
             @PageableDefault(size = 10, sort = "lastName") Pageable pageable) {
