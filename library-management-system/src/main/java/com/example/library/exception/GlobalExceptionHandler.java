@@ -78,6 +78,19 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(OutstandingFineException.class)
+    public ResponseEntity<ErrorResponse> handleOutstandingFine(OutstandingFineException ex, HttpServletRequest request) {
+        ErrorResponse error = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .build();
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(BookAlreadyReturnedException.class)
     public ResponseEntity<ErrorResponse> handleBookAlreadyReturned(BookAlreadyReturnedException ex, HttpServletRequest request) {
         ErrorResponse error = ErrorResponse.builder()
