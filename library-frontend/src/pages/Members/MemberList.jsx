@@ -26,12 +26,14 @@ import {
   Lock,
   Eye,
   EyeOff,
-  KeyRound
+  KeyRound,
+  DollarSign
 } from 'lucide-react';
 import memberService from '../../api/memberService';
 import { useAuth } from '../../context/AuthContext';
 import MemberModal from './MemberModal';
 import DeleteMemberModal from './DeleteMemberModal';
+import MemberFinesModal from './MemberFinesModal';
 
 /**
  * Member Directory Dashboard Component.
@@ -67,6 +69,13 @@ const MemberList = () => {
   const [editingMember, setEditingMember] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deletingMember, setDeletingMember] = useState(null);
+  const [isFinesModalOpen, setIsFinesModalOpen] = useState(false);
+  const [finesMember, setFinesMember] = useState(null);
+
+  const openFinesModal = (member) => {
+    setFinesMember(member);
+    setIsFinesModalOpen(true);
+  };
 
   // Copied Email feedback state
   const [copiedEmail, setCopiedEmail] = useState(null);
@@ -633,6 +642,17 @@ const MemberList = () => {
                       {/* Role-Guarded Actions */}
                       <td className="py-4 px-4 sm:px-6 text-right">
                         <div className="inline-flex items-center justify-end gap-1.5">
+                          {/* Fine Management Button (ADMIN & LIBRARIAN) */}
+                          {canManageMembers && (
+                            <button
+                              onClick={() => openFinesModal(member)}
+                              className="p-1.5 rounded-lg text-slate-500 hover:text-amber-700 hover:bg-amber-50 transition-colors cursor-pointer"
+                              title="Manage Member Fines & Ledger"
+                            >
+                              <DollarSign className="h-4 w-4 text-amber-600" />
+                            </button>
+                          )}
+
                           {/* Edit Button (ADMIN & LIBRARIAN only) */}
                           {canManageMembers && (
                             <button
@@ -729,6 +749,15 @@ const MemberList = () => {
                 <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between">
                   <span className="text-[11px] text-slate-500 font-medium">Patron Record</span>
                   <div className="flex items-center gap-1">
+                    {canManageMembers && (
+                      <button
+                        onClick={() => openFinesModal(member)}
+                        className="p-1.5 rounded-lg text-slate-500 hover:text-amber-700 hover:bg-amber-50 transition-colors cursor-pointer"
+                        title="Manage Fines & Ledger"
+                      >
+                        <DollarSign className="h-4 w-4 text-amber-600" />
+                      </button>
+                    )}
                     {canManageMembers && (
                       <button
                         onClick={() => openEditModal(member)}
@@ -845,6 +874,17 @@ const MemberList = () => {
         onClose={() => setIsDeleteModalOpen(false)}
         onSuccess={handleMemberDeleted}
         member={deletingMember}
+      />
+
+      {/* Member Fines & Settlement Modal */}
+      <MemberFinesModal
+        isOpen={isFinesModalOpen}
+        onClose={() => {
+          setIsFinesModalOpen(false);
+          setFinesMember(null);
+        }}
+        member={finesMember}
+        onFineUpdated={fetchMembers}
       />
     </div>
   );

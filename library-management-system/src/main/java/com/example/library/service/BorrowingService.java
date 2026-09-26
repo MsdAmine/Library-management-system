@@ -7,11 +7,15 @@ import com.example.library.exception.BookNotAvailableException;
 import com.example.library.exception.BorrowingLimitExceededException;
 import com.example.library.exception.InventoryStateException;
 import com.example.library.exception.ResourceNotFoundException;
+import com.example.library.exception.OutstandingFineException;
 import com.example.library.model.Book;
 import com.example.library.model.BorrowingRecord;
+import com.example.library.model.Fine;
+import com.example.library.model.FineStatus;
 import com.example.library.model.User;
 import com.example.library.repository.BookRepository;
 import com.example.library.repository.BorrowingRecordRepository;
+import com.example.library.repository.FineRepository;
 import com.example.library.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -38,14 +42,26 @@ public class BorrowingService {
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
     private final ReservationRepository reservationRepository;
+    private final FineRepository fineRepository;
 
     public static final int MAX_ALLOWED_BOOKS = 5;
     public static final BigDecimal FINE_PER_OVERDUE_DAY = new BigDecimal("1.50");
+    public static final BigDecimal MAX_OUTSTANDING_FINE_LIMIT = new BigDecimal("10.00");
 
     @Transactional
     public BorrowingRecord borrowBook(Long userId, Long bookId) {
         User user = userRepository.findActiveById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + userId));
+
+        // Block checkout if member has outstanding pending fines exceeding $10.00
+        BigDecimal outstandingFines = fineRepository.sumAmountByMemberIdAndStatus(userId, FineStatus.PENDING);
+        if (outstandingFines != null && outstandingFines.compareTo(MAX_OUTSTANDING_FINE_LIMIT) > 0) {
+            throw new OutstandingFineException(
+                "Member has outstanding pending fines of $" + outstandingFines +
+                " exceeding the allowed limit of $" + MAX_OUTSTANDING_FINE_LIMIT +
+                ". Please settle outstanding fines before borrowing new books."
+            );
+        }
 
         long activeLoans = borrowingRecordRepository.countByUserIdAndStatus(userId, BorrowingRecord.BorrowingStatus.BORROWED);
         if (activeLoans >= MAX_ALLOWED_BOOKS) {
@@ -100,7 +116,22 @@ public class BorrowingService {
             record.setFineAmount(BigDecimal.ZERO);
         }
 
-        return borrowingRecordRepository.save(record);
+        BorrowingRecord savedRecord = borrowingRecordRepository.save(record);
+
+        // Automatically create PENDING Fine record if overdue fine is calculated
+        if (savedRecord.getFineAmount() != null && savedRecord.getFineAmount().compareTo(BigDecimal.ZERO) > 0) {
+            long daysOverdue = ChronoUnit.DAYS.between(savedRecord.getDueDate(), currentDate);
+            Fine fine = Fine.builder()
+                    .borrowingRecord(savedRecord)
+                    .member(savedRecord.getUser())
+                    .amount(savedRecord.getFineAmount())
+                    .status(FineStatus.PENDING)
+                    .notes("Overdue return: " + daysOverdue + " day" + (daysOverdue > 1 ? "s" : "") + " late ($" + FINE_PER_OVERDUE_DAY + "/day)")
+                    .build();
+            fineRepository.save(fine);
+        }
+
+        return savedRecord;
     }
 
     public Page<BorrowingRecord> getAllBorrowings(Pageable pageable) {
