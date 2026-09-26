@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import bookService from '../../api/bookService';
 import reservationService from '../../api/reservationService';
+import borrowingService from '../../api/borrowingService';
 import { useAuth } from '../../context/AuthContext';
 import BookModal from './BookModal';
 import DeleteBookModal from './DeleteBookModal';
@@ -99,13 +100,14 @@ const BookList = () => {
   // Book holds state
   const [myHolds, setMyHolds] = useState([]);
   const [holdingBookId, setHoldingBookId] = useState(null);
+  const [claimingBookId, setClaimingBookId] = useState(null);
 
-  // Fetch current user's active holds
+  // Fetch current user's active holds (PENDING or HELD_FOR_PICKUP)
   const fetchMyHolds = useCallback(async () => {
     if (user) {
       try {
         const data = await reservationService.getMyHolds();
-        setMyHolds(Array.isArray(data) ? data.filter(h => h.status === 'PENDING') : []);
+        setMyHolds(Array.isArray(data) ? data.filter(h => h.status === 'PENDING' || h.status === 'HELD_FOR_PICKUP') : []);
       } catch (err) {
         console.warn('Could not load user holds:', err);
       }
@@ -219,6 +221,29 @@ const BookList = () => {
       showToast(reservationService.getErrorMessage(err), 'error');
     } finally {
       setHoldingBookId(null);
+    }
+  };
+
+  const handleClaimBook = async (book) => {
+    if (!user) {
+      showToast('Please log in to your library account to claim your book.', 'error');
+      return;
+    }
+
+    const memberId = user.id || user.userId || localStorage.getItem('userId');
+    setClaimingBookId(book.id);
+    try {
+      await borrowingService.borrowBook(memberId, book.id);
+      showToast(
+        `Book Claimed! "${book.title}" has been successfully checked out to your account. Enjoy your reading!`,
+        'success'
+      );
+      fetchMyHolds();
+      fetchBooks();
+    } catch (err) {
+      showToast(borrowingService.getErrorMessage(err), 'error');
+    } finally {
+      setClaimingBookId(null);
     }
   };
 
@@ -625,29 +650,65 @@ const BookList = () => {
                       {/* Role-Based Action Buttons & Hold Reservation CTA */}
                       <td className="py-4 px-4 sm:px-6 text-right">
                         <div className="inline-flex items-center justify-end gap-2">
-                          {/* Reserve / Hold Action for 0 copies */}
-                          {!isAvailable && (
-                            isReservedByMe ? (
-                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-purple-50 text-purple-700 border border-purple-200 text-xs font-bold shadow-xs">
-                                <BookmarkCheck className="h-3.5 w-3.5 text-purple-600" />
-                                <span>Hold #{myHold.queuePosition || 1}</span>
-                              </span>
-                            ) : (
-                              <button
-                                onClick={() => handlePlaceHold(book)}
-                                disabled={holdingBookId === book.id}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 shadow-sm shadow-purple-500/25 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
-                                title="Place a hold on this book (Waitlist Queue)"
-                              >
-                                {holdingBookId === book.id ? (
-                                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                ) : (
-                                  <BookmarkPlus className="h-3.5 w-3.5" />
-                                )}
-                                <span>Reserve / Hold</span>
-                              </button>
-                            )
-                          )}
+                          {/* Ready for Pickup / Hold Actions */}
+                          {(() => {
+                            const myHold = myHolds.find((h) => h.bookId === book.id);
+                            const isHeldForMe = myHold?.status === 'HELD_FOR_PICKUP';
+                            const isPendingForMe = myHold?.status === 'PENDING';
+
+                            if (isHeldForMe) {
+                              return (
+                                <button
+                                  onClick={() => handleClaimBook(book)}
+                                  disabled={claimingBookId === book.id}
+                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-700 hover:to-teal-800 shadow-md shadow-emerald-500/25 active:scale-95 transition-all cursor-pointer disabled:opacity-50 animate-pulse"
+                                  title="Your held copy is ready for pickup! Click to check out."
+                                >
+                                  {claimingBookId === book.id ? (
+                                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                  ) : (
+                                    <Sparkles className="h-3.5 w-3.5 text-amber-300" />
+                                  )}
+                                  <span>Ready for Pickup - Claim Book</span>
+                                </button>
+                              );
+                            }
+
+                            if (isPendingForMe) {
+                              return (
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-purple-50 text-purple-700 border border-purple-200 text-xs font-bold shadow-xs">
+                                  <BookmarkCheck className="h-3.5 w-3.5 text-purple-600" />
+                                  <span>Hold #{myHold.queuePosition || 1}</span>
+                                </span>
+                              );
+                            }
+
+                            if (!isAvailable) {
+                              return (
+                                <div className="inline-flex items-center gap-2">
+                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-bold">
+                                    <Clock className="h-3 w-3 text-amber-600" />
+                                    <span>On Hold for Waiting Patron</span>
+                                  </span>
+                                  <button
+                                    onClick={() => handlePlaceHold(book)}
+                                    disabled={holdingBookId === book.id}
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 shadow-sm shadow-purple-500/25 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+                                    title="Place a hold on this book (Waitlist Queue)"
+                                  >
+                                    {holdingBookId === book.id ? (
+                                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                    ) : (
+                                      <BookmarkPlus className="h-3.5 w-3.5" />
+                                    )}
+                                    <span>Reserve / Hold</span>
+                                  </button>
+                                </div>
+                              );
+                            }
+
+                            return null;
+                          })()}
 
                           {/* Edit Button (ADMIN & LIBRARIAN only) */}
                           {canManageBooks && (
@@ -743,34 +804,75 @@ const BookList = () => {
                   </div>
 
                   {/* Out of Stock Hold Banner / Button in Card View */}
-                  {!isAvailable && (
-                    <div className="mt-4 pt-3 border-t border-slate-100">
-                      {isReservedByMe ? (
-                        <div className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-purple-50 text-purple-700 border border-purple-200 text-xs font-bold shadow-xs">
-                          <BookmarkCheck className="h-4 w-4 text-purple-600" />
-                          <span>Hold Placed &bull; Waitlist #{myHold.queuePosition || 1}</span>
+                  {(() => {
+                    const isHeldForMe = myHold?.status === 'HELD_FOR_PICKUP';
+                    const isPendingForMe = myHold?.status === 'PENDING';
+
+                    if (isHeldForMe) {
+                      return (
+                        <div className="mt-4 pt-3 border-t border-slate-100">
+                          <button
+                            onClick={() => handleClaimBook(book)}
+                            disabled={claimingBookId === book.id}
+                            className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-700 hover:to-teal-800 shadow-md shadow-emerald-600/25 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-50 animate-pulse"
+                          >
+                            {claimingBookId === book.id ? (
+                              <>
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                <span>Claiming Book...</span>
+                              </>
+                            ) : (
+                              <>
+                                <Sparkles className="h-3.5 w-3.5 text-amber-300" />
+                                <span>Ready for Pickup - Claim Book</span>
+                              </>
+                            )}
+                          </button>
                         </div>
-                      ) : (
-                        <button
-                          onClick={() => handlePlaceHold(book)}
-                          disabled={holdingBookId === book.id}
-                          className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 shadow-md shadow-purple-600/20 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-50"
-                        >
-                          {holdingBookId === book.id ? (
-                            <>
-                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                              <span>Placing Hold...</span>
-                            </>
-                          ) : (
-                            <>
-                              <BookmarkPlus className="h-3.5 w-3.5" />
-                              <span>Reserve / Place Hold</span>
-                            </>
-                          )}
-                        </button>
-                      )}
-                    </div>
-                  )}
+                      );
+                    }
+
+                    if (isPendingForMe) {
+                      return (
+                        <div className="mt-4 pt-3 border-t border-slate-100">
+                          <div className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-purple-50 text-purple-700 border border-purple-200 text-xs font-bold shadow-xs">
+                            <BookmarkCheck className="h-4 w-4 text-purple-600" />
+                            <span>Hold Placed &bull; Waitlist #{myHold.queuePosition || 1}</span>
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    if (!isAvailable) {
+                      return (
+                        <div className="mt-4 pt-3 border-t border-slate-100 space-y-2">
+                          <div className="flex items-center justify-center gap-1.5 py-1 text-[11px] font-bold text-amber-800 bg-amber-50 rounded-lg border border-amber-200">
+                            <Clock className="h-3 w-3 text-amber-600" />
+                            <span>On Hold for Waiting Patron</span>
+                          </div>
+                          <button
+                            onClick={() => handlePlaceHold(book)}
+                            disabled={holdingBookId === book.id}
+                            className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 shadow-md shadow-purple-600/20 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-50"
+                          >
+                            {holdingBookId === book.id ? (
+                              <>
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                <span>Placing Hold...</span>
+                              </>
+                            ) : (
+                              <>
+                                <BookmarkPlus className="h-3.5 w-3.5" />
+                                <span>Reserve / Place Hold</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      );
+                    }
+
+                    return null;
+                  })()}
                 </div>
 
                 {/* Card Footer Actions */}

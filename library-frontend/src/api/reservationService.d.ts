@@ -1,4 +1,4 @@
-export type ReservationStatus = 'PENDING' | 'FULFILLED' | 'CANCELLED' | 'EXPIRED';
+export type ReservationStatus = 'PENDING' | 'HELD_FOR_PICKUP' | 'FULFILLED' | 'CANCELLED' | 'EXPIRED';
 
 export interface ReservationResponseDTO {
   id: number;
@@ -12,6 +12,7 @@ export interface ReservationResponseDTO {
   memberEmail: string;
   reservationDate: string;
   status: ReservationStatus;
+  pickupDeadline?: string;
   queuePosition?: number | null;
   createdAt?: string;
   updatedAt?: string;

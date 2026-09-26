@@ -65,6 +65,7 @@ const MemberPortal = () => {
   // Pay Fine Modal state
   const [selectedFineForPayment, setSelectedFineForPayment] = useState(null);
   const [isPayModalOpen, setIsPayModalOpen] = useState(false);
+  const [claimingHoldId, setClaimingHoldId] = useState(null);
 
   // Pagination for history
   const [historyPage, setHistoryPage] = useState(0);
@@ -129,8 +130,11 @@ const MemberPortal = () => {
   const remainingQuota = Math.max(0, MAX_QUOTA - activeCount);
 
   // Compute Hold Metrics
+  const readyHolds = holds.filter((h) => h.status === 'HELD_FOR_PICKUP');
+  const readyHoldsCount = readyHolds.length;
   const pendingHolds = holds.filter((h) => h.status === 'PENDING');
   const pendingHoldsCount = pendingHolds.length;
+  const totalActiveHoldsCount = readyHoldsCount + pendingHoldsCount;
 
   // Compute Fine Metrics from Domain Ledger
   const pendingFines = fines.filter((f) => f.status === 'PENDING');
@@ -197,6 +201,41 @@ const MemberPortal = () => {
       hour: '2-digit',
       minute: '2-digit',
     });
+  };
+
+  // Helper for pickup deadline remaining countdown
+  const getPickupRemainingTime = (pickupDeadlineStr) => {
+    if (!pickupDeadlineStr) return { isExpired: false, label: '48h pickup window' };
+    const now = new Date();
+    const deadline = new Date(pickupDeadlineStr);
+    const diffMs = deadline - now;
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+    if (diffMs <= 0) {
+      return { isExpired: true, label: 'Pickup Window Expired' };
+    }
+    if (diffHours < 1) {
+      return { isExpired: false, label: `Expires in ${Math.max(1, diffMinutes)}m` };
+    }
+    return { isExpired: false, label: `Expires in ${diffHours}h ${diffMinutes > 0 ? `${diffMinutes}m` : ''}` };
+  };
+
+  const handleClaimHold = async (hold) => {
+    if (!memberId || !hold.bookId) return;
+    setClaimingHoldId(hold.id);
+    setError('');
+    setActionSuccess('');
+    try {
+      await borrowingService.borrowBook(memberId, hold.bookId);
+      setActionSuccess(`Book Claimed! "${hold.bookTitle || 'Book'}" has been successfully checked out to your account.`);
+      await fetchMemberData();
+      setTimeout(() => setActionSuccess(''), 5000);
+    } catch (err) {
+      setError(borrowingService.getErrorMessage(err));
+    } finally {
+      setClaimingHoldId(null);
+    }
   };
 
   // Handle Cancel Hold
@@ -356,31 +395,43 @@ const MemberPortal = () => {
         <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4">
           <div className="flex items-start justify-between gap-2">
             <div className="flex items-center gap-3">
-              <div className="h-11 w-11 rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600 shrink-0 shadow-xs">
-                <BookmarkCheck className="h-5 w-5" />
+              <div className={`h-11 w-11 rounded-2xl border flex items-center justify-center shrink-0 shadow-xs ${
+                readyHoldsCount > 0
+                  ? 'bg-emerald-50 border-emerald-200 text-emerald-600'
+                  : 'bg-purple-50 border-purple-100 text-purple-600'
+              }`}>
+                {readyHoldsCount > 0 ? <Sparkles className="h-5 w-5 text-emerald-600" /> : <BookmarkCheck className="h-5 w-5" />}
               </div>
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Waitlist Holds</p>
                 <p className="text-2xl font-extrabold text-slate-900 tracking-tight mt-0.5">
-                  {pendingHoldsCount}
+                  {totalActiveHoldsCount}
                 </p>
               </div>
             </div>
             <span
               className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full border ${
-                pendingHoldsCount > 0
+                readyHoldsCount > 0
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200 animate-pulse'
+                  : pendingHoldsCount > 0
                   ? 'bg-purple-50 text-purple-700 border-purple-200'
                   : 'bg-slate-100 text-slate-600 border-slate-200'
               }`}
             >
-              {pendingHoldsCount > 0 ? 'Active Holds' : 'No Holds'}
+              {readyHoldsCount > 0
+                ? `${readyHoldsCount} Ready for Pickup!`
+                : pendingHoldsCount > 0
+                ? 'Active Holds'
+                : 'No Holds'}
             </span>
           </div>
 
           <div className="pt-2 border-t border-slate-100">
             <p className="text-[11px] text-slate-500 font-medium">
-              {pendingHoldsCount > 0
-                ? `${pendingHoldsCount} ${pendingHoldsCount === 1 ? 'book reservation' : 'book reservations'} in queue.`
+              {readyHoldsCount > 0
+                ? `${readyHoldsCount} reserved book ready for immediate claim & checkout.`
+                : pendingHoldsCount > 0
+                ? `${pendingHoldsCount} book reservation in waitlist queue.`
                 : 'No pending waitlist reservations.'}
             </p>
           </div>
@@ -499,7 +550,14 @@ const MemberPortal = () => {
               }`}
             >
               <BookmarkCheck className="h-4 w-4" />
-              <span>My Holds &amp; Reservations ({pendingHoldsCount})</span>
+              <span>
+                My Holds &amp; Reservations ({totalActiveHoldsCount})
+                {readyHoldsCount > 0 && (
+                  <span className="ml-1.5 px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-extrabold">
+                    {readyHoldsCount} Ready
+                  </span>
+                )}
+              </span>
             </button>
 
             <button
@@ -673,20 +731,49 @@ const MemberPortal = () => {
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-xs">
                     {holds.map((hold) => {
+                      const isReady = hold.status === 'HELD_FOR_PICKUP';
                       const isPending = hold.status === 'PENDING';
+                      const pickupCountdown = isReady ? getPickupRemainingTime(hold.pickupDeadline) : null;
+
                       return (
-                        <tr key={hold.id} className="hover:bg-slate-50/80 transition-colors">
+                        <tr 
+                          key={hold.id} 
+                          className={`transition-colors ${
+                            isReady
+                              ? 'bg-emerald-50/40 hover:bg-emerald-50/70 border-l-4 border-l-emerald-500'
+                              : 'hover:bg-slate-50/80'
+                          }`}
+                        >
                           <td className="py-3.5 px-4 sm:px-6 font-bold text-slate-900">
                             <div className="flex flex-col">
-                              <span>{hold.bookTitle || 'Unknown Title'}</span>
+                              <span className="flex items-center gap-1.5">
+                                <span>{hold.bookTitle || 'Unknown Title'}</span>
+                                {isReady && (
+                                  <span className="px-1.5 py-0.2 rounded-md bg-emerald-100 text-emerald-800 text-[9px] font-extrabold tracking-wide">
+                                    HELD FOR YOU
+                                  </span>
+                                )}
+                              </span>
                               <span className="text-[11px] text-slate-500 font-normal">
                                 by {hold.bookAuthor || 'Unknown Author'} {hold.bookIsbn ? `• ISBN: ${hold.bookIsbn}` : ''}
                               </span>
                             </div>
                           </td>
-                          <td className="py-3.5 px-4 text-slate-600">{formatDateTime(hold.reservationDate)}</td>
+                          <td className="py-3.5 px-4 text-slate-600">
+                            <div>{formatDateTime(hold.reservationDate)}</div>
+                            {isReady && hold.pickupDeadline && (
+                              <div className="text-[10px] text-emerald-700 font-semibold mt-0.5">
+                                Held until: {formatDateTime(hold.pickupDeadline)}
+                              </div>
+                            )}
+                          </td>
                           <td className="py-3.5 px-4 text-center">
-                            {isPending && hold.queuePosition ? (
+                            {isReady ? (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                <Sparkles className="h-3.5 w-3.5 text-emerald-600" />
+                                <span>#1 Ready for Pickup</span>
+                              </span>
+                            ) : isPending && hold.queuePosition ? (
                               <span className="inline-flex items-center justify-center h-6 min-w-6 px-2 rounded-full text-xs font-extrabold bg-purple-100 text-purple-800 border border-purple-200">
                                 #{hold.queuePosition} in Queue
                               </span>
@@ -695,20 +782,56 @@ const MemberPortal = () => {
                             )}
                           </td>
                           <td className="py-3.5 px-4 text-center">
-                            <span
-                              className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
-                                isPending
-                                  ? 'bg-purple-50 text-purple-700 border-purple-200'
-                                  : hold.status === 'FULFILLED'
-                                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                                  : 'bg-slate-100 text-slate-600 border-slate-200'
-                              }`}
-                            >
-                              {hold.status}
-                            </span>
+                            {isReady ? (
+                              <div className="flex flex-col items-center gap-1">
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300 animate-pulse">
+                                  <Sparkles className="h-3 w-3 text-emerald-600" />
+                                  <span>READY FOR PICKUP</span>
+                                </span>
+                                <span className="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
+                                  {pickupCountdown?.label}
+                                </span>
+                              </div>
+                            ) : (
+                              <span
+                                className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
+                                  isPending
+                                    ? 'bg-purple-50 text-purple-700 border-purple-200'
+                                    : hold.status === 'FULFILLED'
+                                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                    : 'bg-slate-100 text-slate-600 border-slate-200'
+                                }`}
+                              >
+                                {hold.status}
+                              </span>
+                            )}
                           </td>
                           <td className="py-3.5 px-4 sm:px-6 text-right">
-                            {isPending ? (
+                            {isReady ? (
+                              <div className="inline-flex items-center justify-end gap-1.5">
+                                <button
+                                  onClick={() => handleClaimHold(hold)}
+                                  disabled={claimingHoldId === hold.id}
+                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md shadow-emerald-600/20 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+                                  title="Claim and check out this book immediately"
+                                >
+                                  {claimingHoldId === hold.id ? (
+                                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                  ) : (
+                                    <Sparkles className="h-3.5 w-3.5 text-amber-300" />
+                                  )}
+                                  <span>Claim Book</span>
+                                </button>
+                                <button
+                                  onClick={() => handleCancelHold(hold)}
+                                  disabled={cancellingHoldId === hold.id}
+                                  className="p-1.5 rounded-xl text-slate-400 hover:text-rose-700 hover:bg-rose-50 transition-all cursor-pointer"
+                                  title="Cancel hold"
+                                >
+                                  <BookmarkX className="h-4 w-4" />
+                                </button>
+                              </div>
+                            ) : isPending ? (
                               <button
                                 onClick={() => handleCancelHold(hold)}
                                 disabled={cancellingHoldId === hold.id}

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,6 +29,8 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
+
+    public static final int HOLD_PICKUP_EXPIRATION_HOURS = 48;
 
     @Transactional
     public ReservationResponseDTO placeHold(Long memberId, Long bookId) {
@@ -46,7 +49,8 @@ public class ReservationService {
         }
 
         // Prevent duplicate active holds for the same member and book
-        if (reservationRepository.existsByMemberIdAndBookIdAndStatus(memberId, bookId, ReservationStatus.PENDING)) {
+        if (reservationRepository.existsByMemberIdAndBookIdAndStatusIn(
+                memberId, bookId, List.of(ReservationStatus.PENDING, ReservationStatus.HELD_FOR_PICKUP))) {
             throw new ResourceAlreadyExistsException(
                     "Member already has an active hold request for book: " + book.getTitle()
             );
@@ -66,12 +70,34 @@ public class ReservationService {
         return toDTO(savedReservation, queuePosition);
     }
 
+    @Transactional
+    public Optional<Reservation> transitionNextHoldToPickup(Long bookId) {
+        Optional<Reservation> nextHold = reservationRepository.findFirstByBookIdAndStatusOrderByReservationDateAsc(
+                bookId, ReservationStatus.PENDING
+        );
+
+        if (nextHold.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Reservation reservation = nextHold.get();
+        reservation.setStatus(ReservationStatus.HELD_FOR_PICKUP);
+        reservation.setPickupDeadline(LocalDateTime.now().plusHours(HOLD_PICKUP_EXPIRATION_HOURS));
+        Reservation saved = reservationRepository.save(reservation);
+        return Optional.of(saved);
+    }
+
     @Transactional(readOnly = true)
     public List<ReservationResponseDTO> getMyHolds(Long memberId) {
         List<Reservation> reservations = reservationRepository.findByMemberIdOrderByReservationDateDesc(memberId);
         return reservations.stream()
                 .map(r -> {
-                    Integer pos = r.getStatus() == ReservationStatus.PENDING ? calculateQueuePosition(r) : null;
+                    Integer pos = null;
+                    if (r.getStatus() == ReservationStatus.HELD_FOR_PICKUP) {
+                        pos = 1;
+                    } else if (r.getStatus() == ReservationStatus.PENDING) {
+                        pos = calculateQueuePosition(r);
+                    }
                     return toDTO(r, pos);
                 })
                 .toList();
@@ -82,14 +108,22 @@ public class ReservationService {
         Book book = bookRepository.findActiveById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id " + bookId));
 
-        List<Reservation> queue = reservationRepository.findByBookIdAndStatusOrderByReservationDateAsc(
+        List<Reservation> held = reservationRepository.findByBookIdAndStatusOrderByReservationDateAsc(
+                book.getId(), ReservationStatus.HELD_FOR_PICKUP
+        );
+        List<Reservation> pending = reservationRepository.findByBookIdAndStatusOrderByReservationDateAsc(
                 book.getId(), ReservationStatus.PENDING
         );
 
         AtomicInteger rank = new AtomicInteger(1);
-        return queue.stream()
-                .map(r -> toDTO(r, rank.getAndIncrement()))
-                .toList();
+        List<ReservationResponseDTO> result = new ArrayList<>();
+        for (Reservation r : held) {
+            result.add(toDTO(r, rank.getAndIncrement()));
+        }
+        for (Reservation r : pending) {
+            result.add(toDTO(r, rank.getAndIncrement()));
+        }
+        return result;
     }
 
     @Transactional
@@ -102,12 +136,22 @@ public class ReservationService {
             throw new AccessDeniedException("You do not have permission to cancel this hold.");
         }
 
-        if (reservation.getStatus() != ReservationStatus.PENDING) {
-            throw new IllegalStateException("Only active pending reservations can be cancelled. Current status: " + reservation.getStatus());
+        if (reservation.getStatus() != ReservationStatus.PENDING && reservation.getStatus() != ReservationStatus.HELD_FOR_PICKUP) {
+            throw new IllegalStateException("Only active reservations (PENDING or HELD_FOR_PICKUP) can be cancelled. Current status: " + reservation.getStatus());
         }
 
+        boolean wasHeldForPickup = reservation.getStatus() == ReservationStatus.HELD_FOR_PICKUP;
         reservation.setStatus(ReservationStatus.CANCELLED);
         Reservation saved = reservationRepository.save(reservation);
+
+        // If the cancelled hold was holding a quarantined copy, pass it to next pending hold or restore stock
+        if (wasHeldForPickup && reservation.getBook() != null) {
+            Long bookId = reservation.getBook().getId();
+            Optional<Reservation> nextHold = transitionNextHoldToPickup(bookId);
+            if (nextHold.isEmpty()) {
+                bookRepository.incrementAvailableCopies(bookId);
+            }
+        }
 
         return toDTO(saved, null);
     }
@@ -117,8 +161,8 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Reservation not found with id " + reservationId));
 
-        if (reservation.getStatus() != ReservationStatus.PENDING) {
-            throw new IllegalStateException("Only active pending reservations can be fulfilled. Current status: " + reservation.getStatus());
+        if (reservation.getStatus() != ReservationStatus.PENDING && reservation.getStatus() != ReservationStatus.HELD_FOR_PICKUP) {
+            throw new IllegalStateException("Only active reservations can be fulfilled. Current status: " + reservation.getStatus());
         }
 
         reservation.setStatus(ReservationStatus.FULFILLED);
@@ -129,6 +173,16 @@ public class ReservationService {
 
     @Transactional
     public Optional<ReservationResponseDTO> fulfillNextPendingHold(Long bookId) {
+        Optional<Reservation> held = reservationRepository.findFirstByBookIdAndStatusOrderByReservationDateAsc(
+                bookId, ReservationStatus.HELD_FOR_PICKUP
+        );
+        if (held.isPresent()) {
+            Reservation reservation = held.get();
+            reservation.setStatus(ReservationStatus.FULFILLED);
+            Reservation saved = reservationRepository.save(reservation);
+            return Optional.of(toDTO(saved, null));
+        }
+
         Optional<Reservation> nextInQueue = reservationRepository.findFirstByBookIdAndStatusOrderByReservationDateAsc(
                 bookId, ReservationStatus.PENDING
         );
@@ -146,13 +200,26 @@ public class ReservationService {
 
     @Transactional(readOnly = true)
     public long countPendingHolds(Long bookId) {
-        return reservationRepository.countByBookIdAndStatus(bookId, ReservationStatus.PENDING);
+        return reservationRepository.countByBookIdAndStatusIn(
+                bookId, List.of(ReservationStatus.PENDING, ReservationStatus.HELD_FOR_PICKUP)
+        );
     }
 
     public int calculateQueuePosition(Reservation reservation) {
-        if (reservation == null || reservation.getBook() == null || reservation.getStatus() != ReservationStatus.PENDING) {
+        if (reservation == null || reservation.getBook() == null) {
             return 0;
         }
+        if (reservation.getStatus() == ReservationStatus.HELD_FOR_PICKUP) {
+            return 1;
+        }
+        if (reservation.getStatus() != ReservationStatus.PENDING) {
+            return 0;
+        }
+
+        long countHeld = reservationRepository.countByBookIdAndStatus(
+                reservation.getBook().getId(),
+                ReservationStatus.HELD_FOR_PICKUP
+        );
 
         long countAheadOrEqual = reservationRepository.countByBookIdAndStatusAndReservationDateLessThanEqual(
                 reservation.getBook().getId(),
@@ -160,7 +227,7 @@ public class ReservationService {
                 reservation.getReservationDate()
         );
 
-        return Math.max(1, (int) countAheadOrEqual);
+        return Math.max(1, (int) (countHeld + countAheadOrEqual));
     }
 
     public ReservationResponseDTO toDTO(Reservation reservation, Integer queuePosition) {
@@ -178,6 +245,7 @@ public class ReservationService {
                 .memberEmail(reservation.getMember() != null ? reservation.getMember().getEmail() : null)
                 .reservationDate(reservation.getReservationDate())
                 .status(reservation.getStatus())
+                .pickupDeadline(reservation.getPickupDeadline())
                 .queuePosition(queuePosition)
                 .createdAt(reservation.getCreatedAt())
                 .updatedAt(reservation.getUpdatedAt())
