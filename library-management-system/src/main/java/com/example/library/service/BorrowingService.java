@@ -47,6 +47,7 @@ public class BorrowingService {
     public static final int MAX_ALLOWED_BOOKS = 5;
     public static final BigDecimal FINE_PER_OVERDUE_DAY = new BigDecimal("1.50");
     public static final BigDecimal MAX_OUTSTANDING_FINE_LIMIT = new BigDecimal("10.00");
+    public static final int PICKUP_LOCK_HOURS = 48;
 
     @Transactional
     public BorrowingRecord borrowBook(Long userId, Long bookId) {
@@ -71,9 +72,29 @@ public class BorrowingService {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id " + bookId));
 
-        int updatedRows = bookRepository.decrementAvailableCopies(bookId);
-        if (updatedRows == 0) {
-            throw new BookNotAvailableException("No copies available for book: " + book.getTitle());
+        // Check if member has an active HELD_FOR_PICKUP reservation for this book
+        Optional<Reservation> heldForUser = reservationRepository.findFirstByMemberIdAndBookIdAndStatus(
+                userId, bookId, ReservationStatus.HELD_FOR_PICKUP
+        );
+
+        if (heldForUser.isPresent()) {
+            Reservation hold = heldForUser.get();
+            hold.setStatus(ReservationStatus.FULFILLED);
+            reservationRepository.save(hold);
+            // Copy was quarantined on return, so availableCopies does not need decrementing
+        } else {
+            // General borrowing requires unheld available copy
+            int updatedRows = bookRepository.decrementAvailableCopies(bookId);
+            if (updatedRows == 0) {
+                throw new BookNotAvailableException("No copies available for book: " + book.getTitle());
+            }
+
+            // If user had a PENDING hold for this book, fulfill it
+            reservationRepository.findFirstByMemberIdAndBookIdAndStatus(userId, bookId, ReservationStatus.PENDING)
+                    .ifPresent(pendingHold -> {
+                        pendingHold.setStatus(ReservationStatus.FULFILLED);
+                        reservationRepository.save(pendingHold);
+                    });
         }
 
         // Create borrowing record
@@ -96,12 +117,26 @@ public class BorrowingService {
             throw new BookAlreadyReturnedException("Borrowing record " + recordId + " has already been returned");
         }
 
-        int restored = bookRepository.incrementAvailableCopies(record.getBook().getId());
-        if (restored == 0) {
-            throw new InventoryStateException(
-                "Cannot restore inventory for book id " + record.getBook().getId() +
-                ": availableCopies already equals totalCopies. Data may be inconsistent."
-            );
+        // Check for queued pending holds to place copy into HELD_FOR_PICKUP quarantine state
+        Optional<Reservation> nextHold = reservationRepository.findFirstByBookIdAndStatusOrderByReservationDateAsc(
+                record.getBook().getId(), ReservationStatus.PENDING
+        );
+
+        if (nextHold.isPresent()) {
+            Reservation hold = nextHold.get();
+            hold.setStatus(ReservationStatus.HELD_FOR_PICKUP);
+            hold.setPickupDeadline(LocalDateTime.now().plusHours(PICKUP_LOCK_HOURS));
+            reservationRepository.save(hold);
+            // Do NOT increment availableCopies: copy is quarantined for the top-queued patron
+        } else {
+            // No pending holds: restore to public available inventory
+            int restored = bookRepository.incrementAvailableCopies(record.getBook().getId());
+            if (restored == 0) {
+                throw new InventoryStateException(
+                    "Cannot restore inventory for book id " + record.getBook().getId() +
+                    ": availableCopies already equals totalCopies. Data may be inconsistent."
+                );
+            }
         }
 
         // Update record
@@ -170,17 +205,25 @@ public class BorrowingService {
 
         Long bookId = record.getBook() != null ? record.getBook().getId() : null;
         long pendingHolds = (bookId != null && reservationRepository != null)
-                ? reservationRepository.countByBookIdAndStatus(bookId, ReservationStatus.PENDING)
+                ? reservationRepository.countByBookIdAndStatusIn(bookId, List.of(ReservationStatus.PENDING, ReservationStatus.HELD_FOR_PICKUP))
                 : 0;
 
         String nextMemberName = null;
-        if (pendingHolds > 0) {
-            Optional<Reservation> nextHold = reservationRepository.findFirstByBookIdAndStatusOrderByReservationDateAsc(
-                    bookId, ReservationStatus.PENDING
+        if (pendingHolds > 0 && reservationRepository != null && bookId != null) {
+            Optional<Reservation> readyHold = reservationRepository.findFirstByBookIdAndStatusOrderByReservationDateAsc(
+                    bookId, ReservationStatus.HELD_FOR_PICKUP
             );
-            if (nextHold.isPresent() && nextHold.get().getMember() != null) {
-                User m = nextHold.get().getMember();
+            if (readyHold.isPresent() && readyHold.get().getMember() != null) {
+                User m = readyHold.get().getMember();
                 nextMemberName = (m.getFirstName() + " " + m.getLastName()).trim();
+            } else {
+                Optional<Reservation> nextHold = reservationRepository.findFirstByBookIdAndStatusOrderByReservationDateAsc(
+                        bookId, ReservationStatus.PENDING
+                );
+                if (nextHold.isPresent() && nextHold.get().getMember() != null) {
+                    User m = nextHold.get().getMember();
+                    nextMemberName = (m.getFirstName() + " " + m.getLastName()).trim();
+                }
             }
         }
 

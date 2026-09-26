@@ -36,6 +36,8 @@ public class Reservation {
     @Builder.Default
     private ReservationStatus status = ReservationStatus.PENDING;
 
+    private LocalDateTime pickupDeadline;
+
     @Column(updatable = false)
     private LocalDateTime createdAt;
 

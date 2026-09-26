@@ -21,6 +21,7 @@ public class ReservationResponseDTO {
     private String memberEmail;
     private LocalDateTime reservationDate;
     private ReservationStatus status;
+    private LocalDateTime pickupDeadline;
     private Integer queuePosition;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
