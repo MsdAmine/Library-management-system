@@ -8,7 +8,7 @@ import Dashboard from './pages/Dashboard';
 import MemberPortal from './pages/MemberPortal';
 import BookList from './pages/Catalog/BookList';
 import MemberList from './pages/Members/MemberList';
-import Borrowings from './pages/Borrowings';
+import BorrowingList from './pages/Borrowings/BorrowingList';
 import Analytics from './pages/Analytics';
 import Users from './pages/Users';
 import UnauthorizedPage from './pages/auth/UnauthorizedPage';
@@ -66,7 +66,7 @@ function App() {
               path="/loans"
               element={
                 <ProtectedRoute allowedRoles={['ADMIN', 'LIBRARIAN']}>
-                  <Borrowings />
+                  <BorrowingList />
                 </ProtectedRoute>
               }
             />

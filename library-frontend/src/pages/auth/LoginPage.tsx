@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { authApi } from '../../services/api';
 import { Library, Mail, Lock, Loader2 } from 'lucide-react';
 import './Auth.css';
 
@@ -18,10 +17,9 @@ const LoginPage = () => {
     setLoading(true);
     setError('');
     try {
-      const response = await authApi.login({ email, password });
-      const { token, role } = response.data;
-      login(token, role);
-      if (role === 'USER') {
+      const result = await login(email, password);
+      const userRole = result?.user?.role;
+      if (userRole === 'USER') {
         navigate('/unauthorized');
       } else {
         navigate('/');

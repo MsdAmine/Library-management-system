@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { userApi } from '../services/api';
+import api from '../api/axios';
 import { Plus, Trash2, X, Mail, Lock, User, ShieldCheck, Users as UsersIcon, AlertCircle, Loader2 } from 'lucide-react';
 import './Users.css';
 
@@ -31,7 +31,7 @@ const Users = () => {
     setLoading(true);
     setFetchError('');
     try {
-      const res = await userApi.getAll();
+      const res = await api.get('/users');
       setUsers(res.data);
     } catch (err: any) {
       setFetchError(err.response?.data?.message ?? `Error ${err.response?.status ?? ''}: failed to load users.`);
@@ -64,7 +64,7 @@ const Users = () => {
     setFormError('');
     setSubmitting(true);
     try {
-      await userApi.create(form);
+      await api.post('/auth/register', form);
       closeModal();
       fetchUsers();
     } catch (err: any) {
@@ -76,7 +76,7 @@ const Users = () => {
 
   const handleDelete = async (id: number) => {
     try {
-      await userApi.delete(id);
+      await api.delete(`/users/${id}`);
       setDeletingId(null);
       fetchUsers();
     } catch {

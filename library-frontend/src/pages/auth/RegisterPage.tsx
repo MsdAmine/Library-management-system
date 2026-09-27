@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { authApi } from '../../services/api';
+import api from '../../api/axios';
 import { Library, Mail, Lock, Loader2, User } from 'lucide-react';
 import './Auth.css';
 
@@ -19,9 +19,9 @@ const RegisterPage = () => {
     setLoading(true);
     setError('');
     try {
-      const response = await authApi.register({ email, password, role });
+      const response = await api.post('/auth/register', { email, password, role });
       const { token: newToken, role: newRole } = response.data;
-      login(newToken, newRole);
+      await login(newToken, newRole);
       navigate('/');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Registration failed. Please try again.');
