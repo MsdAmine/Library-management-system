@@ -19,9 +19,12 @@ public interface BorrowingRecordRepository extends JpaRepository<BorrowingRecord
     Page<BorrowingRecord> findByUserId(Long userId, Pageable pageable);
     Page<BorrowingRecord> findByUserIdAndArchivedFalse(Long userId, Pageable pageable);
     List<BorrowingRecord> findByUserIdAndStatus(Long userId, BorrowingRecord.BorrowingStatus status);
+    List<BorrowingRecord> findByUserIdAndStatusIn(Long userId, List<BorrowingRecord.BorrowingStatus> statuses);
     List<BorrowingRecord> findByBookId(Long bookId);
     List<BorrowingRecord> findByArchivedTrue();
+    List<BorrowingRecord> findByStatusAndDueDateBefore(BorrowingRecord.BorrowingStatus status, LocalDate today);
     long countByUserIdAndStatus(Long userId, BorrowingRecord.BorrowingStatus status);
+    long countByUserIdAndStatusIn(Long userId, List<BorrowingRecord.BorrowingStatus> statuses);
     long countByStatus(BorrowingRecord.BorrowingStatus status);
 
     @Query("SELECT COUNT(r) FROM BorrowingRecord r WHERE r.status = 'BORROWED' AND r.dueDate < :today")
