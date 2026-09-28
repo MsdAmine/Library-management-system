@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   BookOpen, 
@@ -20,12 +20,23 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [sessionExpiredBanner, setSessionExpiredBanner] = useState(false);
 
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const from = location.state?.from?.pathname || '/';
+
+  // Detect session-expiry flag injected by the 401 Axios interceptor
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('sessionExpired') === 'true' || location.state?.sessionExpired) {
+      setSessionExpiredBanner(true);
+      // Strip the query-param so a manual refresh doesn't re-show the banner
+      window.history.replaceState({}, '', '/login');
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -84,6 +95,26 @@ const Login = () => {
               Sign in to manage library catalog, loans, and memberships.
             </p>
           </div>
+
+          {/* Session Expired Banner */}
+          {sessionExpiredBanner && (
+            <div
+              id="session-expired-banner"
+              className="mb-4 flex items-start gap-3 p-4 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-sm"
+            >
+              <AlertCircle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <span className="font-bold">Session Expired</span>
+                <p className="font-medium mt-0.5 text-amber-800">Your session has timed out. Please sign in again to continue.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSessionExpiredBanner(false)}
+                className="text-amber-500 hover:text-amber-700 font-bold text-base leading-none cursor-pointer"
+                aria-label="Dismiss"
+              >✕</button>
+            </div>
+          )}
 
           {/* Error Alert */}
           {error && (
