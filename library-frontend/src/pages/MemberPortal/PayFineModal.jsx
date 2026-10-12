@@ -75,8 +75,17 @@ const PayFineModal = ({ isOpen, onClose, fine, onPaymentSuccess }) => {
   const formattedAmount = Number(fine.amount || 0).toFixed(2);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="bg-white rounded-3xl shadow-2xl border border-slate-200/90 w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200"
+      onClick={onClose}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="pay-fine-modal-title"
+        className="bg-white rounded-3xl shadow-2xl border border-slate-200/90 w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200"
+        onClick={(e) => e.stopPropagation()}
+      >
         
         {/* Header */}
         <div className="px-6 py-5 border-b border-slate-100 bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 text-white flex items-center justify-between">
@@ -85,7 +94,7 @@ const PayFineModal = ({ isOpen, onClose, fine, onPaymentSuccess }) => {
               <CreditCard className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold tracking-tight">Pay Overdue Fine</h2>
+              <h2 id="pay-fine-modal-title" className="text-base font-bold tracking-tight">Pay Overdue Fine</h2>
               <p className="text-xs text-indigo-200 font-medium">Fine Record #{fine.id}</p>
             </div>
           </div>
@@ -93,6 +102,7 @@ const PayFineModal = ({ isOpen, onClose, fine, onPaymentSuccess }) => {
           <button
             onClick={onClose}
             disabled={submitting}
+            aria-label="Close payment modal"
             className="p-1.5 rounded-xl text-indigo-200 hover:text-white hover:bg-white/10 transition-colors"
           >
             <X className="h-4 w-4" />

@@ -218,8 +218,14 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200">
-      <div 
+    <div
+      className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-200"
+      onClick={onClose}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="book-modal-title"
         className="relative w-full max-w-2xl bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden text-slate-900 transform transition-all"
         onClick={(e) => e.stopPropagation()}
       >
@@ -233,7 +239,7 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
               <BookOpen className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+              <h2 id="book-modal-title" className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
                 {editingBook ? 'Edit Book Metadata' : 'Add New Book to Catalog'}
               </h2>
               <p className="text-xs text-slate-500 font-medium">
@@ -272,6 +278,8 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
                 Book Title <span className="text-rose-500 font-bold">*</span>
               </label>
               <input
+                // eslint-disable-next-line jsx-a11y/no-autofocus
+                autoFocus
                 type="text"
                 name="title"
                 value={formData.title}
