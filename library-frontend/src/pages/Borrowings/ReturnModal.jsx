@@ -45,6 +45,17 @@ const ReturnModal = ({ isOpen, onClose, record, onSuccess }) => {
     }
   }, [isOpen, record]);
 
+  // Escape key listener
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isOpen && !submitting) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, submitting, onClose]);
+
   if (!isOpen || !record) return null;
 
   // Calculate overdue days and fine estimation
@@ -103,8 +114,14 @@ const ReturnModal = ({ isOpen, onClose, record, onSuccess }) => {
     : 'Unknown Member';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
-      <div 
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200"
+      onClick={onClose}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="return-modal-title"
         className="relative w-full max-w-lg bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
         onClick={(e) => e.stopPropagation()}
       >
@@ -115,13 +132,14 @@ const ReturnModal = ({ isOpen, onClose, record, onSuccess }) => {
               <RotateCcw className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Process Book Return</h2>
+              <h2 id="return-modal-title" className="text-lg font-bold text-slate-900">Process Book Return</h2>
               <p className="text-xs text-slate-500">Check in borrowed book and calculate fines</p>
             </div>
           </div>
           <button
             onClick={onClose}
             disabled={submitting}
+            aria-label="Close return modal"
             className="rounded-lg p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
           >
             <X className="h-5 w-5" />

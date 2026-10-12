@@ -167,8 +167,17 @@ const MemberFinesModal = ({ isOpen, onClose, member, onFineUpdated }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="bg-white rounded-3xl shadow-2xl border border-slate-200/90 w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200"
+      onClick={onClose}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="member-fines-modal-title"
+        className="bg-white rounded-3xl shadow-2xl border border-slate-200/90 w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200"
+        onClick={(e) => e.stopPropagation()}
+      >
         
         {/* Header */}
         <div className="px-6 py-5 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-indigo-50/40 flex items-center justify-between">
@@ -177,7 +186,7 @@ const MemberFinesModal = ({ isOpen, onClose, member, onFineUpdated }) => {
               <DollarSign className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+              <h2 id="member-fines-modal-title" className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
                 <span>Member Fine &amp; Ledger Management</span>
                 <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-700">
                   ID: #{member.id}
@@ -201,6 +210,7 @@ const MemberFinesModal = ({ isOpen, onClose, member, onFineUpdated }) => {
             <button
               onClick={onClose}
               disabled={submitting}
+              aria-label="Close member fines modal"
               className="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-white border border-slate-200/80 transition-all cursor-pointer"
             >
               <X className="h-4 w-4" />
