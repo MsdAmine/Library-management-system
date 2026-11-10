@@ -11,7 +11,6 @@ import BookList from './pages/Catalog/BookList';
 import MemberList from './pages/Members/MemberList';
 import BorrowingList from './pages/Borrowings/BorrowingList';
 import Analytics from './pages/Analytics';
-import Users from './pages/Users';
 import UnauthorizedPage from './pages/auth/UnauthorizedPage';
 
 /**
@@ -84,15 +83,8 @@ function App() {
                 }
               />
 
-              {/* System User Accounts - Admin only */}
-              <Route
-                path="/users"
-                element={
-                  <ProtectedRoute allowedRoles={['ADMIN']}>
-                    <Users />
-                  </ProtectedRoute>
-                }
-              />
+              {/* Legacy users route safely redirected to Members directory */}
+              <Route path="/users" element={<Navigate to="/members" replace />} />
             </Route>
 
             {/* Fallback Route */}
