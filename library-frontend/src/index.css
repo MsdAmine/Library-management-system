@@ -10,13 +10,29 @@
     --color-primary-hover: #4f46e5;
   }
 
+  html,
+  body {
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+  }
+
   body {
     font-family: var(--font-sans);
     background-color: #f8fafc;
     color: #0f172a;
-    min-height: 100vh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  #root {
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
 }
 
@@ -38,4 +54,3 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
-
