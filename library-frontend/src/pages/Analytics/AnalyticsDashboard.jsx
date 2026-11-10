@@ -118,7 +118,7 @@ const AnalyticsDashboard = () => {
   const avgLoansPerActiveBorrower = activeBorrowers > 0 ? (activeLoans / activeBorrowers).toFixed(1) : '0';
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300">
+    <div className="space-y-8 pb-8 sm:pb-12 animate-in fade-in duration-300">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 sm:p-7 rounded-3xl border border-slate-200/90 shadow-xs">
         <div className="space-y-1.5">

@@ -8,9 +8,11 @@ const AppLayout = () => {
       {/* Top Navigation Bar with optimized spacing and responsive collapse */}
       <Navbar />
 
-      {/* Main Content Container - locked within viewport */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 overflow-hidden flex flex-col">
-        <Outlet />
+      {/* Main Content Area - Fixed top bar with clean internal vertical scrolling */}
+      <main className="flex-1 w-full overflow-y-auto overflow-x-hidden min-h-0">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+          <Outlet />
+        </div>
       </main>
     </div>
   );
