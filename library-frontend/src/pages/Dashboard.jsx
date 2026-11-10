@@ -9,7 +9,6 @@ import {
   CheckCircle, 
   Sparkles, 
   ArrowUpRight,
-  Key,
   Mail,
   Clock,
   Database
@@ -17,7 +16,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 
 const Dashboard = () => {
-  const { user, role, token } = useAuth();
+  const { user, role } = useAuth();
 
   const stats = [
     {
@@ -89,59 +88,36 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Authentication & Security Diagnostic Overview */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* User Profile Card */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
-              <Shield className="h-4 w-4 text-indigo-600" />
-              Account Identity
-            </h3>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
-              {role}
-            </span>
-          </div>
-
-          <div className="space-y-3.5 text-sm pt-1">
-            <div className="flex items-center gap-2.5 text-slate-700">
-              <Mail className="h-4 w-4 text-slate-400 shrink-0" />
-              <span className="text-slate-500 text-xs font-medium">Email:</span>
-              <span className="font-semibold text-slate-900 truncate">{user?.email || 'N/A'}</span>
-            </div>
-            <div className="flex items-center gap-2.5 text-slate-700">
-              <Clock className="h-4 w-4 text-slate-400 shrink-0" />
-              <span className="text-slate-500 text-xs font-medium">Auth State:</span>
-              <span className="inline-flex items-center gap-1.5 text-emerald-700 font-semibold text-xs bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-                Verified &amp; Stored
-              </span>
-            </div>
-            <div className="flex items-center gap-2.5 text-slate-700">
-              <Database className="h-4 w-4 text-slate-400 shrink-0" />
-              <span className="text-slate-500 text-xs font-medium">User ID:</span>
-              <span className="font-mono text-xs font-semibold text-slate-800 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">{user?.id || user?.userId || 'N/A'}</span>
-            </div>
-          </div>
+      {/* Account Identity Card */}
+      <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs space-y-4">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+          <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
+            <Shield className="h-4 w-4 text-indigo-600" />
+            Account Identity
+          </h3>
+          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+            {role}
+          </span>
         </div>
 
-        {/* JWT Details Card */}
-        <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs space-y-3 lg:col-span-2">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
-              <Key className="h-4 w-4 text-amber-500" />
-              JWT Auth Interceptor Status
-            </h3>
-            <span className="text-xs text-slate-500 font-mono bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">
-              Authorization: Bearer &lt;token&gt;
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+          <div className="flex items-center gap-2.5 text-slate-700">
+            <Mail className="h-4 w-4 text-slate-400 shrink-0" />
+            <span className="text-slate-500 text-xs font-medium">Email:</span>
+            <span className="font-semibold text-slate-900 truncate">{user?.email || 'N/A'}</span>
+          </div>
+          <div className="flex items-center gap-2.5 text-slate-700">
+            <Clock className="h-4 w-4 text-slate-400 shrink-0" />
+            <span className="text-slate-500 text-xs font-medium">Auth State:</span>
+            <span className="inline-flex items-center gap-1.5 text-emerald-700 font-semibold text-xs bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+              Verified &amp; Stored
             </span>
           </div>
-          <p className="text-xs text-slate-600 leading-relaxed">
-            Requests made through <code className="text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-100 font-semibold">src/api/axios.js</code> automatically append this token to all backend REST endpoints under <code className="text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-100 font-semibold">/api/v1/*</code>.
-          </p>
-          <div className="bg-slate-50 rounded-xl p-3.5 border border-slate-200 font-mono text-xs text-slate-700 break-all select-all">
-            <span className="text-indigo-600 font-bold">Token: </span>
-            {token ? `${token.substring(0, 48)}...${token.substring(token.length - 20)}` : 'No active token found in storage'}
+          <div className="flex items-center gap-2.5 text-slate-700">
+            <Database className="h-4 w-4 text-slate-400 shrink-0" />
+            <span className="text-slate-500 text-xs font-medium">User ID:</span>
+            <span className="font-mono text-xs font-semibold text-slate-800 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">{user?.id || user?.userId || 'N/A'}</span>
           </div>
         </div>
       </div>
