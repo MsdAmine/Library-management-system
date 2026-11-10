@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
   CreditCard,
   X,
@@ -146,7 +146,7 @@ const PayFineModal = ({ isOpen, onClose, fine, onPaymentSuccess }) => {
                     : 'border-slate-200 text-slate-600 hover:border-slate-300'
                 }`}
               >
-                <CreditCard className="h-4 w-4 text-indigo-600" />
+                <CreditCard className="h-4 w-4 text-indigo-700" />
                 <span>Card</span>
               </button>
 
@@ -248,7 +248,7 @@ const PayFineModal = ({ isOpen, onClose, fine, onPaymentSuccess }) => {
             <button
               type="submit"
               disabled={submitting}
-              className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 text-xs font-bold rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-600/20 transition-all cursor-pointer disabled:opacity-60"
+              className="flex-1 inline-flex items-center justify-center gap-2 py-2.5 text-xs font-bold rounded-2xl bg-indigo-700 hover:bg-indigo-800 text-white shadow-md shadow-indigo-700/20 transition-all cursor-pointer disabled:opacity-60"
             >
               {submitting ? (
                 <>

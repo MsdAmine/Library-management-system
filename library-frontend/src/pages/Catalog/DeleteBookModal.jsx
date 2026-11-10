@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   AlertTriangle, 
   Trash2, 
@@ -95,7 +95,7 @@ const DeleteBookModal = ({ isOpen, onClose, onSuccess, book }) => {
 
           <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/90 space-y-2.5">
             <div className="flex items-start gap-2.5">
-              <BookOpen className="h-4 w-4 text-indigo-600 shrink-0 mt-1" />
+              <BookOpen className="h-4 w-4 text-indigo-700 shrink-0 mt-1" />
               <div>
                 <span className="text-xs text-slate-500 font-bold">Title:</span>
                 <p className="text-sm font-bold text-slate-900">{book.title}</p>

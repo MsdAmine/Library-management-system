@@ -4,7 +4,7 @@ import Navbar from '../components/layout/Navbar';
 
 const AppLayout = () => {
   return (
-    <div className="h-screen max-h-screen overflow-hidden bg-slate-50 text-slate-900 flex flex-col selection:bg-indigo-500 selection:text-white">
+    <div className="h-screen max-h-screen overflow-hidden bg-slate-50 text-slate-900 flex flex-col selection:bg-indigo-700 selection:text-white">
       {/* Top Navigation Bar with optimized spacing and responsive collapse */}
       <Navbar />
 

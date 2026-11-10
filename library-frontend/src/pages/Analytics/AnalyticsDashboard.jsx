@@ -123,7 +123,7 @@ const AnalyticsDashboard = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 sm:p-7 rounded-3xl border border-slate-200/90 shadow-xs">
         <div className="space-y-1.5">
           <div className="flex items-center gap-2.5">
-            <div className="h-11 w-11 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-xs">
+            <div className="h-11 w-11 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-700 shadow-xs">
               <BarChart3 className="h-6 w-6" />
             </div>
             <div>
@@ -156,12 +156,12 @@ const AnalyticsDashboard = () => {
             id="refresh-analytics-btn"
             onClick={() => fetchAnalytics(true)}
             disabled={loading || refreshing}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-indigo-700 bg-white hover:bg-indigo-50/60 border border-slate-200 hover:border-indigo-200 shadow-xs transition-all duration-200 active:scale-95 disabled:opacity-50 cursor-pointer"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:text-indigo-800 bg-white hover:bg-indigo-50/60 border border-slate-200 hover:border-indigo-200 shadow-xs transition-all duration-200 active:scale-95 disabled:opacity-50 cursor-pointer"
             title="Refresh aggregate metrics"
           >
             <RefreshCw
               className={`h-4 w-4 ${
-                refreshing || loading ? 'animate-spin text-indigo-600' : 'text-slate-500'
+                refreshing || loading ? 'animate-spin text-indigo-700' : 'text-slate-500'
               }`}
             />
             <span>{refreshing ? 'Refreshing...' : 'Refresh Metrics'}</span>
@@ -197,7 +197,7 @@ const AnalyticsDashboard = () => {
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                 Catalog Inventory
               </span>
-              <div className="h-9 w-9 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center shadow-xs">
+              <div className="h-9 w-9 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-100 flex items-center justify-center shadow-xs">
                 <BookOpen className="h-4.5 w-4.5" />
               </div>
             </div>
@@ -226,7 +226,7 @@ const AnalyticsDashboard = () => {
           <div className="pt-4 mt-2 border-t border-slate-100 space-y-1.5">
             <div className="flex justify-between text-[11px] font-semibold">
               <span className="text-emerald-700">{formatPercent(availablePct)} Available</span>
-              <span className="text-indigo-600">{formatPercent(borrowedPct)} Borrowed</span>
+              <span className="text-indigo-700">{formatPercent(borrowedPct)} Borrowed</span>
             </div>
             <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden flex">
               <div
@@ -235,7 +235,7 @@ const AnalyticsDashboard = () => {
                 title={`Available: ${formatNumber(availableCopies)} copies`}
               ></div>
               <div
-                className="bg-indigo-500 transition-all duration-500"
+                className="bg-indigo-700 transition-all duration-500"
                 style={{ width: `${borrowedPct}%` }}
                 title={`Borrowed: ${formatNumber(borrowedCopies)} copies`}
               ></div>
@@ -429,7 +429,7 @@ const AnalyticsDashboard = () => {
         <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-xs space-y-5">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div className="flex items-center gap-2.5">
-              <div className="h-8 w-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+              <div className="h-8 w-8 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center">
                 <PieChart className="h-4 w-4" />
               </div>
               <h2 className="text-base font-bold text-slate-900">Inventory Distribution</h2>
@@ -445,7 +445,7 @@ const AnalyticsDashboard = () => {
                 Available on Shelf ({formatNumber(availableCopies)})
               </span>
               <span className="flex items-center gap-1.5 text-indigo-700">
-                <span className="h-2.5 w-2.5 rounded-full bg-indigo-500"></span>
+                <span className="h-2.5 w-2.5 rounded-full bg-indigo-700"></span>
                 Borrowed ({formatNumber(borrowedCopies)})
               </span>
             </div>
@@ -457,7 +457,7 @@ const AnalyticsDashboard = () => {
                 title={`Available: ${formatPercent(availablePct)}`}
               ></div>
               <div
-                className="bg-indigo-600 rounded-r-lg transition-all duration-500"
+                className="bg-indigo-700 rounded-r-lg transition-all duration-500"
                 style={{ width: `${borrowedPct}%` }}
                 title={`Borrowed: ${formatPercent(borrowedPct)}`}
               ></div>
@@ -476,7 +476,7 @@ const AnalyticsDashboard = () => {
             </div>
             <div className="flex items-center justify-between py-2 border-b border-slate-100">
               <span className="text-slate-600 font-medium">Avg. Copies per Title</span>
-              <span className="font-bold text-indigo-600">{avgCopiesPerTitle}</span>
+              <span className="font-bold text-indigo-700">{avgCopiesPerTitle}</span>
             </div>
             <div className="flex items-center justify-between py-2">
               <span className="text-slate-600 font-medium">Shelf Availability Rate</span>
@@ -596,7 +596,7 @@ const AnalyticsDashboard = () => {
             </div>
             <div className="flex items-center justify-between py-2 border-b border-slate-100">
               <span className="text-slate-600 font-medium">Avg. Loans / Active Patron</span>
-              <span className="font-bold text-indigo-600">{avgLoansPerActiveBorrower}</span>
+              <span className="font-bold text-indigo-700">{avgLoansPerActiveBorrower}</span>
             </div>
             <div className="flex items-center justify-between py-2">
               <span className="text-slate-600 font-medium">Patron Engagement Status</span>
@@ -623,17 +623,17 @@ const AnalyticsDashboard = () => {
             className="flex items-center justify-between p-4 bg-white hover:bg-indigo-50/40 rounded-2xl border border-slate-200 hover:border-indigo-200 shadow-xs transition group cursor-pointer text-left"
           >
             <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <div className="h-9 w-9 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center group-hover:scale-105 transition-transform">
                 <BookOpen className="h-4.5 w-4.5" />
               </div>
               <div>
-                <span className="text-xs font-bold text-slate-900 group-hover:text-indigo-600 transition-colors block">
+                <span className="text-xs font-bold text-slate-900 group-hover:text-indigo-700 transition-colors block">
                   Book Catalog
                 </span>
                 <span className="text-[11px] text-slate-500">Manage {formatNumber(totalTitles)} titles</span>
               </div>
             </div>
-            <ArrowUpRight className="h-4 w-4 text-slate-400 group-hover:text-indigo-600 transition-colors" />
+            <ArrowUpRight className="h-4 w-4 text-slate-400 group-hover:text-indigo-700 transition-colors" />
           </button>
 
           <button

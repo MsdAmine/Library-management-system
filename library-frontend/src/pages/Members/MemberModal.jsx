@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   X, 
   User, 
@@ -173,18 +173,18 @@ const MemberModal = ({ isOpen, onClose, onSuccess, editingMember = null }) => {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Accent Gradient Bar */}
-        <div className="h-1.5 w-full bg-gradient-to-r from-indigo-500 via-indigo-600 to-violet-600"></div>
+        <div className="h-1.5 w-full bg-gradient-to-r from-indigo-700 via-indigo-800 to-violet-800"></div>
 
         {/* Modal Header */}
         <div className="flex items-start justify-between p-6 pb-4 border-b border-slate-100 bg-slate-50/70">
           <div className="flex items-center gap-3.5">
-            <div className="h-11 w-11 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shrink-0 shadow-xs">
+            <div className="h-11 w-11 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-700 shrink-0 shadow-xs">
               <User className="h-5 w-5" />
             </div>
             <div>
               <h3 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
                 {editingMember ? 'Edit Member Details' : 'Register New Member'}
-                <Sparkles className="h-4 w-4 text-indigo-600" />
+                <Sparkles className="h-4 w-4 text-indigo-700" />
               </h3>
               <p className="text-xs text-slate-500 font-medium">
                 {editingMember 
@@ -232,7 +232,7 @@ const MemberModal = ({ isOpen, onClose, onSuccess, editingMember = null }) => {
                   className={`w-full px-3.5 py-2.5 bg-slate-50 border rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none transition-all font-medium ${
                     errors.firstName
                       ? 'border-rose-400 focus:ring-1 focus:ring-rose-500/20 bg-rose-50/50'
-                      : 'border-slate-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/15'
+                      : 'border-slate-200 focus:border-indigo-700 focus:ring-1 focus:ring-indigo-700/15'
                   }`}
                 />
               </div>
@@ -258,7 +258,7 @@ const MemberModal = ({ isOpen, onClose, onSuccess, editingMember = null }) => {
                   className={`w-full px-3.5 py-2.5 bg-slate-50 border rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none transition-all font-medium ${
                     errors.lastName
                       ? 'border-rose-400 focus:ring-1 focus:ring-rose-500/20 bg-rose-50/50'
-                      : 'border-slate-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/15'
+                      : 'border-slate-200 focus:border-indigo-700 focus:ring-1 focus:ring-indigo-700/15'
                   }`}
                 />
               </div>
@@ -286,7 +286,7 @@ const MemberModal = ({ isOpen, onClose, onSuccess, editingMember = null }) => {
                 className={`w-full pl-10 pr-3.5 py-2.5 bg-slate-50 border rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none transition-all font-medium ${
                   errors.email
                     ? 'border-rose-400 focus:ring-1 focus:ring-rose-500/20 bg-rose-50/50'
-                    : 'border-slate-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/15'
+                    : 'border-slate-200 focus:border-indigo-700 focus:ring-1 focus:ring-indigo-700/15'
                 }`}
               />
             </div>
@@ -314,7 +314,7 @@ const MemberModal = ({ isOpen, onClose, onSuccess, editingMember = null }) => {
                   className={`w-full px-3.5 py-2.5 bg-slate-50 border rounded-xl text-xs text-slate-900 focus:bg-white focus:outline-none transition-all font-medium ${
                     errors.membershipDate
                       ? 'border-rose-400 focus:ring-1 focus:ring-rose-500/20 bg-rose-50/50'
-                      : 'border-slate-200 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/15'
+                      : 'border-slate-200 focus:border-indigo-700 focus:ring-1 focus:ring-indigo-700/15'
                   }`}
                 />
               </div>
@@ -338,7 +338,7 @@ const MemberModal = ({ isOpen, onClose, onSuccess, editingMember = null }) => {
                   placeholder={editingMember ? 'Leave blank to keep current' : `Default: ${DEFAULT_PASSWORD}`}
                   value={formData.password}
                   onChange={(e) => handleInputChange('password', e.target.value)}
-                  className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/15 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none transition-all font-medium"
+                  className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-700 focus:ring-1 focus:ring-indigo-700/15 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none transition-all font-medium"
                 />
                 <button
                   type="button"
@@ -371,7 +371,7 @@ const MemberModal = ({ isOpen, onClose, onSuccess, editingMember = null }) => {
             <button
               type="submit"
               disabled={submitting}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 shadow-md shadow-indigo-600/25 ring-1 ring-indigo-500/30 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-white bg-indigo-700 hover:bg-indigo-800 active:bg-indigo-900 shadow-md shadow-indigo-700/25 ring-1 ring-indigo-600/30 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {submitting ? (
                 <>

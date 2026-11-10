@@ -290,7 +290,7 @@ const BookList = () => {
         <div 
           className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-2xl border shadow-xl backdrop-blur-xl animate-in slide-in-from-bottom-5 duration-300 ${
             toastMessage.type === 'info'
-              ? 'bg-white/95 border-cyan-200 text-cyan-800 shadow-slate-900/10'
+              ? 'bg-white/95 border-slate-200 text-slate-700 shadow-slate-900/10'
               : 'bg-white/95 border-emerald-200 text-emerald-800 shadow-slate-900/10'
           }`}
         >
@@ -308,7 +308,7 @@ const BookList = () => {
       {/* Header Banner */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white border border-slate-200/90 p-6 sm:p-7 rounded-3xl shadow-xs">
         <div className="space-y-1.5">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-800 border border-indigo-200">
             <BookMarked className="h-3.5 w-3.5" />
             <span>Library Inventory &amp; Catalog</span>
           </div>
@@ -331,7 +331,7 @@ const BookList = () => {
             title="Refresh catalog data"
             className="p-2.5 rounded-xl text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-100 border border-slate-200 transition-all cursor-pointer disabled:opacity-50 shadow-xs"
           >
-            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin text-indigo-600' : ''}`} />
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin text-indigo-700' : ''}`} />
           </button>
 
           {/* Role-Based Guard: Add Book button only visible for ADMIN & LIBRARIAN */}
@@ -339,7 +339,7 @@ const BookList = () => {
             <button
               onClick={openAddModal}
               id="add-book-btn"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 shadow-md shadow-indigo-600/25 ring-1 ring-indigo-500/30 active:scale-[0.98] transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-700 hover:bg-indigo-800 active:bg-indigo-900 shadow-md shadow-indigo-700/25 ring-1 ring-indigo-600/30 active:scale-[0.98] transition-all cursor-pointer"
             >
               <Plus className="h-4 w-4" />
               <span>Add New Book</span>
@@ -352,7 +352,7 @@ const BookList = () => {
       <div className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 space-y-4 shadow-xs">
         <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
           <div className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-wider">
-            <SlidersHorizontal className="h-4 w-4 text-indigo-600" />
+            <SlidersHorizontal className="h-4 w-4 text-indigo-700" />
             <span>Search &amp; Filter Catalog</span>
           </div>
 
@@ -363,7 +363,7 @@ const BookList = () => {
                 onClick={() => setViewMode('table')}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-lg transition-all cursor-pointer ${
                   viewMode === 'table'
-                    ? 'bg-white text-indigo-700 shadow-xs font-bold border border-slate-200/80'
+                    ? 'bg-white text-indigo-800 shadow-xs font-bold border border-slate-200/80'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
                 title="Table view"
@@ -375,7 +375,7 @@ const BookList = () => {
                 onClick={() => setViewMode('grid')}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-lg transition-all cursor-pointer ${
                   viewMode === 'grid'
-                    ? 'bg-white text-indigo-700 shadow-xs font-bold border border-slate-200/80'
+                    ? 'bg-white text-indigo-800 shadow-xs font-bold border border-slate-200/80'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
                 title="Grid view"
@@ -407,7 +407,7 @@ const BookList = () => {
               placeholder="Search by book title..."
               value={filters.title}
               onChange={(e) => handleFilterChange('title', e.target.value)}
-              className="w-full pl-10 pr-8 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15 transition-all font-medium"
+              className="w-full pl-10 pr-8 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-indigo-700 focus:ring-2 focus:ring-indigo-700/15 transition-all font-medium"
             />
             {filters.title && (
               <button
@@ -427,7 +427,7 @@ const BookList = () => {
               placeholder="Filter by author..."
               value={filters.author}
               onChange={(e) => handleFilterChange('author', e.target.value)}
-              className="w-full pl-10 pr-8 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15 transition-all font-medium"
+              className="w-full pl-10 pr-8 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-indigo-700 focus:ring-2 focus:ring-indigo-700/15 transition-all font-medium"
             />
             {filters.author && (
               <button
@@ -444,7 +444,7 @@ const BookList = () => {
             <select
               value={filters.genre}
               onChange={(e) => handleFilterChange('genre', e.target.value)}
-              className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:bg-white focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15 transition-all cursor-pointer font-medium"
+              className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:bg-white focus:outline-none focus:border-indigo-700 focus:ring-2 focus:ring-indigo-700/15 transition-all cursor-pointer font-medium"
             >
               {GENRES.map((g) => (
                 <option key={g} value={g} className="bg-white text-slate-800">
@@ -461,7 +461,7 @@ const BookList = () => {
                 type="checkbox"
                 checked={filters.availableOnly}
                 onChange={(e) => handleFilterChange('availableOnly', e.target.checked)}
-                className="h-4 w-4 rounded bg-white border-slate-300 text-indigo-600 focus:ring-indigo-500/20 cursor-pointer accent-indigo-600"
+                className="h-4 w-4 rounded bg-white border-slate-300 text-indigo-700 focus:ring-indigo-700/20 cursor-pointer accent-indigo-700"
               />
               <span className="font-semibold whitespace-nowrap">In-Stock Only</span>
             </label>
@@ -507,7 +507,7 @@ const BookList = () => {
       ) : books.length === 0 ? (
         /* Empty State */
         <div className="bg-white border border-slate-200/90 rounded-3xl p-12 text-center flex flex-col items-center justify-center space-y-4 shadow-xs">
-          <div className="h-16 w-16 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-xs">
+          <div className="h-16 w-16 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-700 shadow-xs">
             <BookOpen className="h-8 w-8" />
           </div>
           <div className="space-y-1 max-w-md">
@@ -521,14 +521,14 @@ const BookList = () => {
           {hasActiveFilters ? (
             <button
               onClick={resetFilters}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-indigo-700 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-all cursor-pointer"
+              className="px-4 py-2 rounded-xl text-xs font-semibold text-indigo-700 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-all cursor-pointer"
             >
               Clear All Filters
             </button>
           ) : canManageBooks && (
             <button
               onClick={openAddModal}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-600/20 transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-white bg-indigo-700 hover:bg-indigo-800 shadow-md shadow-indigo-700/20 transition-all cursor-pointer"
             >
               <Plus className="h-3.5 w-3.5" />
               <span>Add Your First Book</span>
@@ -565,11 +565,11 @@ const BookList = () => {
                       {/* Book Details */}
                       <td className="py-4 px-4 sm:px-6">
                         <div className="flex items-center gap-3.5">
-                          <div className="h-10 w-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shrink-0 group-hover:border-indigo-300 transition-colors shadow-xs">
+                          <div className="h-10 w-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-700 shrink-0 group-hover:border-indigo-200 transition-colors shadow-xs">
                             <BookOpen className="h-5 w-5" />
                           </div>
                           <div className="flex flex-col">
-                            <span className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors text-sm">
+                            <span className="font-bold text-slate-900 group-hover:text-indigo-700 transition-colors text-sm">
                               {book.title}
                             </span>
                             <div className="flex items-center gap-2 text-[11px] text-slate-500 font-medium">
@@ -602,7 +602,7 @@ const BookList = () => {
                             {copiedIsbn === book.isbn ? (
                               <Check className="h-3 w-3 text-emerald-600" />
                             ) : (
-                              <Copy className="h-3 w-3 text-slate-400 group-hover/isbn:text-indigo-600" />
+                              <Copy className="h-3 w-3 text-slate-400 group-hover/isbn:text-indigo-700" />
                             )}
                           </button>
                         ) : (
@@ -613,7 +613,7 @@ const BookList = () => {
                       {/* Genre */}
                       <td className="py-4 px-4">
                         {book.genre ? (
-                          <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                          <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-800 border border-indigo-200">
                             {book.genre}
                           </span>
                         ) : (
@@ -693,7 +693,7 @@ const BookList = () => {
                                   <button
                                     onClick={() => handlePlaceHold(book)}
                                     disabled={holdingBookId === book.id}
-                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 shadow-sm shadow-purple-500/25 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-purple-700 via-indigo-700 to-indigo-800 hover:from-purple-800 hover:to-indigo-900 shadow-sm shadow-purple-600/25 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
                                     title="Place a hold on this book (Waitlist Queue)"
                                   >
                                     {holdingBookId === book.id ? (
@@ -714,7 +714,7 @@ const BookList = () => {
                           {canManageBooks && (
                             <button
                               onClick={() => openEditModal(book)}
-                              className="p-1.5 rounded-lg text-slate-500 hover:text-indigo-700 hover:bg-indigo-50 border border-transparent hover:border-indigo-200 transition-all cursor-pointer"
+                              className="p-1.5 rounded-lg text-slate-500 hover:text-indigo-800 hover:bg-indigo-50 border border-transparent hover:border-indigo-200 transition-all cursor-pointer"
                               title="Edit book metadata"
                             >
                               <Edit3 className="h-4 w-4" />
@@ -759,11 +759,11 @@ const BookList = () => {
             return (
               <div
                 key={book.id}
-                className="bg-white border border-slate-200/90 hover:border-indigo-300 rounded-2xl p-5 shadow-xs flex flex-col justify-between transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md group"
+                className="bg-white border border-slate-200/90 hover:border-indigo-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md group"
               >
                 <div>
                   <div className="flex items-start justify-between gap-3 mb-3">
-                    <div className="h-12 w-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-xs shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                    <div className="h-12 w-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-700 shadow-xs shrink-0 group-hover:bg-indigo-700 group-hover:text-white transition-all">
                       <BookOpen className="h-6 w-6" />
                     </div>
                     <span
@@ -780,14 +780,14 @@ const BookList = () => {
                     </span>
                   </div>
 
-                  <h3 className="text-base font-bold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-2">
+                  <h3 className="text-base font-bold text-slate-900 group-hover:text-indigo-700 transition-colors line-clamp-2">
                     {book.title}
                   </h3>
                   <p className="text-xs text-slate-500 mt-1 font-semibold">By {book.author}</p>
 
                   <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2 text-xs">
                     {book.genre && (
-                      <span className="px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 text-[10px] font-bold">
+                      <span className="px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-800 border border-indigo-200 text-[10px] font-bold">
                         {book.genre}
                       </span>
                     )}
@@ -853,7 +853,7 @@ const BookList = () => {
                           <button
                             onClick={() => handlePlaceHold(book)}
                             disabled={holdingBookId === book.id}
-                            className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 shadow-md shadow-purple-600/20 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-50"
+                            className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-purple-700 via-indigo-700 to-indigo-800 hover:from-purple-800 hover:to-indigo-900 shadow-md shadow-purple-700/20 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-50"
                           >
                             {holdingBookId === book.id ? (
                               <>
@@ -882,7 +882,7 @@ const BookList = () => {
                     {canManageBooks && (
                       <button
                         onClick={() => openEditModal(book)}
-                        className="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-colors cursor-pointer"
+                        className="p-1.5 rounded-lg text-slate-500 hover:text-indigo-700 hover:bg-indigo-50 transition-colors cursor-pointer"
                         title="Edit Book"
                       >
                         <Edit3 className="h-4 w-4" />
@@ -924,7 +924,7 @@ const BookList = () => {
                   setPageSize(Number(e.target.value));
                   setCurrentPage(0);
                 }}
-                className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-xs text-slate-800 focus:bg-white focus:outline-none focus:border-indigo-500 cursor-pointer font-medium"
+                className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-xs text-slate-800 focus:bg-white focus:outline-none focus:border-indigo-700 cursor-pointer font-medium"
               >
                 <option value={5}>5</option>
                 <option value={10}>10</option>
@@ -956,7 +956,7 @@ const BookList = () => {
 
             {/* Page Pill indicator */}
             <div className="px-3 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700">
-              Page <span className="text-indigo-600 font-bold">{currentPage + 1}</span> of{' '}
+              Page <span className="text-indigo-700 font-bold">{currentPage + 1}</span> of{' '}
               <span className="text-slate-900 font-bold">{Math.max(1, totalPages)}</span>
             </div>
 

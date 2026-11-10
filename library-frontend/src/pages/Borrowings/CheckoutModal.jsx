@@ -233,7 +233,7 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
         {/* Modal Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-slate-200 bg-slate-50/70">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-xs">
+            <div className="h-10 w-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-700 shadow-xs">
               <ArrowLeftRight className="h-5 w-5" />
             </div>
             <div>
@@ -271,7 +271,7 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                 {isSearchingMembers ? (
-                  <Loader2 className="h-4 w-4 animate-spin text-indigo-600" />
+                  <Loader2 className="h-4 w-4 animate-spin text-indigo-700" />
                 ) : (
                   <UserIcon className="h-4 w-4" />
                 )}
@@ -289,7 +289,7 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
                   if (memberOptions.length > 0) setShowMemberDropdown(true);
                 }}
                 placeholder="Search member by first name, last name, or email..."
-                className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-xs"
+                className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-700/20 focus:border-indigo-700 transition-all shadow-xs"
               />
               {selectedMember && (
                 <button
@@ -343,7 +343,7 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
               }`}>
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <UserIcon className="h-4 w-4 text-indigo-600" />
+                    <UserIcon className="h-4 w-4 text-indigo-700" />
                     <span className="text-sm font-semibold text-slate-900">
                       {selectedMember.firstName} {selectedMember.lastName}
                     </span>
@@ -352,7 +352,7 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
                   <div className="flex items-center gap-1.5 text-xs">
                     {isLoadingQuota ? (
                       <span className="flex items-center gap-1 text-slate-500">
-                        <Loader2 className="h-3 w-3 animate-spin text-indigo-600" /> Checking quota...
+                        <Loader2 className="h-3 w-3 animate-spin text-indigo-700" /> Checking quota...
                       </span>
                     ) : (
                       <span className={`px-2.5 py-1 rounded-full font-bold shadow-xs ${
@@ -376,7 +376,7 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
                         ? 'bg-rose-600' 
                         : activeLoanCount >= 4 
                         ? 'bg-amber-500' 
-                        : 'bg-indigo-600'
+                        : 'bg-indigo-700'
                     }`}
                     style={{ width: `${Math.min((activeLoanCount / MAX_QUOTA) * 100, 100)}%` }}
                   />
@@ -400,7 +400,7 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                 {isSearchingBooks ? (
-                  <Loader2 className="h-4 w-4 animate-spin text-indigo-600" />
+                  <Loader2 className="h-4 w-4 animate-spin text-indigo-700" />
                 ) : (
                   <BookOpen className="h-4 w-4" />
                 )}
@@ -416,7 +416,7 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
                   if (bookOptions.length > 0) setShowBookDropdown(true);
                 }}
                 placeholder="Search catalog by book title or author..."
-                className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-xs"
+                className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-700/20 focus:border-indigo-700 transition-all shadow-xs"
               />
               {selectedBook && (
                 <button
@@ -449,7 +449,7 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
                         }`}
                       >
                         <div className="flex items-center gap-3">
-                          <div className="h-8 w-8 rounded-lg bg-indigo-50 text-indigo-600 border border-indigo-100 font-bold flex items-center justify-center">
+                          <div className="h-8 w-8 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-100 font-bold flex items-center justify-center">
                             <BookOpen className="h-4 w-4" />
                           </div>
                           <div>
@@ -481,7 +481,7 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
                   : 'bg-slate-50 border-slate-200'
               }`}>
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center">
+                  <div className="h-10 w-10 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-700 flex items-center justify-center">
                     <BookOpen className="h-5 w-5" />
                   </div>
                   <div>
@@ -505,7 +505,7 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
           {/* 3. Loan Period & Policy Summary */}
           <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-              <Clock className="h-3.5 w-3.5 text-indigo-600" />
+              <Clock className="h-3.5 w-3.5 text-indigo-700" />
               Loan Period & Terms
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
@@ -515,7 +515,7 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
               </div>
               <div className="p-2.5 rounded-lg bg-white border border-slate-200 flex items-center justify-between shadow-xs">
                 <span className="text-slate-500 font-medium">Due Date (14 Days):</span>
-                <span className="font-bold text-indigo-600">{formatDate(dueDate)}</span>
+                <span className="font-bold text-indigo-700">{formatDate(dueDate)}</span>
               </div>
             </div>
             <div className="flex items-center gap-2 text-[11px] text-slate-500 pt-1">
@@ -539,7 +539,7 @@ const CheckoutModal = ({ isOpen, onClose, onSuccess }) => {
             type="button"
             onClick={handleSubmit}
             disabled={submitting || !selectedMember || !selectedBook || isQuotaExceeded || isBookUnavailable}
-            className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-md shadow-indigo-600/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 cursor-pointer"
+            className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-indigo-700 hover:bg-indigo-800 rounded-xl shadow-md shadow-indigo-700/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95 cursor-pointer"
           >
             {submitting ? (
               <>

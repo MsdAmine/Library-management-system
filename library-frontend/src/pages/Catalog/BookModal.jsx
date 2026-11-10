@@ -230,12 +230,12 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Glowing Top Accent Bar */}
-        <div className="h-1.5 w-full bg-gradient-to-r from-indigo-500 via-indigo-600 to-violet-600"></div>
+        <div className="h-1.5 w-full bg-gradient-to-r from-indigo-700 via-indigo-800 to-violet-800"></div>
 
         {/* Modal Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 bg-slate-50/70">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-xs">
+            <div className="h-10 w-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-700 shadow-xs">
               <BookOpen className="h-5 w-5" />
             </div>
             <div>
@@ -274,7 +274,7 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
             {/* Title (Full Width) */}
             <div className="sm:col-span-2 space-y-1.5">
               <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                <Bookmark className="h-3.5 w-3.5 text-indigo-600" />
+                <Bookmark className="h-3.5 w-3.5 text-indigo-700" />
                 Book Title <span className="text-rose-500 font-bold">*</span>
               </label>
               <input
@@ -288,7 +288,7 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
                 className={`w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 transition-all font-medium ${
                   errors.title
                     ? 'border-rose-400 focus:ring-rose-500/20 bg-rose-50/50'
-                    : 'border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/15'
+                    : 'border-slate-200 focus:border-indigo-700 focus:ring-indigo-700/15'
                 }`}
                 required
               />
@@ -302,7 +302,7 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
             {/* Author (Full Width or Half) */}
             <div className="sm:col-span-2 space-y-1.5">
               <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                <User className="h-3.5 w-3.5 text-indigo-600" />
+                <User className="h-3.5 w-3.5 text-indigo-700" />
                 Author <span className="text-rose-500 font-bold">*</span>
               </label>
               <input
@@ -314,7 +314,7 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
                 className={`w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 transition-all font-medium ${
                   errors.author
                     ? 'border-rose-400 focus:ring-rose-500/20 bg-rose-50/50'
-                    : 'border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/15'
+                    : 'border-slate-200 focus:border-indigo-700 focus:ring-indigo-700/15'
                 }`}
                 required
               />
@@ -329,7 +329,7 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
             <div className="space-y-1.5">
               <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
-                  <Hash className="h-3.5 w-3.5 text-indigo-600" />
+                  <Hash className="h-3.5 w-3.5 text-indigo-700" />
                   ISBN (10 or 13)
                 </span>
                 <span className="text-[10px] text-slate-500 normal-case font-medium">Format: 978-0-13-468599-1</span>
@@ -343,7 +343,7 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
                 className={`w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border text-sm font-mono text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 transition-all ${
                   errors.isbn
                     ? 'border-rose-400 focus:ring-rose-500/20 bg-rose-50/50'
-                    : 'border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/15'
+                    : 'border-slate-200 focus:border-indigo-700 focus:ring-indigo-700/15'
                 }`}
               />
               {errors.isbn && (
@@ -356,7 +356,7 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
             {/* Publication Year */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                <Calendar className="h-3.5 w-3.5 text-indigo-600" />
+                <Calendar className="h-3.5 w-3.5 text-indigo-700" />
                 Publication Year <span className="text-rose-500 font-bold">*</span>
               </label>
               <input
@@ -370,7 +370,7 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
                 className={`w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 transition-all font-medium ${
                   errors.publicationYear
                     ? 'border-rose-400 focus:ring-rose-500/20 bg-rose-50/50'
-                    : 'border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/15'
+                    : 'border-slate-200 focus:border-indigo-700 focus:ring-indigo-700/15'
                 }`}
                 required
               />
@@ -384,7 +384,7 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
             {/* Genre Selector */}
             <div className="sm:col-span-2 space-y-1.5">
               <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                <Tag className="h-3.5 w-3.5 text-indigo-600" />
+                <Tag className="h-3.5 w-3.5 text-indigo-700" />
                 Genre / Category
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -392,14 +392,14 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
                   name="genreSelect"
                   value={useCustomGenre ? 'Custom' : formData.genre}
                   onChange={handleChange}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15 font-medium"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-800 focus:bg-white focus:outline-none focus:border-indigo-700 focus:ring-2 focus:ring-indigo-700/15 font-medium"
                 >
                   {PRESET_GENRES.map((g) => (
                     <option key={g} value={g} className="bg-white text-slate-800">
                       {g}
                     </option>
                   ))}
-                  <option value="Custom" className="bg-white text-indigo-600 font-bold">
+                  <option value="Custom" className="bg-white text-indigo-700 font-bold">
                     + Other / Custom Category...
                   </option>
                 </select>
@@ -414,7 +414,7 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
                     className={`w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 transition-all font-medium ${
                       errors.customGenre
                         ? 'border-rose-400 focus:ring-rose-500/20'
-                        : 'border-indigo-300 focus:border-indigo-500 focus:ring-indigo-500/15'
+                        : 'border-indigo-300 focus:border-indigo-700 focus:ring-indigo-700/15'
                     }`}
                   />
                 )}
@@ -430,7 +430,7 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
             <div className="space-y-1.5">
               <label className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
-                  <Layers className="h-3.5 w-3.5 text-indigo-600" />
+                  <Layers className="h-3.5 w-3.5 text-indigo-700" />
                   Total Copies <span className="text-rose-500 font-bold">*</span>
                 </span>
                 <span className="text-[10px] text-slate-500 font-medium">Physical Stock</span>
@@ -444,7 +444,7 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
                 className={`w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 transition-all font-medium ${
                   errors.totalCopies
                     ? 'border-rose-400 focus:ring-rose-500/20 bg-rose-50/50'
-                    : 'border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/15'
+                    : 'border-slate-200 focus:border-indigo-700 focus:ring-indigo-700/15'
                 }`}
                 required
               />
@@ -474,7 +474,7 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
                 className={`w-full px-3.5 py-2.5 rounded-xl bg-slate-50 border text-sm text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 transition-all font-medium ${
                   errors.availableCopies
                     ? 'border-rose-400 focus:ring-rose-500/20 bg-rose-50/50'
-                    : 'border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/15'
+                    : 'border-slate-200 focus:border-indigo-700 focus:ring-indigo-700/15'
                 }`}
                 required
               />
@@ -499,7 +499,7 @@ const BookModal = ({ isOpen, onClose, onSuccess, editingBook = null }) => {
             <button
               type="submit"
               disabled={submitting}
-              className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 shadow-md shadow-indigo-600/25 ring-1 ring-indigo-500/30 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
+              className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-700 hover:bg-indigo-800 active:bg-indigo-900 shadow-md shadow-indigo-700/25 ring-1 ring-indigo-600/30 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-50 disabled:pointer-events-none"
             >
               {submitting ? (
                 <>
