@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { 
   BookOpen, 
@@ -10,8 +10,7 @@ import {
   X, 
   ShieldCheck, 
   User as UserIcon,
-  Layers,
-  ChevronDown
+  Layers
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -20,8 +19,6 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [adminDropdownOpen, setAdminDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
 
   const handleLogout = () => {
     logout();
@@ -29,12 +26,9 @@ const Navbar = () => {
   };
 
   const isUser = role === 'USER';
-  const isAdmin = role === 'ADMIN';
-  const isLibrarian = role === 'LIBRARIAN';
-  const isStaff = isAdmin || isLibrarian;
 
-  // Primary operational nav items
-  const primaryNavItems = isUser
+  // Navigation items based on role
+  const navItems = isUser
     ? [
         { name: 'My Loans & Portal', path: '/', icon: Layers },
         { name: 'Browse Catalog', path: '/catalog', icon: BookOpen },
@@ -44,25 +38,13 @@ const Navbar = () => {
         { name: 'Catalog', path: '/catalog', icon: BookOpen },
         { name: 'Members', path: '/members', icon: Users },
         { name: 'Circulation & Loans', path: '/loans', icon: ArrowLeftRight },
+        { name: 'Analytics', path: '/analytics', icon: BarChart3 },
       ];
-
-  // Secondary administrative items (grouped into dropdown on constrained widths)
-  const secondaryNavItems = isStaff
-    ? [
-        { name: 'Analytics', path: '/analytics', icon: BarChart3, desc: 'Borrowing trends & metrics' },
-        ...(isAdmin ? [{ name: 'Users', path: '/users', icon: ShieldCheck, desc: 'Staff & role privileges' }] : []),
-      ]
-    : [];
-
-  // All nav items combined (for mobile drawer and wide desktop screens)
-  const allNavItems = [...primaryNavItems, ...secondaryNavItems];
 
   // Helper to determine active route
   const isRouteActive = (path) => {
     return path === '/' ? location.pathname === '/' : location.pathname.startsWith(path);
   };
-
-  const isAdminSectionActive = secondaryNavItems.some((item) => isRouteActive(item.path));
 
   // Role badge color variants
   const getRoleBadgeClasses = (userRole) => {
@@ -77,32 +59,9 @@ const Navbar = () => {
     }
   };
 
-  // Close dropdown on click outside or escape key
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setAdminDropdownOpen(false);
-      }
-    };
-    const handleEscape = (event) => {
-      if (event.key === 'Escape') {
-        setAdminDropdownOpen(false);
-      }
-    };
-    if (adminDropdownOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('keydown', handleEscape);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleEscape);
-    };
-  }, [adminDropdownOpen]);
-
-  // Close menus on route change
+  // Close mobile menu on route change
   useEffect(() => {
     setMobileMenuOpen(false);
-    setAdminDropdownOpen(false);
   }, [location.pathname]);
 
   return (
@@ -129,9 +88,9 @@ const Navbar = () => {
             </div>
           </NavLink>
 
-          {/* Desktop Navigation Links — Wide Screens (>= 1280px) */}
-          <nav className="hidden xl:flex items-center gap-1 2xl:gap-1.5">
-            {allNavItems.map((item) => {
+          {/* Desktop Navigation Links — Directly beside logo */}
+          <nav className="hidden lg:flex items-center gap-1 xl:gap-1.5">
+            {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = isRouteActive(item.path);
 
@@ -150,80 +109,6 @@ const Navbar = () => {
                 </NavLink>
               );
             })}
-          </nav>
-
-          {/* Desktop Navigation Links — Constrained Screens (1024px - 1279px) */}
-          <nav className="hidden lg:flex xl:hidden items-center gap-1">
-            {primaryNavItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = isRouteActive(item.path);
-
-              return (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  className={`whitespace-nowrap flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-xl transition-all duration-150 ${
-                    isActive
-                      ? 'text-indigo-600 bg-indigo-50 font-semibold border border-indigo-200/80 shadow-2xs'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 border border-transparent'
-                  }`}
-                >
-                  <Icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-indigo-600' : 'text-slate-400'}`} />
-                  <span>{item.name}</span>
-                </NavLink>
-              );
-            })}
-
-            {/* Secondary Admin links dropdown for constrained widths */}
-            {secondaryNavItems.length > 0 && (
-              <div className="relative" ref={dropdownRef}>
-                <button
-                  type="button"
-                  onClick={() => setAdminDropdownOpen(!adminDropdownOpen)}
-                  className={`whitespace-nowrap flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-xl transition-all duration-150 cursor-pointer ${
-                    isAdminSectionActive || adminDropdownOpen
-                      ? 'text-indigo-600 bg-indigo-50 font-semibold border border-indigo-200/80 shadow-2xs'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 border border-transparent'
-                  }`}
-                  aria-expanded={adminDropdownOpen}
-                  aria-haspopup="true"
-                >
-                  <ShieldCheck className={`h-4 w-4 shrink-0 ${isAdminSectionActive ? 'text-indigo-600' : 'text-slate-400'}`} />
-                  <span>Admin</span>
-                  <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${adminDropdownOpen ? 'rotate-180 text-indigo-600' : 'text-slate-400'}`} />
-                </button>
-
-                {adminDropdownOpen && (
-                  <div className="absolute left-0 mt-2 w-56 rounded-2xl bg-white border border-slate-200/90 shadow-xl p-1.5 space-y-0.5 z-50 animate-in fade-in zoom-in-95 duration-150">
-                    <div className="px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 mb-1">
-                      Administration
-                    </div>
-                    {secondaryNavItems.map((item) => {
-                      const Icon = item.icon;
-                      const isActive = isRouteActive(item.path);
-                      return (
-                        <NavLink
-                          key={item.path}
-                          to={item.path}
-                          onClick={() => setAdminDropdownOpen(false)}
-                          className={`flex items-start gap-2.5 p-2 rounded-xl text-xs transition-colors ${
-                            isActive
-                              ? 'bg-indigo-50 text-indigo-700 font-semibold'
-                              : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
-                          }`}
-                        >
-                          <Icon className={`h-4 w-4 shrink-0 mt-0.5 ${isActive ? 'text-indigo-600' : 'text-slate-400'}`} />
-                          <div className="flex flex-col">
-                            <span className="font-medium text-slate-900">{item.name}</span>
-                            {item.desc && <span className="text-[11px] text-slate-500 font-normal">{item.desc}</span>}
-                          </div>
-                        </NavLink>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            )}
           </nav>
         </div>
 
@@ -296,7 +181,7 @@ const Navbar = () => {
           </div>
 
           {/* Nav links */}
-          {allNavItems.map((item) => {
+          {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = isRouteActive(item.path);
 
