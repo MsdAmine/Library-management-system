@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Users, 
   Search, 
@@ -222,7 +222,7 @@ const MemberList = () => {
         <div 
           className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-2xl border shadow-xl backdrop-blur-xl animate-in slide-in-from-bottom-5 duration-300 ${
             toastMessage.type === 'info'
-              ? 'bg-white/95 border-cyan-200 text-cyan-800 shadow-slate-900/10'
+              ? 'bg-white/95 border-slate-200 text-slate-700 shadow-slate-900/10'
               : 'bg-white/95 border-emerald-200 text-emerald-800 shadow-slate-900/10'
           }`}
         >
@@ -240,7 +240,7 @@ const MemberList = () => {
       {/* Header Banner */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white border border-slate-200/90 p-6 sm:p-7 rounded-3xl shadow-xs">
         <div className="space-y-1.5">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-800 border border-indigo-200">
             <UserCheck className="h-3.5 w-3.5" />
             <span>Membership Directory &amp; Records</span>
           </div>
@@ -262,14 +262,14 @@ const MemberList = () => {
             className="p-2.5 rounded-xl text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-100 border border-slate-200 transition-all cursor-pointer shadow-xs"
             title="Refresh member list"
           >
-            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin text-indigo-600' : ''}`} />
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin text-indigo-700' : ''}`} />
           </button>
 
           {canManageMembers && (
             <button
               onClick={openAddModal}
               id="add-member-btn"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 shadow-md shadow-indigo-600/25 ring-1 ring-indigo-500/30 transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-white bg-indigo-700 hover:bg-indigo-800 active:bg-indigo-900 shadow-md shadow-indigo-700/25 ring-1 ring-indigo-600/30 transition-all cursor-pointer"
             >
               <UserPlus className="h-4 w-4" />
               <span>Add Member</span>
@@ -280,7 +280,7 @@ const MemberList = () => {
 
       {/* Created Member Credentials Alert Banner */}
       {createdCredentials && (
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-500/10 via-indigo-500/10 to-purple-500/10 border-2 border-emerald-500/40 p-5 sm:p-6 shadow-lg shadow-emerald-500/5 animate-in slide-in-from-top-4 duration-300">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-500/10 via-indigo-700/10 to-purple-500/10 border-2 border-emerald-500/40 p-5 sm:p-6 shadow-lg shadow-emerald-500/5 animate-in slide-in-from-top-4 duration-300">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="flex items-start gap-4">
               <div className="h-12 w-12 rounded-2xl bg-emerald-100 border border-emerald-200 flex items-center justify-center text-emerald-700 shrink-0 shadow-xs mt-0.5">
@@ -328,7 +328,7 @@ const MemberList = () => {
                 </span>
                 <button
                   onClick={() => handleCopyEmail(createdCredentials.email)}
-                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-semibold transition-colors cursor-pointer shrink-0"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 text-xs font-semibold transition-colors cursor-pointer shrink-0"
                   title="Copy Email"
                 >
                   {copiedEmail === createdCredentials.email ? (
@@ -391,7 +391,7 @@ const MemberList = () => {
       {/* Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex items-center gap-4">
-          <div className="h-12 w-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shrink-0 shadow-xs">
+          <div className="h-12 w-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-700 shrink-0 shadow-xs">
             <Users className="h-6 w-6" />
           </div>
           <div>
@@ -433,7 +433,7 @@ const MemberList = () => {
               placeholder="Search by first or last name..."
               value={searchTerm}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="w-full pl-10 pr-9 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/15 transition-all font-medium"
+              className="w-full pl-10 pr-9 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-indigo-700 focus:ring-2 focus:ring-indigo-700/15 transition-all font-medium"
             />
             {searchTerm && (
               <button
@@ -453,7 +453,7 @@ const MemberList = () => {
                 onClick={() => setViewMode('table')}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-lg transition-all cursor-pointer ${
                   viewMode === 'table'
-                    ? 'bg-white text-indigo-700 shadow-xs font-bold border border-slate-200/80'
+                    ? 'bg-white text-indigo-800 shadow-xs font-bold border border-slate-200/80'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
                 title="Table view"
@@ -465,7 +465,7 @@ const MemberList = () => {
                 onClick={() => setViewMode('grid')}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-lg transition-all cursor-pointer ${
                   viewMode === 'grid'
-                    ? 'bg-white text-indigo-700 shadow-xs font-bold border border-slate-200/80'
+                    ? 'bg-white text-indigo-800 shadow-xs font-bold border border-slate-200/80'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
                 title="Cards grid view"
@@ -526,7 +526,7 @@ const MemberList = () => {
       ) : members.length === 0 ? (
         /* Empty State */
         <div className="bg-white border border-slate-200/90 rounded-3xl p-12 text-center flex flex-col items-center justify-center space-y-4 shadow-xs">
-          <div className="h-16 w-16 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-xs">
+          <div className="h-16 w-16 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-700 shadow-xs">
             <Users className="h-8 w-8" />
           </div>
           <div className="space-y-1 max-w-md">
@@ -540,14 +540,14 @@ const MemberList = () => {
           {searchTerm ? (
             <button
               onClick={clearSearch}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-indigo-700 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-all cursor-pointer"
+              className="px-4 py-2 rounded-xl text-xs font-semibold text-indigo-700 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-all cursor-pointer"
             >
               Clear Search Query
             </button>
           ) : canManageMembers ? (
             <button
               onClick={openAddModal}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-600/20 transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-white bg-indigo-700 hover:bg-indigo-800 shadow-md shadow-indigo-700/20 transition-all cursor-pointer"
             >
               <UserPlus className="h-4 w-4" />
               <span>Register First Member</span>
@@ -580,11 +580,11 @@ const MemberList = () => {
                       {/* Member Details */}
                       <td className="py-4 px-4 sm:px-6">
                         <div className="flex items-center gap-3.5">
-                          <div className="h-10 w-10 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center font-bold text-indigo-700 shrink-0 group-hover:border-indigo-400 transition-colors shadow-xs text-xs">
+                          <div className="h-10 w-10 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center font-bold text-indigo-800 shrink-0 group-hover:border-indigo-400 transition-colors shadow-xs text-xs">
                             {getInitials(member.firstName, member.lastName)}
                           </div>
                           <div className="flex flex-col">
-                            <span className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors text-sm">
+                            <span className="font-bold text-slate-900 group-hover:text-indigo-700 transition-colors text-sm">
                               {member.firstName} {member.lastName}
                             </span>
                             <span className="text-[11px] text-slate-500 font-mono font-medium">
@@ -602,12 +602,12 @@ const MemberList = () => {
                             className="group/email inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200/80 border border-slate-200 text-[11px] text-slate-700 transition-colors cursor-pointer"
                             title="Click to copy email address"
                           >
-                            <Mail className="h-3 w-3 text-slate-400 group-hover/email:text-indigo-600 shrink-0" />
+                            <Mail className="h-3 w-3 text-slate-400 group-hover/email:text-indigo-700 shrink-0" />
                             <span>{member.email}</span>
                             {copiedEmail === member.email ? (
                               <Check className="h-3 w-3 text-emerald-600 shrink-0" />
                             ) : (
-                              <Copy className="h-3 w-3 text-slate-400 group-hover/email:text-indigo-600 shrink-0" />
+                              <Copy className="h-3 w-3 text-slate-400 group-hover/email:text-indigo-700 shrink-0" />
                             )}
                           </button>
                         </div>
@@ -692,16 +692,16 @@ const MemberList = () => {
             return (
               <div
                 key={member.id}
-                className="bg-white border border-slate-200/90 hover:border-indigo-300 rounded-2xl p-5 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between group"
+                className="bg-white border border-slate-200/90 hover:border-indigo-200 rounded-2xl p-5 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between group"
               >
                 <div>
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <div className="h-11 w-11 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center font-bold text-indigo-700 text-sm shadow-xs">
+                      <div className="h-11 w-11 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center font-bold text-indigo-800 text-sm shadow-xs">
                         {getInitials(member.firstName, member.lastName)}
                       </div>
                       <div>
-                        <h3 className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors text-sm">
+                        <h3 className="font-bold text-slate-900 group-hover:text-indigo-700 transition-colors text-sm">
                           {member.firstName} {member.lastName}
                         </h3>
                         <span className="text-[11px] text-slate-500 font-mono font-medium">ID: #{member.id}</span>
@@ -728,7 +728,7 @@ const MemberList = () => {
                       </span>
                       <button
                         onClick={() => handleCopyEmail(member.email)}
-                        className="font-mono text-[11px] text-slate-700 hover:text-indigo-600 font-semibold transition-colors truncate max-w-[160px] cursor-pointer"
+                        className="font-mono text-[11px] text-slate-700 hover:text-indigo-700 font-semibold transition-colors truncate max-w-[160px] cursor-pointer"
                         title="Click to copy email"
                       >
                         {member.email}
@@ -761,7 +761,7 @@ const MemberList = () => {
                     {canManageMembers && (
                       <button
                         onClick={() => openEditModal(member)}
-                        className="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-colors cursor-pointer"
+                        className="p-1.5 rounded-lg text-slate-500 hover:text-indigo-700 hover:bg-indigo-50 transition-colors cursor-pointer"
                         title="Edit Member"
                       >
                         <Edit3 className="h-4 w-4" />
@@ -803,7 +803,7 @@ const MemberList = () => {
                   setPageSize(Number(e.target.value));
                   setCurrentPage(0);
                 }}
-                className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-xs text-slate-800 focus:bg-white focus:outline-none focus:border-indigo-500 cursor-pointer font-medium"
+                className="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-xs text-slate-800 focus:bg-white focus:outline-none focus:border-indigo-700 cursor-pointer font-medium"
               >
                 <option value={5}>5</option>
                 <option value={10}>10</option>
@@ -835,7 +835,7 @@ const MemberList = () => {
 
             {/* Page indicator */}
             <div className="px-3 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700">
-              Page <span className="text-indigo-600 font-bold">{currentPage + 1}</span> of{' '}
+              Page <span className="text-indigo-700 font-bold">{currentPage + 1}</span> of{' '}
               <span className="text-slate-900 font-bold">{Math.max(1, totalPages)}</span>
             </div>
 

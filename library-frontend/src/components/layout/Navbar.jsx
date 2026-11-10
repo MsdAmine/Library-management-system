@@ -55,7 +55,7 @@ const Navbar = () => {
         return 'bg-emerald-50 text-emerald-700 border-emerald-200 ring-1 ring-emerald-100';
       case 'USER':
       default:
-        return 'bg-blue-50 text-blue-700 border-blue-200 ring-1 ring-blue-100';
+        return 'bg-slate-50 text-slate-700 border-slate-200 ring-1 ring-slate-100';
     }
   };
 
@@ -76,15 +76,15 @@ const Navbar = () => {
             to="/" 
             className="group flex items-center gap-2.5 sm:gap-3 whitespace-nowrap shrink-0 transition-transform duration-200 active:scale-95"
           >
-            <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-500 shadow-md shadow-indigo-500/20 ring-1 ring-indigo-500/20 group-hover:shadow-indigo-500/35 transition-all">
+            <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-slate-800 via-indigo-800 to-indigo-700 shadow-md shadow-indigo-800/20 ring-1 ring-indigo-700/20 group-hover:shadow-indigo-700/35 transition-all">
               <BookOpen className="h-4 w-4 sm:h-5 sm:w-5 text-white transform group-hover:rotate-6 transition-transform" />
             </div>
             <div className="flex flex-col whitespace-nowrap">
               <span className="font-bold text-slate-900 text-base sm:text-lg flex items-center gap-1.5 leading-tight">
                 Library
-                <span className="inline-block h-2 w-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                <span className="inline-block h-2 w-2 rounded-full bg-indigo-400 animate-pulse"></span>
               </span>
-              <span className="text-[9px] sm:text-[10px] text-indigo-600 font-semibold tracking-wider block">MANAGEMENT SYSTEM</span>
+              <span className="text-[9px] sm:text-[10px] text-indigo-700 font-semibold tracking-wider block">MANAGEMENT SYSTEM</span>
             </div>
           </NavLink>
 
@@ -100,11 +100,11 @@ const Navbar = () => {
                   to={item.path}
                   className={`whitespace-nowrap flex items-center gap-1.5 px-3 py-1.5 text-xs xl:text-sm font-medium rounded-xl transition-all duration-150 ${
                     isActive
-                      ? 'text-indigo-600 bg-indigo-50 font-semibold border border-indigo-200/80 shadow-2xs'
+                      ? 'text-indigo-700 bg-indigo-50 font-semibold border border-indigo-200/80 shadow-2xs'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 border border-transparent'
                   }`}
                 >
-                  <Icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-indigo-600' : 'text-slate-400'}`} />
+                  <Icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-indigo-700' : 'text-slate-400'}`} />
                   <span>{item.name}</span>
                 </NavLink>
               );
@@ -192,11 +192,11 @@ const Navbar = () => {
                 onClick={() => setMobileMenuOpen(false)}
                 className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                   isActive
-                    ? 'text-indigo-700 bg-indigo-50 font-semibold border border-indigo-200 shadow-2xs'
+                    ? 'text-indigo-800 bg-indigo-50 font-semibold border border-indigo-200 shadow-2xs'
                     : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                 }`}
               >
-                <Icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-indigo-600' : 'text-slate-400'}`} />
+                <Icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-indigo-700' : 'text-slate-400'}`} />
                 <span>{item.name}</span>
               </NavLink>
             );

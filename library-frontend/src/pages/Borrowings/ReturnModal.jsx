@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { 
   X, 
   RotateCcw, 
@@ -160,14 +160,14 @@ const ReturnModal = ({ isOpen, onClose, record, onSuccess }) => {
 
           {/* Book Summary Card */}
           <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-start gap-3.5">
-            <div className="h-11 w-11 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center flex-shrink-0 shadow-xs">
+            <div className="h-11 w-11 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-700 flex items-center justify-center flex-shrink-0 shadow-xs">
               <BookOpen className="h-6 w-6" />
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="text-base font-bold text-slate-900 truncate">{record.book?.title}</h3>
               <p className="text-xs text-slate-500">Author: {record.book?.author || '—'} · ISBN: {record.book?.isbn || '—'}</p>
               <div className="flex items-center gap-2 mt-2 pt-2 border-t border-slate-200 text-xs text-slate-600">
-                <UserIcon className="h-3.5 w-3.5 text-indigo-600" />
+                <UserIcon className="h-3.5 w-3.5 text-indigo-700" />
                 <span>Borrower: <strong className="text-slate-900 font-semibold">{memberName}</strong></span>
               </div>
             </div>

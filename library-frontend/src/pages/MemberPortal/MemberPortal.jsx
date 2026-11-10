@@ -274,12 +274,12 @@ const MemberPortal = () => {
   return (
     <div className="space-y-8 pb-8 sm:pb-12 animate-in fade-in duration-300">
       {/* Patron Hero Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 p-6 sm:p-8 shadow-xl shadow-indigo-500/15 text-white">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-900 to-indigo-800 p-6 sm:p-8 shadow-xl shadow-indigo-900/15 text-white">
         <div className="absolute top-0 right-0 -mr-16 -mt-16 w-72 h-72 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-white/15 text-indigo-100 backdrop-blur-md border border-white/20">
-              <Sparkles className="h-3.5 w-3.5 text-cyan-300" />
+              <Sparkles className="h-3.5 w-3.5 text-indigo-300" />
               <span>Library Member Portal</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
@@ -304,7 +304,7 @@ const MemberPortal = () => {
               to="/catalog"
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-indigo-950 bg-white hover:bg-indigo-50 shadow-md shadow-indigo-950/20 transition-all cursor-pointer"
             >
-              <BookOpen className="h-4 w-4 text-indigo-600" />
+              <BookOpen className="h-4 w-4 text-indigo-700" />
               <span>Browse Catalog</span>
             </Link>
           </div>
@@ -343,7 +343,7 @@ const MemberPortal = () => {
         <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs flex flex-col justify-between space-y-4">
           <div className="flex items-start justify-between gap-2">
             <div className="flex items-center gap-3">
-              <div className="h-11 w-11 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shrink-0 shadow-xs">
+              <div className="h-11 w-11 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-700 shrink-0 shadow-xs">
                 <BookMarked className="h-5 w-5" />
               </div>
               <div>
@@ -376,7 +376,7 @@ const MemberPortal = () => {
                     ? 'bg-rose-500'
                     : activeCount >= 3
                     ? 'bg-amber-500'
-                    : 'bg-indigo-600'
+                    : 'bg-indigo-700'
                 }`}
                 style={{ width: `${quotaPercentage}%` }}
               ></div>
@@ -533,7 +533,7 @@ const MemberPortal = () => {
               onClick={() => setActiveTab('active')}
               className={`flex items-center gap-2 px-4 py-3 border-b-2 font-semibold text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap ${
                 activeTab === 'active'
-                  ? 'border-indigo-600 text-indigo-600 font-bold bg-white rounded-t-xl shadow-xs'
+                  ? 'border-indigo-700 text-indigo-700 font-bold bg-white rounded-t-xl shadow-xs'
                   : 'border-transparent text-slate-500 hover:text-slate-900'
               }`}
             >
@@ -576,7 +576,7 @@ const MemberPortal = () => {
               onClick={() => setActiveTab('history')}
               className={`flex items-center gap-2 px-4 py-3 border-b-2 font-semibold text-xs sm:text-sm transition-all cursor-pointer whitespace-nowrap ${
                 activeTab === 'history'
-                  ? 'border-indigo-600 text-indigo-600 font-bold bg-white rounded-t-xl shadow-xs'
+                  ? 'border-indigo-700 text-indigo-700 font-bold bg-white rounded-t-xl shadow-xs'
                   : 'border-transparent text-slate-500 hover:text-slate-900'
               }`}
             >
@@ -604,7 +604,7 @@ const MemberPortal = () => {
 
           {loading ? (
             <div className="py-12 flex flex-col items-center justify-center space-y-3 text-slate-400">
-              <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+              <Loader2 className="h-8 w-8 animate-spin text-indigo-700" />
               <p className="text-xs font-semibold">Loading member records...</p>
             </div>
           ) : activeTab === 'active' ? (
@@ -622,7 +622,7 @@ const MemberPortal = () => {
                 </div>
                 <Link
                   to="/catalog"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm transition-all"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-white bg-indigo-700 hover:bg-indigo-800 shadow-sm transition-all"
                 >
                   <Search className="h-3.5 w-3.5" />
                   <span>Search Catalog</span>
@@ -645,7 +645,7 @@ const MemberPortal = () => {
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="space-y-1">
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">
                             Loan #{item.id}
                           </span>
                           <h4 className="text-sm font-bold text-slate-900 leading-snug">

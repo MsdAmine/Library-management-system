@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   BookOpen, 
@@ -86,15 +86,15 @@ const Dashboard = () => {
       helper: 'In catalog',
       icon: BookOpen,
       iconBg: 'bg-indigo-50 border-indigo-100/90',
-      iconColor: 'text-indigo-600',
+      iconColor: 'text-indigo-700',
     },
     {
       label: 'Active Members',
       value: metrics.activeMembers.toLocaleString(),
       helper: 'Registered patrons',
       icon: Users,
-      iconBg: 'bg-cyan-50 border-cyan-100/90',
-      iconColor: 'text-cyan-600',
+      iconBg: 'bg-teal-50 border-teal-100/90',
+      iconColor: 'text-teal-700',
     },
     {
       label: 'Active Loans',
@@ -120,7 +120,7 @@ const Dashboard = () => {
       desc: 'Browse inventory, track shelf copies, and manage ISBN catalog records.',
       link: '/catalog',
       icon: BookOpen,
-      color: 'from-indigo-500 to-indigo-600',
+      color: 'from-indigo-700 to-indigo-800',
       badge: 'Inventory',
       action: 'Manage catalog',
     },
@@ -129,7 +129,7 @@ const Dashboard = () => {
       desc: 'Manage patron accounts, membership cards, and borrower privileges.',
       link: '/members',
       icon: Users,
-      color: 'from-cyan-500 to-teal-600',
+      color: 'from-teal-700 to-teal-800',
       badge: 'Community',
       action: 'View directory',
     },
@@ -138,7 +138,7 @@ const Dashboard = () => {
       desc: 'Process book checkouts, handle returns, and inspect overdue items.',
       link: '/loans',
       icon: ArrowLeftRight,
-      color: 'from-amber-500 to-orange-600',
+      color: 'from-amber-600 to-orange-700',
       badge: 'Circulation',
       action: 'Process loans',
     },
@@ -147,7 +147,7 @@ const Dashboard = () => {
       desc: 'Analyze borrowing velocity, inventory turnover, and circulation trends.',
       link: '/analytics',
       icon: BarChart3,
-      color: 'from-violet-500 to-purple-600',
+      color: 'from-violet-700 to-indigo-900',
       badge: 'Insights',
       action: 'Explore metrics',
     },
@@ -156,7 +156,7 @@ const Dashboard = () => {
   return (
     <div className="space-y-5 sm:space-y-6 animate-in fade-in duration-300">
       {/* 1. Sleek, Compact Welcome Hero Banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-700 p-5 sm:p-6 shadow-md shadow-indigo-500/10 text-white shrink-0">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-900 to-indigo-800 p-5 sm:p-6 shadow-md shadow-indigo-900/15 text-white shrink-0">
         <div className="absolute top-0 right-0 -mr-12 -mt-12 w-64 h-64 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="space-y-1">
@@ -169,13 +169,13 @@ const Dashboard = () => {
                 {role || 'STAFF'}
               </span>
             </div>
-            <p className="text-indigo-100 text-xs sm:text-sm">
+            <p className="text-indigo-200 text-xs sm:text-sm">
               Signed in as <span className="font-semibold text-white">{user?.email || 'Authenticated User'}</span> &bull; Library Management Administration Portal
             </p>
           </div>
 
           <div className="hidden md:flex items-center gap-2 text-xs font-medium text-indigo-100 bg-white/10 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/20 shrink-0">
-            <Sparkles className="h-3.5 w-3.5 text-cyan-300" />
+            <Sparkles className="h-3.5 w-3.5 text-indigo-300" />
             <span>Active Session</span>
           </div>
         </div>
@@ -233,19 +233,19 @@ const Dashboard = () => {
               <Link
                 key={item.title}
                 to={item.link}
-                className="group relative bg-white hover:bg-slate-50/90 border border-slate-200/90 hover:border-indigo-300 rounded-2xl p-4 sm:p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-indigo-500/10 flex flex-col justify-between shadow-xs"
+                className="group relative bg-white hover:bg-slate-50/90 border border-slate-200/90 hover:border-indigo-200 rounded-2xl p-4 sm:p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-900/8 flex flex-col justify-between shadow-xs"
               >
                 <div>
                   <div className="flex items-start justify-between mb-3">
-                    <div className={`h-10 w-10 sm:h-11 sm:w-11 rounded-xl bg-gradient-to-tr ${item.color} flex items-center justify-center text-white shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform`}>
+                    <div className={`h-10 w-10 sm:h-11 sm:w-11 rounded-xl bg-gradient-to-tr ${item.color} flex items-center justify-center text-white shadow-md shadow-slate-900/15 group-hover:scale-105 transition-transform`}>
                       <Icon className="h-5 w-5" />
                     </div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-indigo-600 bg-slate-100 group-hover:bg-indigo-50 px-2 py-0.5 rounded-full border border-slate-200 group-hover:border-indigo-200 transition-colors">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-indigo-700 bg-slate-100 group-hover:bg-indigo-50 px-2 py-0.5 rounded-full border border-slate-200 group-hover:border-indigo-200 transition-colors">
                       {item.badge}
                     </span>
                   </div>
 
-                  <h3 className="text-sm sm:text-base font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
+                  <h3 className="text-sm sm:text-base font-bold text-slate-900 group-hover:text-indigo-700 transition-colors">
                     {item.title}
                   </h3>
                   <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
@@ -253,9 +253,9 @@ const Dashboard = () => {
                   </p>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-slate-600 group-hover:text-indigo-600 transition-colors">
+                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-slate-600 group-hover:text-indigo-700 transition-colors">
                   <span>{item.action}</span>
-                  <ArrowUpRight className="h-3.5 w-3.5 text-slate-400 group-hover:text-indigo-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  <ArrowUpRight className="h-3.5 w-3.5 text-slate-400 group-hover:text-indigo-700 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </div>
               </Link>
             );

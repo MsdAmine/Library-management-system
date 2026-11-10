@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { 
   ArrowLeftRight, 
   Search, 
@@ -221,8 +221,8 @@ const BorrowingList = () => {
       case 'BORROWED':
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200 shadow-xs">
-            <Clock className="h-3.5 w-3.5 text-indigo-600" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-800 border border-indigo-200 shadow-xs">
+            <Clock className="h-3.5 w-3.5 text-indigo-700" />
             Active Loan
           </span>
         );
@@ -259,7 +259,7 @@ const BorrowingList = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/90 shadow-xs">
         <div className="space-y-1">
           <div className="flex items-center gap-2.5">
-            <div className="h-10 w-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-xs">
+            <div className="h-10 w-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-700 shadow-xs">
               <ArrowLeftRight className="h-5 w-5" />
             </div>
             <h1 className="text-2xl font-bold tracking-tight text-slate-900">Circulation & Loan Operations</h1>
@@ -275,7 +275,7 @@ const BorrowingList = () => {
             <button
               id="new-loan-btn"
               onClick={() => setIsCheckoutModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-600/20 transition-all duration-200 active:scale-95 cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-indigo-700 hover:bg-indigo-800 shadow-md shadow-indigo-700/20 transition-all duration-200 active:scale-95 cursor-pointer"
             >
               <Plus className="h-4 w-4" />
               <span>New Loan Checkout</span>
@@ -298,7 +298,7 @@ const BorrowingList = () => {
             className="p-2.5 rounded-xl text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-50 border border-slate-200 shadow-xs transition-colors cursor-pointer"
             title="Refresh list"
           >
-            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin text-indigo-600' : ''}`} />
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin text-indigo-700' : ''}`} />
           </button>
         </div>
       </div>
@@ -320,11 +320,11 @@ const BorrowingList = () => {
                   }}
                   className={`relative flex items-center gap-2 px-4 py-3 text-sm transition-all cursor-pointer ${
                     isActive
-                      ? 'text-indigo-600 border-b-2 border-indigo-600 font-bold'
+                      ? 'text-indigo-700 border-b-2 border-indigo-700 font-bold'
                       : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50 font-medium rounded-t-lg'
                   }`}
                 >
-                  <Icon className={`h-4 w-4 ${isActive ? 'text-indigo-600' : 'text-slate-400'}`} />
+                  <Icon className={`h-4 w-4 ${isActive ? 'text-indigo-700' : 'text-slate-400'}`} />
                   <span>{tab.label}</span>
                 </button>
               );
@@ -348,7 +348,7 @@ const BorrowingList = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search by member name, book title, author, or Record ID..."
-              className="w-full pl-10 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 shadow-xs transition-all"
+              className="w-full pl-10 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-700/20 focus:border-indigo-700 shadow-xs transition-all"
             />
             {searchTerm && (
               <button
@@ -368,7 +368,7 @@ const BorrowingList = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full pl-10 pr-8 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 shadow-xs transition-all appearance-none cursor-pointer"
+              className="w-full pl-10 pr-8 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-700/20 focus:border-indigo-700 shadow-xs transition-all appearance-none cursor-pointer"
             >
               <option value="ALL">All Loan Statuses</option>
               <option value="BORROWED">Active Loans Only</option>
@@ -444,7 +444,7 @@ const BorrowingList = () => {
                       {canManageCirculation && (
                         <button
                           onClick={() => setIsCheckoutModalOpen(true)}
-                          className="mt-2 inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-colors cursor-pointer"
+                          className="mt-2 inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-indigo-800 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-colors cursor-pointer"
                         >
                           <Plus className="h-3.5 w-3.5" /> Checkout First Book
                         </button>
@@ -564,7 +564,7 @@ const BorrowingList = () => {
                   setPageSize(Number(e.target.value));
                   setCurrentPage(0);
                 }}
-                className="bg-white border border-slate-200 text-slate-800 rounded-lg px-2.5 py-1 focus:outline-none focus:ring-1 focus:ring-indigo-500 shadow-xs"
+                className="bg-white border border-slate-200 text-slate-800 rounded-lg px-2.5 py-1 focus:outline-none focus:ring-1 focus:ring-indigo-700 shadow-xs"
               >
                 <option value={10}>10</option>
                 <option value={25}>25</option>
