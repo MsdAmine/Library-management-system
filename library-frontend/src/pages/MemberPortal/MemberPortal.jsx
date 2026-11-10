@@ -272,7 +272,7 @@ const MemberPortal = () => {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300">
+    <div className="space-y-8 pb-8 sm:pb-12 animate-in fade-in duration-300">
       {/* Patron Hero Banner */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 p-6 sm:p-8 shadow-xl shadow-indigo-500/15 text-white">
         <div className="absolute top-0 right-0 -mr-16 -mt-16 w-72 h-72 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>

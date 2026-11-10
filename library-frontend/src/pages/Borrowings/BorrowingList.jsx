@@ -230,7 +230,7 @@ const BorrowingList = () => {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
+    <div className="space-y-6 pb-8 sm:pb-12 animate-in fade-in duration-300">
       {/* Toast Alert */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-bottom-5 duration-200">
