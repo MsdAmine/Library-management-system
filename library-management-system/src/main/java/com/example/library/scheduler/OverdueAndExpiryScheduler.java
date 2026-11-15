@@ -28,6 +28,7 @@ public class OverdueAndExpiryScheduler {
     private final ReservationRepository reservationRepository;
     private final ReservationService reservationService;
     private final BookRepository bookRepository;
+    private final com.example.library.service.InventoryLocks inventoryLocks;
 
     /**
      * Task 1: Overdue Loan Sweep
@@ -37,7 +38,7 @@ public class OverdueAndExpiryScheduler {
      * @return Number of borrowing records updated to OVERDUE status
      */
     @Scheduled(cron = "${app.scheduler.overdue-sweep.cron:0 0 1 * * ?}")
-    @Transactional
+    @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
     public int sweepOverdueBorrowings() {
         LocalDate today = LocalDate.now();
         log.info("Starting scheduled overdue borrowing sweep for date: {}", today);
@@ -47,7 +48,11 @@ public class OverdueAndExpiryScheduler {
         );
 
         int updatedCount = 0;
+        overdueLoans = overdueLoans.stream().sorted(java.util.Comparator.comparing(r -> r.getBook().getId())).toList();
         for (BorrowingRecord record : overdueLoans) {
+            inventoryLocks.book(record.getBook().getId());
+            inventoryLocks.refresh(record);
+            if (record.getStatus() != BorrowingStatus.BORROWED) continue;
             record.setStatus(BorrowingStatus.OVERDUE);
             borrowingRecordRepository.save(record);
             updatedCount++;
@@ -71,7 +76,7 @@ public class OverdueAndExpiryScheduler {
      * @return Number of expired reservations processed
      */
     @Scheduled(cron = "${app.scheduler.expiry-sweep.cron:0 */15 * * * ?}")
-    @Transactional
+    @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
     public int sweepExpiredHoldPickups() {
         LocalDateTime now = LocalDateTime.now();
         log.info("Starting scheduled expired hold reservation sweep at: {}", now);
@@ -81,7 +86,12 @@ public class OverdueAndExpiryScheduler {
         );
 
         int expiredCount = 0;
+        expiredHolds = expiredHolds.stream().sorted(java.util.Comparator.comparing(r -> r.getBook().getId())).toList();
         for (Reservation reservation : expiredHolds) {
+            inventoryLocks.book(reservation.getBook().getId());
+            inventoryLocks.refresh(reservation);
+            if (reservation.getStatus() != ReservationStatus.HELD_FOR_PICKUP
+                    || !reservation.getPickupDeadline().isBefore(now)) continue;
             reservation.setStatus(ReservationStatus.EXPIRED);
             reservationRepository.save(reservation);
             expiredCount++;

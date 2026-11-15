@@ -27,12 +27,18 @@ public class FineService {
     private final UserRepository userRepository;
 
     @Transactional
-    public FineResponseDTO payFine(Long fineId, String paymentReference) {
-        Fine fine = fineRepository.findById(fineId)
+    public FineResponseDTO payFine(Long fineId, String paymentReference, User actor) {
+        Fine fine = fineRepository.findLockedById(fineId)
                 .orElseThrow(() -> new ResourceNotFoundException("Fine not found with id " + fineId));
 
         if (fine.getStatus() != FineStatus.PENDING) {
             throw new IllegalStateException("Fine is already settled with status: " + fine.getStatus());
+        }
+
+        if (actor == null || (actor.getRole() != com.example.library.model.Role.ADMIN
+                && actor.getRole() != com.example.library.model.Role.LIBRARIAN
+                && !fine.getMember().getId().equals(actor.getId()))) {
+            throw new org.springframework.security.access.AccessDeniedException("You may only pay your own fines.");
         }
 
         String ref = (paymentReference != null && !paymentReference.trim().isEmpty())
@@ -49,7 +55,7 @@ public class FineService {
 
     @Transactional
     public FineResponseDTO waiveFine(Long fineId, String notes) {
-        Fine fine = fineRepository.findById(fineId)
+        Fine fine = fineRepository.findLockedById(fineId)
                 .orElseThrow(() -> new ResourceNotFoundException("Fine not found with id " + fineId));
 
         if (fine.getStatus() != FineStatus.PENDING) {

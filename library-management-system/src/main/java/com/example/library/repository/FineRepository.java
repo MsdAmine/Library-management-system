@@ -14,6 +14,10 @@ import java.util.Optional;
 @Repository
 public interface FineRepository extends JpaRepository<Fine, Long> {
 
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT f FROM Fine f WHERE f.id = :id")
+    Optional<Fine> findLockedById(@Param("id") Long id);
+
     List<Fine> findByMemberIdOrderByCreatedAtDesc(Long memberId);
 
     List<Fine> findByMemberIdAndStatusOrderByCreatedAtDesc(Long memberId, FineStatus status);

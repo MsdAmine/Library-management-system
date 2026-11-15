@@ -1,3 +1,4 @@
+import { isAxiosError } from 'axios';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -24,8 +25,8 @@ const LoginPage = () => {
       } else {
         navigate('/');
       }
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Invalid email or password');
+    } catch (err: unknown) {
+      setError((isAxiosError<{ message?: string }>(err) ? err.response?.data?.message : undefined) || 'Invalid email or password');
     } finally {
       setLoading(false);
     }

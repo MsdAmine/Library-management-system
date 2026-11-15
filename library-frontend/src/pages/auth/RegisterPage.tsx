@@ -1,6 +1,6 @@
+import { isAxiosError } from 'axios';
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
 import api from '../../api/axios';
 import { Library, Mail, Lock, Loader2, User } from 'lucide-react';
 import './Auth.css';
@@ -11,7 +11,6 @@ const RegisterPage = () => {
   const [role, setRole] = useState('USER');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -19,12 +18,10 @@ const RegisterPage = () => {
     setLoading(true);
     setError('');
     try {
-      const response = await api.post('/auth/register', { email, password, role });
-      const { token: newToken, role: newRole } = response.data;
-      await login(newToken, newRole);
-      navigate('/');
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+      await api.post('/auth/register', { email, password, role });
+      navigate('/members');
+    } catch (err: unknown) {
+      setError((isAxiosError<{ message?: string }>(err) ? err.response?.data?.message : undefined) || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }

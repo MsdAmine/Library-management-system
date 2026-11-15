@@ -42,6 +42,7 @@ public class FineController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<FineResponseDTO> payFine(
             @PathVariable Long id,
+            @AuthenticationPrincipal User currentUser,
             @RequestBody(required = false) PayFineRequestDTO request,
             @RequestParam(required = false) String paymentReference
     ) {
@@ -52,7 +53,7 @@ public class FineController {
             reference = paymentReference;
         }
 
-        FineResponseDTO response = fineService.payFine(id, reference);
+        FineResponseDTO response = fineService.payFine(id, reference, currentUser);
         return ResponseEntity.ok(response);
     }
 

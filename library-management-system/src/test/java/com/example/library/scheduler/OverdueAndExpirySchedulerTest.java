@@ -40,6 +40,9 @@ class OverdueAndExpirySchedulerTest {
     @Mock
     private BookRepository bookRepository;
 
+    @Mock
+    private com.example.library.service.InventoryLocks inventoryLocks;
+
     @InjectMocks
     private OverdueAndExpiryScheduler scheduler;
 

@@ -27,10 +27,10 @@ public interface BorrowingRecordRepository extends JpaRepository<BorrowingRecord
     long countByUserIdAndStatusIn(Long userId, List<BorrowingRecord.BorrowingStatus> statuses);
     long countByStatus(BorrowingRecord.BorrowingStatus status);
 
-    @Query("SELECT COUNT(r) FROM BorrowingRecord r WHERE r.status = 'BORROWED' AND r.dueDate < :today")
+    @Query("SELECT COUNT(r) FROM BorrowingRecord r WHERE r.status IN ('BORROWED', 'OVERDUE') AND r.dueDate < :today")
     long countOverdue(LocalDate today);
 
-    @Query("SELECT COUNT(DISTINCT r.user) FROM BorrowingRecord r WHERE r.status = 'BORROWED'")
+    @Query("SELECT COUNT(DISTINCT r.user) FROM BorrowingRecord r WHERE r.status IN ('BORROWED', 'OVERDUE')")
     long countActiveMembers();
 
     @Query("SELECT COALESCE(SUM(r.fineAmount), 0) FROM BorrowingRecord r WHERE r.status = 'RETURNED' AND r.fineAmount > 0")

@@ -38,7 +38,7 @@ public class MemberController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<MemberResponseDTO> addMember(@Valid @RequestBody MemberRequestDTO requestDTO) {
         User savedUser = memberService.addMember(requestDTO);
         return new ResponseEntity<>(convertToDTO(savedUser), HttpStatus.CREATED);

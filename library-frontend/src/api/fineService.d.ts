@@ -25,7 +25,7 @@ export interface FineService {
   getAllFines(): Promise<FineResponseDTO[]>;
   payFine(fineId: number | string, paymentReference?: string): Promise<FineResponseDTO>;
   waiveFine(fineId: number | string, notes?: string): Promise<FineResponseDTO>;
-  getErrorMessage(error: any): string;
+  getErrorMessage(error: unknown): string;
 }
 
 export const fineService: FineService;

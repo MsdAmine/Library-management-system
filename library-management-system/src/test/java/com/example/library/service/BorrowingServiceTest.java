@@ -40,6 +40,9 @@ class BorrowingServiceTest {
     @Mock
     private ReservationRepository reservationRepository;
 
+    @Mock
+    private com.example.library.service.InventoryLocks inventoryLocks;
+
     @InjectMocks
     private BorrowingService borrowingService;
 
@@ -106,9 +109,9 @@ class BorrowingServiceTest {
         when(userRepository.findActiveById(1L)).thenReturn(Optional.of(sampleUser));
         when(fineRepository.sumAmountByMemberIdAndStatus(1L, FineStatus.PENDING))
                 .thenReturn(BigDecimal.ZERO);
-        when(borrowingRecordRepository.countByUserIdAndStatus(1L, BorrowingRecord.BorrowingStatus.BORROWED))
+        when(borrowingRecordRepository.countByUserIdAndStatusIn(eq(1L), anyList()))
                 .thenReturn(0L);
-        when(bookRepository.findById(5L)).thenReturn(Optional.of(sampleBook));
+        when(bookRepository.findActiveById(5L)).thenReturn(Optional.of(sampleBook));
         when(reservationRepository.findFirstByMemberIdAndBookIdAndStatus(1L, 5L, ReservationStatus.HELD_FOR_PICKUP))
                 .thenReturn(Optional.of(pickupHold));
         when(borrowingRecordRepository.save(any(BorrowingRecord.class))).thenAnswer(i -> i.getArgument(0));
@@ -130,9 +133,9 @@ class BorrowingServiceTest {
         when(userRepository.findActiveById(1L)).thenReturn(Optional.of(sampleUser));
         when(fineRepository.sumAmountByMemberIdAndStatus(1L, FineStatus.PENDING))
                 .thenReturn(new BigDecimal("5.00"));
-        when(borrowingRecordRepository.countByUserIdAndStatus(1L, BorrowingRecord.BorrowingStatus.BORROWED))
+        when(borrowingRecordRepository.countByUserIdAndStatusIn(eq(1L), anyList()))
                 .thenReturn(1L);
-        when(bookRepository.findById(5L)).thenReturn(Optional.of(sampleBook));
+        when(bookRepository.findActiveById(5L)).thenReturn(Optional.of(sampleBook));
         when(reservationRepository.findFirstByMemberIdAndBookIdAndStatus(1L, 5L, ReservationStatus.HELD_FOR_PICKUP))
                 .thenReturn(Optional.empty());
         when(bookRepository.decrementAvailableCopies(5L)).thenReturn(1);
@@ -153,8 +156,8 @@ class BorrowingServiceTest {
     void borrowBook_ThrowsException_WhenZeroCopiesAndNoPickupHold() {
         when(userRepository.findActiveById(1L)).thenReturn(Optional.of(sampleUser));
         when(fineRepository.sumAmountByMemberIdAndStatus(1L, FineStatus.PENDING)).thenReturn(BigDecimal.ZERO);
-        when(borrowingRecordRepository.countByUserIdAndStatus(1L, BorrowingRecord.BorrowingStatus.BORROWED)).thenReturn(0L);
-        when(bookRepository.findById(5L)).thenReturn(Optional.of(sampleBook));
+        when(borrowingRecordRepository.countByUserIdAndStatusIn(eq(1L), anyList())).thenReturn(0L);
+        when(bookRepository.findActiveById(5L)).thenReturn(Optional.of(sampleBook));
         when(reservationRepository.findFirstByMemberIdAndBookIdAndStatus(1L, 5L, ReservationStatus.HELD_FOR_PICKUP))
                 .thenReturn(Optional.empty());
         when(bookRepository.decrementAvailableCopies(5L)).thenReturn(0);
@@ -207,5 +210,25 @@ class BorrowingServiceTest {
 
         assertThat(returned.getStatus()).isEqualTo(BorrowingRecord.BorrowingStatus.RETURNED);
         verify(bookRepository).incrementAvailableCopies(5L);
+    }
+
+    @Test
+    void expiredPickupCannotCreateLoan() {
+        when(userRepository.findActiveById(1L)).thenReturn(Optional.of(sampleUser));
+        when(bookRepository.findActiveById(5L)).thenReturn(Optional.of(sampleBook));
+        when(reservationRepository.findFirstByMemberIdAndBookIdAndStatus(1L, 5L, ReservationStatus.HELD_FOR_PICKUP))
+                .thenReturn(Optional.of(Reservation.builder().pickupDeadline(LocalDateTime.now().minusSeconds(1)).build()));
+        assertThatThrownBy(() -> borrowingService.borrowBook(1L, 5L)).isInstanceOf(BookNotAvailableException.class);
+        verify(borrowingRecordRepository, never()).save(any());
+    }
+
+    @Test
+    void fiveOutstandingLoansBlockCheckout() {
+        when(userRepository.findActiveById(1L)).thenReturn(Optional.of(sampleUser));
+        when(borrowingRecordRepository.countByUserIdAndStatusIn(eq(1L), anyList())).thenReturn(5L);
+        assertThatThrownBy(() -> borrowingService.borrowBook(1L, 5L))
+                .isInstanceOf(com.example.library.exception.BorrowingLimitExceededException.class);
+        verify(borrowingRecordRepository).countByUserIdAndStatusIn(1L,
+                java.util.List.of(BorrowingRecord.BorrowingStatus.BORROWED, BorrowingRecord.BorrowingStatus.OVERDUE));
     }
 }

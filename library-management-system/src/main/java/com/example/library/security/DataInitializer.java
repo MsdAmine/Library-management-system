@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
+@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(name = "app.bootstrap.enabled", havingValue = "true")
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -19,23 +20,20 @@ public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @org.springframework.beans.factory.annotation.Value("${app.bootstrap.email}")
+    private String adminEmail;
+
+    @org.springframework.beans.factory.annotation.Value("${app.bootstrap.password}")
+    private String adminPassword;
+
     @Override
     public void run(String... args) {
         seedAdminUser();
     }
 
     private void seedAdminUser() {
-        String adminEmail = "admin@library.com";
-        String adminPassword = "admin123";
-
         userRepository.findByEmail(adminEmail).ifPresentOrElse(
-                admin -> {
-                    admin.setPassword(passwordEncoder.encode(adminPassword));
-                    admin.setRole(Role.ADMIN);
-                    admin.setActive(true);
-                    userRepository.save(admin);
-                    log.info("Admin account updated: {} / {}", adminEmail, adminPassword);
-                },
+                admin -> log.info("Admin account already exists: {}", adminEmail),
                 () -> {
                     User admin = User.builder()
                             .firstName("System")
@@ -47,7 +45,7 @@ public class DataInitializer implements CommandLineRunner {
                             .active(true)
                             .build();
                     userRepository.save(admin);
-                    log.info("Admin account created: {} / {}", adminEmail, adminPassword);
+                    log.info("Admin account created: {}", adminEmail);
                 }
         );
     }

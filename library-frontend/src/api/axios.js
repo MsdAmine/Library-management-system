@@ -58,7 +58,7 @@ function showToast(message, type = 'error') {
     transition:   'opacity 0.2s ease',
   });
 
-  toast.innerHTML = `<span>${c.icon}</span><span>${message}</span>`;
+  toast.textContent = `${c.icon} ${message}`;
   document.body.appendChild(toast);
 
   // Fade in
@@ -113,6 +113,7 @@ api.interceptors.response.use(
       localStorage.removeItem('role');
       localStorage.removeItem('user');
       localStorage.removeItem('userId');
+      window.dispatchEvent(new Event('auth:expired'));
 
       // Only redirect if we are not already on the login page
       if (window.location.pathname !== '/login') {
@@ -132,14 +133,7 @@ api.interceptors.response.use(
     if (status === 403) {
       showToast('Access Denied — you do not have permission to perform this action.', 'error');
 
-      // Navigate to the dedicated unauthorised page if not already there
-      if (
-        window.location.pathname !== '/unauthorized' &&
-        window.location.pathname !== '/login'
-      ) {
-        window.history.replaceState({}, '', '/unauthorized');
-        window.dispatchEvent(new PopStateEvent('popstate', {}));
-      }
+
     }
 
     return Promise.reject(error);

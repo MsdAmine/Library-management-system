@@ -66,7 +66,7 @@ export declare const borrowingService: {
   returnBook(recordId: number | string): Promise<ReturnRecordResponseDTO>;
   archiveRecords(retentionDays?: number): Promise<ArchiveResultDTO>;
   getArchivedRecords(): Promise<BorrowingRecord[]>;
-  getErrorMessage(error: any): string;
+  getErrorMessage(error: unknown): string;
 };
 
 export default borrowingService;

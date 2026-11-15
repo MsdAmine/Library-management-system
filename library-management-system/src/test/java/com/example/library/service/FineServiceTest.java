@@ -88,10 +88,10 @@ class FineServiceTest {
     @Test
     @DisplayName("payFine: Successfully settles pending fine with provided payment reference")
     void payFine_Success_WithProvidedReference() {
-        when(fineRepository.findById(100L)).thenReturn(Optional.of(samplePendingFine));
+        when(fineRepository.findLockedById(100L)).thenReturn(Optional.of(samplePendingFine));
         when(fineRepository.save(any(Fine.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        FineResponseDTO result = fineService.payFine(100L, "STRIPE_CH_987654");
+        FineResponseDTO result = fineService.payFine(100L, "STRIPE_CH_987654", User.builder().id(1L).role(com.example.library.model.Role.ADMIN).build());
 
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(100L);
@@ -108,10 +108,10 @@ class FineServiceTest {
     @Test
     @DisplayName("payFine: Auto-generates payment reference when none is provided")
     void payFine_Success_GeneratesDefaultReference() {
-        when(fineRepository.findById(100L)).thenReturn(Optional.of(samplePendingFine));
+        when(fineRepository.findLockedById(100L)).thenReturn(Optional.of(samplePendingFine));
         when(fineRepository.save(any(Fine.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        FineResponseDTO result = fineService.payFine(100L, null);
+        FineResponseDTO result = fineService.payFine(100L, null, User.builder().id(1L).role(com.example.library.model.Role.ADMIN).build());
 
         assertThat(result.getStatus()).isEqualTo(FineStatus.PAID);
         assertThat(result.getPaymentReference()).startsWith("PAY-");
@@ -121,9 +121,9 @@ class FineServiceTest {
     @Test
     @DisplayName("payFine: Throws ResourceNotFoundException when fine does not exist")
     void payFine_ThrowsException_WhenNotFound() {
-        when(fineRepository.findById(999L)).thenReturn(Optional.empty());
+        when(fineRepository.findLockedById(999L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> fineService.payFine(999L, "REF-123"))
+        assertThatThrownBy(() -> fineService.payFine(999L, "REF-123", User.builder().id(1L).role(com.example.library.model.Role.ADMIN).build()))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Fine not found with id 999");
     }
@@ -132,9 +132,9 @@ class FineServiceTest {
     @DisplayName("payFine: Throws IllegalStateException when fine is already PAID or WAIVED")
     void payFine_ThrowsException_WhenAlreadySettled() {
         samplePendingFine.setStatus(FineStatus.PAID);
-        when(fineRepository.findById(100L)).thenReturn(Optional.of(samplePendingFine));
+        when(fineRepository.findLockedById(100L)).thenReturn(Optional.of(samplePendingFine));
 
-        assertThatThrownBy(() -> fineService.payFine(100L, "REF-123"))
+        assertThatThrownBy(() -> fineService.payFine(100L, "REF-123", User.builder().id(1L).role(com.example.library.model.Role.ADMIN).build()))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("Fine is already settled with status: PAID");
     }
@@ -142,7 +142,7 @@ class FineServiceTest {
     @Test
     @DisplayName("waiveFine: Successfully waives fine with custom notes")
     void waiveFine_Success() {
-        when(fineRepository.findById(100L)).thenReturn(Optional.of(samplePendingFine));
+        when(fineRepository.findLockedById(100L)).thenReturn(Optional.of(samplePendingFine));
         when(fineRepository.save(any(Fine.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         FineResponseDTO result = fineService.waiveFine(100L, "First-time overdue courtesy waiver approved by Librarian.");
@@ -158,7 +158,7 @@ class FineServiceTest {
     @DisplayName("waiveFine: Throws IllegalStateException when fine is already WAIVED")
     void waiveFine_ThrowsException_WhenAlreadyWaived() {
         samplePendingFine.setStatus(FineStatus.WAIVED);
-        when(fineRepository.findById(100L)).thenReturn(Optional.of(samplePendingFine));
+        when(fineRepository.findLockedById(100L)).thenReturn(Optional.of(samplePendingFine));
 
         assertThatThrownBy(() -> fineService.waiveFine(100L, "Notes"))
                 .isInstanceOf(IllegalStateException.class)

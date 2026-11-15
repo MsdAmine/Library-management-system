@@ -23,7 +23,8 @@ public class AnalyticsService {
                 long availableCopies = bookRepository.sumAvailableCopies();
 
                 long activeBorrowings = borrowingRecordRepository
-                                .countByStatus(BorrowingRecord.BorrowingStatus.BORROWED);
+                                .countByStatus(BorrowingRecord.BorrowingStatus.BORROWED)
+                                + borrowingRecordRepository.countByStatus(BorrowingRecord.BorrowingStatus.OVERDUE);
 
                 return LibraryAnalyticsDTO.builder()
                                 .books(LibraryAnalyticsDTO.BookStats.builder()

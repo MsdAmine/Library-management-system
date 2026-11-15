@@ -29,14 +29,17 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
+    private final InventoryLocks inventoryLocks;
+    private final BorrowingService borrowingService;
 
     public static final int HOLD_PICKUP_EXPIRATION_HOURS = 48;
 
-    @Transactional
+    @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
     public ReservationResponseDTO placeHold(Long memberId, Long bookId) {
         User member = userRepository.findActiveById(memberId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + memberId));
 
+        inventoryLocks.book(bookId);
         Book book = bookRepository.findActiveById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id " + bookId));
 
@@ -70,8 +73,9 @@ public class ReservationService {
         return toDTO(savedReservation, queuePosition);
     }
 
-    @Transactional
+    @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
     public Optional<Reservation> transitionNextHoldToPickup(Long bookId) {
+        inventoryLocks.book(bookId);
         Optional<Reservation> nextHold = reservationRepository.findFirstByBookIdAndStatusOrderByReservationDateAsc(
                 bookId, ReservationStatus.PENDING
         );
@@ -126,10 +130,13 @@ public class ReservationService {
         return result;
     }
 
-    @Transactional
+    @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
     public ReservationResponseDTO cancelHold(Long reservationId, Long requestingUserId, boolean isStaff) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Reservation not found with id " + reservationId));
+
+        inventoryLocks.book(reservation.getBook().getId());
+        inventoryLocks.refresh(reservation);
 
         // Authorization check: Only staff or the owner can cancel
         if (!isStaff && !reservation.getMember().getId().equals(requestingUserId)) {
@@ -156,46 +163,32 @@ public class ReservationService {
         return toDTO(saved, null);
     }
 
-    @Transactional
+    @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
     public ReservationResponseDTO fulfillReservation(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Reservation not found with id " + reservationId));
+
+        inventoryLocks.member(reservation.getMember());
+        inventoryLocks.book(reservation.getBook().getId());
+        inventoryLocks.refresh(reservation);
 
         if (reservation.getStatus() != ReservationStatus.PENDING && reservation.getStatus() != ReservationStatus.HELD_FOR_PICKUP) {
             throw new IllegalStateException("Only active reservations can be fulfilled. Current status: " + reservation.getStatus());
         }
 
-        reservation.setStatus(ReservationStatus.FULFILLED);
-        Reservation saved = reservationRepository.save(reservation);
-
-        return toDTO(saved, null);
+        borrowingService.borrowBook(reservation.getMember().getId(), reservation.getBook().getId());
+        return toDTO(reservation, null);
     }
 
-    @Transactional
+    @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
     public Optional<ReservationResponseDTO> fulfillNextPendingHold(Long bookId) {
-        Optional<Reservation> held = reservationRepository.findFirstByBookIdAndStatusOrderByReservationDateAsc(
-                bookId, ReservationStatus.HELD_FOR_PICKUP
-        );
-        if (held.isPresent()) {
-            Reservation reservation = held.get();
-            reservation.setStatus(ReservationStatus.FULFILLED);
-            Reservation saved = reservationRepository.save(reservation);
-            return Optional.of(toDTO(saved, null));
+        Optional<Reservation> next = reservationRepository.findFirstByBookIdAndStatusOrderByReservationDateAsc(
+                bookId, ReservationStatus.HELD_FOR_PICKUP);
+        if (next.isEmpty()) {
+            next = reservationRepository.findFirstByBookIdAndStatusOrderByReservationDateAsc(
+                    bookId, ReservationStatus.PENDING);
         }
-
-        Optional<Reservation> nextInQueue = reservationRepository.findFirstByBookIdAndStatusOrderByReservationDateAsc(
-                bookId, ReservationStatus.PENDING
-        );
-
-        if (nextInQueue.isEmpty()) {
-            return Optional.empty();
-        }
-
-        Reservation reservation = nextInQueue.get();
-        reservation.setStatus(ReservationStatus.FULFILLED);
-        Reservation saved = reservationRepository.save(reservation);
-
-        return Optional.of(toDTO(saved, null));
+        return next.map(r -> fulfillReservation(r.getId()));
     }
 
     @Transactional(readOnly = true)
@@ -221,13 +214,12 @@ public class ReservationService {
                 ReservationStatus.HELD_FOR_PICKUP
         );
 
-        long countAheadOrEqual = reservationRepository.countByBookIdAndStatusAndReservationDateLessThanEqual(
-                reservation.getBook().getId(),
-                ReservationStatus.PENDING,
-                reservation.getReservationDate()
-        );
-
-        return Math.max(1, (int) (countHeld + countAheadOrEqual));
+        List<Reservation> pending = reservationRepository.findByBookIdAndStatusOrderByReservationDateAsc(
+                reservation.getBook().getId(), ReservationStatus.PENDING);
+        for (int i = 0; i < pending.size(); i++) {
+            if (pending.get(i).getId().equals(reservation.getId())) return (int) countHeld + i + 1;
+        }
+        return (int) countHeld + 1;
     }
 
     public ReservationResponseDTO toDTO(Reservation reservation, Integer queuePosition) {

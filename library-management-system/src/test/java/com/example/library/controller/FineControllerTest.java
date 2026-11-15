@@ -131,7 +131,7 @@ class FineControllerTest {
         sampleFineDTO.setPaymentReference("PAY-12345");
         sampleFineDTO.setSettledAt(LocalDateTime.now());
 
-        when(fineService.payFine(eq(100L), eq("PAY-12345"))).thenReturn(sampleFineDTO);
+        when(fineService.payFine(eq(100L), eq("PAY-12345"), any())).thenReturn(sampleFineDTO);
 
         PayFineRequestDTO request = new PayFineRequestDTO("PAY-12345");
 

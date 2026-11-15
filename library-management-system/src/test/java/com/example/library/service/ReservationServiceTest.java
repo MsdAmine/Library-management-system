@@ -40,6 +40,12 @@ class ReservationServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private com.example.library.service.InventoryLocks inventoryLocks;
+
+    @Mock
+    private com.example.library.service.BorrowingService borrowingService;
+
     @InjectMocks
     private ReservationService reservationService;
 
@@ -90,8 +96,8 @@ class ReservationServiceTest {
             return r;
         });
         when(reservationRepository.countByBookIdAndStatus(20L, ReservationStatus.HELD_FOR_PICKUP)).thenReturn(0L);
-        when(reservationRepository.countByBookIdAndStatusAndReservationDateLessThanEqual(eq(20L), eq(ReservationStatus.PENDING), any(LocalDateTime.class)))
-                .thenReturn(1L);
+        when(reservationRepository.findByBookIdAndStatusOrderByReservationDateAsc(20L, ReservationStatus.PENDING))
+                .thenReturn(List.of(sampleReservation));
 
         ReservationResponseDTO result = reservationService.placeHold(10L, 20L);
 
@@ -178,8 +184,8 @@ class ReservationServiceTest {
         when(reservationRepository.findByMemberIdOrderByReservationDateDesc(10L))
                 .thenReturn(List.of(ready, sampleReservation));
         when(reservationRepository.countByBookIdAndStatus(20L, ReservationStatus.HELD_FOR_PICKUP)).thenReturn(1L);
-        when(reservationRepository.countByBookIdAndStatusAndReservationDateLessThanEqual(eq(20L), eq(ReservationStatus.PENDING), any(LocalDateTime.class)))
-                .thenReturn(1L);
+        when(reservationRepository.findByBookIdAndStatusOrderByReservationDateAsc(20L, ReservationStatus.PENDING))
+                .thenReturn(List.of(sampleReservation));
 
         List<ReservationResponseDTO> results = reservationService.getMyHolds(10L);
 
@@ -284,11 +290,12 @@ class ReservationServiceTest {
     @DisplayName("fulfillReservation: Marks reservation as FULFILLED")
     void fulfillReservation_Success() {
         when(reservationRepository.findById(100L)).thenReturn(Optional.of(sampleReservation));
-        when(reservationRepository.save(any(Reservation.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        doAnswer(invocation -> { sampleReservation.setStatus(ReservationStatus.FULFILLED); return null; })
+                .when(borrowingService).borrowBook(10L, 20L);
 
         ReservationResponseDTO result = reservationService.fulfillReservation(100L);
 
         assertThat(result.getStatus()).isEqualTo(ReservationStatus.FULFILLED);
-        verify(reservationRepository).save(sampleReservation);
+        verify(borrowingService).borrowBook(10L, 20L);
     }
 }

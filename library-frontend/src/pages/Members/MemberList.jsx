@@ -42,7 +42,7 @@ const MemberList = () => {
   const { role } = useAuth();
   const isAdmin = role === 'ADMIN';
   const isLibrarian = role === 'LIBRARIAN';
-  const canManageMembers = isAdmin || isLibrarian; // Role guard for Add/Edit
+  const canManageMembers = isAdmin || isLibrarian; // Role guard for Edit
   const canDeleteMembers = isAdmin; // Role guard for Delete
 
   // Main data state
@@ -265,7 +265,7 @@ const MemberList = () => {
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin text-indigo-700' : ''}`} />
           </button>
 
-          {canManageMembers && (
+          {isAdmin && (
             <button
               onClick={openAddModal}
               id="add-member-btn"
@@ -544,7 +544,7 @@ const MemberList = () => {
             >
               Clear Search Query
             </button>
-          ) : canManageMembers ? (
+          ) : isAdmin ? (
             <button
               onClick={openAddModal}
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-white bg-indigo-700 hover:bg-indigo-800 shadow-md shadow-indigo-700/20 transition-all cursor-pointer"

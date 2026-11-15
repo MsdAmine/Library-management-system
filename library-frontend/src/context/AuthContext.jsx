@@ -116,6 +116,11 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  useEffect(() => {
+    window.addEventListener('auth:expired', logout);
+    return () => window.removeEventListener('auth:expired', logout);
+  }, []);
+
   const isAuthenticated = !!token && !!user;
   const role = user?.role || localStorage.getItem('role') || null;
 

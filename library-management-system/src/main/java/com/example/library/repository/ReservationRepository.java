@@ -24,9 +24,14 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     Page<Reservation> findByMemberId(Long memberId, Pageable pageable);
 
+    @Query("SELECT r FROM Reservation r WHERE r.book.id = :bookId AND r.status = :status ORDER BY r.reservationDate, r.id")
     List<Reservation> findByBookIdAndStatusOrderByReservationDateAsc(Long bookId, ReservationStatus status);
 
-    Optional<Reservation> findFirstByBookIdAndStatusOrderByReservationDateAsc(Long bookId, ReservationStatus status);
+    Optional<Reservation> findFirstByBookIdAndStatusOrderByReservationDateAscIdAsc(Long bookId, ReservationStatus status);
+
+    default Optional<Reservation> findFirstByBookIdAndStatusOrderByReservationDateAsc(Long bookId, ReservationStatus status) {
+        return findFirstByBookIdAndStatusOrderByReservationDateAscIdAsc(bookId, status);
+    }
 
     boolean existsByMemberIdAndBookIdAndStatus(Long memberId, Long bookId, ReservationStatus status);
 

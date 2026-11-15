@@ -43,16 +43,19 @@ public class BorrowingService {
     private final UserRepository userRepository;
     private final ReservationRepository reservationRepository;
     private final FineRepository fineRepository;
+    private final InventoryLocks inventoryLocks;
 
     public static final int MAX_ALLOWED_BOOKS = 5;
     public static final BigDecimal FINE_PER_OVERDUE_DAY = new BigDecimal("1.50");
     public static final BigDecimal MAX_OUTSTANDING_FINE_LIMIT = new BigDecimal("10.00");
     public static final int PICKUP_LOCK_HOURS = 48;
 
-    @Transactional
+    @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
     public BorrowingRecord borrowBook(Long userId, Long bookId) {
         User user = userRepository.findActiveById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + userId));
+
+        inventoryLocks.member(user);
 
         // Block checkout if member has outstanding pending fines exceeding $10.00
         BigDecimal outstandingFines = fineRepository.sumAmountByMemberIdAndStatus(userId, FineStatus.PENDING);
@@ -64,12 +67,13 @@ public class BorrowingService {
             );
         }
 
-        long activeLoans = borrowingRecordRepository.countByUserIdAndStatus(userId, BorrowingRecord.BorrowingStatus.BORROWED);
+        long activeLoans = borrowingRecordRepository.countByUserIdAndStatusIn(userId, List.of(BorrowingRecord.BorrowingStatus.BORROWED, BorrowingRecord.BorrowingStatus.OVERDUE));
         if (activeLoans >= MAX_ALLOWED_BOOKS) {
             throw new BorrowingLimitExceededException("Member has reached the maximum allowed borrowed books limit of " + MAX_ALLOWED_BOOKS);
         }
 
-        Book book = bookRepository.findById(bookId)
+        inventoryLocks.book(bookId);
+        Book book = bookRepository.findActiveById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id " + bookId));
 
         // Check if member has an active HELD_FOR_PICKUP reservation for this book
@@ -79,6 +83,9 @@ public class BorrowingService {
 
         if (heldForUser.isPresent()) {
             Reservation hold = heldForUser.get();
+            if (hold.getPickupDeadline() == null || !hold.getPickupDeadline().isAfter(LocalDateTime.now())) {
+                throw new BookNotAvailableException("Pickup hold has expired; wait for reservation processing.");
+            }
             hold.setStatus(ReservationStatus.FULFILLED);
             reservationRepository.save(hold);
             // Copy was quarantined on return, so availableCopies does not need decrementing
@@ -108,10 +115,13 @@ public class BorrowingService {
         return borrowingRecordRepository.save(record);
     }
 
-    @Transactional
+    @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
     public BorrowingRecord returnBook(Long recordId) {
         BorrowingRecord record = borrowingRecordRepository.findById(recordId)
                 .orElseThrow(() -> new ResourceNotFoundException("Borrowing record not found with id " + recordId));
+
+        inventoryLocks.book(record.getBook().getId());
+        inventoryLocks.refresh(record);
 
         if (record.getStatus() == BorrowingRecord.BorrowingStatus.RETURNED) {
             throw new BookAlreadyReturnedException("Borrowing record " + recordId + " has already been returned");
@@ -181,7 +191,7 @@ public class BorrowingService {
         return borrowingRecordRepository.findByArchivedTrue();
     }
 
-    @Transactional
+    @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
     public ArchiveResultDTO archiveReturnedRecords(int retentionDays) {
         LocalDate cutoffDate = LocalDate.now().minusDays(retentionDays);
         LocalDateTime now = LocalDateTime.now();
@@ -195,7 +205,7 @@ public class BorrowingService {
     }
 
     public List<BorrowingRecord> getActiveBorrowings(Long userId) {
-        return borrowingRecordRepository.findByUserIdAndStatus(userId, BorrowingRecord.BorrowingStatus.BORROWED);
+        return borrowingRecordRepository.findByUserIdAndStatusIn(userId, List.of(BorrowingRecord.BorrowingStatus.BORROWED, BorrowingRecord.BorrowingStatus.OVERDUE));
     }
 
     public ReturnRecordResponseDTO toReturnDTO(BorrowingRecord record) {

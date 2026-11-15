@@ -25,7 +25,7 @@ export declare const reservationService: {
   cancelHold(reservationId: number | string): Promise<ReservationResponseDTO>;
   fulfillReservation(reservationId: number | string): Promise<ReservationResponseDTO>;
   fulfillNextHold(bookId: number | string): Promise<ReservationResponseDTO>;
-  getErrorMessage(error: any): string;
+  getErrorMessage(error: unknown): string;
 };
 
 export default reservationService;
