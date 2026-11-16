@@ -29,5 +29,8 @@ public interface FineRepository extends JpaRepository<Fine, Long> {
     @Query("SELECT COALESCE(SUM(f.amount), 0) FROM Fine f WHERE f.member.id = :memberId AND f.status = :status")
     BigDecimal sumAmountByMemberIdAndStatus(@Param("memberId") Long memberId, @Param("status") FineStatus status);
 
+    @Query("SELECT COALESCE(SUM(f.amount), 0) FROM Fine f WHERE f.status = :status")
+    BigDecimal sumAmountByStatus(@Param("status") FineStatus status);
+
     long countByMemberIdAndStatus(Long memberId, FineStatus status);
 }

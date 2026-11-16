@@ -14,12 +14,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import com.example.library.repository.BorrowingRecordRepository;
+import com.example.library.repository.ReservationRepository;
+import com.example.library.exception.BookInUseException;
+import com.example.library.model.BorrowingRecord.BorrowingStatus;
+import com.example.library.model.ReservationStatus;
+import java.util.List;
+import org.springframework.transaction.annotation.Isolation;
 
 @Service
 @RequiredArgsConstructor
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final BorrowingRecordRepository borrowingRecordRepository;
+    private final ReservationRepository reservationRepository;
+    private final InventoryLocks inventoryLocks;
 
     public Page<Book> getAllBooks(Pageable pageable) {
         return bookRepository.findAllActive(pageable);
@@ -96,10 +106,21 @@ public class BookService {
         return addBook(dto);
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public void deleteBook(Long id) {
+        inventoryLocks.book(id);
         Book book = bookRepository.findActiveById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id " + id));
+        long outstandingLoans = borrowingRecordRepository.countByBookIdAndStatusIn(id, List.of(
+                BorrowingStatus.BORROWED,
+                BorrowingStatus.OVERDUE));
+        long activeHolds = reservationRepository.countByBookIdAndStatusIn(id, List.of(
+                ReservationStatus.PENDING,
+                ReservationStatus.HELD_FOR_PICKUP));
+        if (outstandingLoans > 0 || activeHolds > 0) {
+            throw new BookInUseException(
+                    "Return outstanding loans and resolve active reservations before deleting this book.");
+        }
         book.setActive(false);
         bookRepository.save(book);
     }

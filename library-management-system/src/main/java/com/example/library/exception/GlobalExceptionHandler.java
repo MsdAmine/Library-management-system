@@ -13,6 +13,13 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(BookInUseException.class)
+    public ResponseEntity<ErrorResponse> handleBookInUse(BookInUseException ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorResponse.builder()
+                .timestamp(LocalDateTime.now()).status(HttpStatus.CONFLICT.value())
+                .error(HttpStatus.CONFLICT.getReasonPhrase()).message(ex.getMessage()).path(request.getRequestURI()).build());
+    }
+
     @ExceptionHandler(ResourceAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleAlreadyExists(ResourceAlreadyExistsException ex, HttpServletRequest request) {
         ErrorResponse error = ErrorResponse.builder()
@@ -222,4 +229,4 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-}
+}

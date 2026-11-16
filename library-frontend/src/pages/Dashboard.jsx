@@ -46,16 +46,13 @@ const Dashboard = () => {
           totalBooks = data.bookStats?.totalTitles || data.books?.totalTitles || 0;
           activeMembers = data.memberStats?.totalMembers || data.members?.totalMembers || 0;
           activeLoans = data.borrowingStats?.activeBorrowings || data.borrowings?.activeBorrowings || 0;
-          pendingFines = data.borrowingStats?.overdueBorrowings || data.borrowings?.overdueBorrowings || 0;
         }
 
         if (finesResult.status === 'fulfilled' && Array.isArray(finesResult.value)) {
           const unpaid = finesResult.value.filter(
-            (f) => f.status === 'PENDING' || f.status === 'UNPAID' || !f.paid
+            (f) => f.status === 'PENDING'
           );
-          if (unpaid.length > 0) {
-            pendingFines = unpaid.length;
-          }
+          pendingFines = unpaid.length;
         }
 
         setMetrics({

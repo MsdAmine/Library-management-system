@@ -30,6 +30,13 @@ class BookServiceTest {
     @Mock
     private BookRepository bookRepository;
 
+    @Mock
+    private com.example.library.repository.BorrowingRecordRepository borrowingRecordRepository;
+    @Mock
+    private com.example.library.repository.ReservationRepository reservationRepository;
+    @Mock
+    private InventoryLocks inventoryLocks;
+
     @InjectMocks
     private BookService bookService;
 

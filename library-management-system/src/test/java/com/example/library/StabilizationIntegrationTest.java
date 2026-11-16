@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
+@SpringBootTest(properties = "spring.jpa.open-in-view=false")
 @AutoConfigureMockMvc
 class StabilizationIntegrationTest extends IsolatedDatabaseTest {
     @Autowired MockMvc mvc;
@@ -57,6 +57,59 @@ class StabilizationIntegrationTest extends IsolatedDatabaseTest {
         mvc.perform(get("/api/v1/fines/my-fines").header("Authorization", oldToken)).andExpect(status().isUnauthorized());
     }
 
+
+    @Test void loanResponsesSerializeWithoutHibernateProxiesOrCredentials() throws Exception {
+        User member = member(Role.USER); Book b = book(1);
+        mvc.perform(post("/api/v1/borrowings/borrow").param("memberId", member.getId().toString())
+                .param("bookId", b.getId().toString()).header("Authorization", token(member)))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.user.password").doesNotExist());
+        String[] routes = {"/api/v1/borrowings/member/" + member.getId() + "/active",
+                "/api/v1/borrowings/member/" + member.getId()};
+        for (String route : routes) {
+            mvc.perform(get(route).header("Authorization", token(member))).andExpect(status().isOk())
+                    .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.content()
+                            .string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.containsString("hibernateLazyInitializer"))));
+        }
+        mvc.perform(get("/api/v1/borrowings").header("Authorization", token(member(Role.ADMIN))))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.content[0].book.title").exists());
+        mvc.perform(get("/api/v1/analytics").header("Authorization", token(member)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Autowired AnalyticsService analytics;
+
+    @Test void collectedFinesIncludePaymentsAndExcludePendingAndWaivedAmounts() {
+        var before = analytics.getAnalytics().getBorrowings().getTotalFinesCollected();
+        User owner = member(Role.USER); Book b = book(1);
+        BorrowingRecord first = borrowing.borrowBook(owner.getId(), b.getId());
+        first.setDueDate(LocalDate.now().minusDays(1)); loans.saveAndFlush(first);
+        borrowing.returnBook(first.getId());
+        Fine waived = fines.findByBorrowingRecordId(first.getId()).orElseThrow();
+        assertThat(analytics.getAnalytics().getBorrowings().getTotalFinesCollected()).isEqualByComparingTo(before);
+        fineService.waiveFine(waived.getId(), "Test waiver");
+        assertThat(analytics.getAnalytics().getBorrowings().getTotalFinesCollected()).isEqualByComparingTo(before);
+        BorrowingRecord second = borrowing.borrowBook(owner.getId(), b.getId());
+        second.setDueDate(LocalDate.now().minusDays(3)); loans.saveAndFlush(second);
+        borrowing.returnBook(second.getId());
+        fineService.payFine(fines.findByBorrowingRecordId(second.getId()).orElseThrow().getId(), "TEST-RECEIPT", owner);
+        assertThat(analytics.getAnalytics().getBorrowings().getTotalFinesCollected())
+                .isEqualByComparingTo(before.add(new java.math.BigDecimal("4.50")));
+    }
+
+    @Test void bookDeletionRequiresOutstandingLoansAndReservationsToBeResolved() throws Exception {
+        User borrower = member(Role.USER); User waiting = member(Role.USER); User admin = member(Role.ADMIN);
+        Book b = book(1); BorrowingRecord loan = borrowing.borrowBook(borrower.getId(), b.getId());
+        mvc.perform(delete("/api/v1/books/" + b.getId()).header("Authorization", token(admin)))
+                .andExpect(status().isConflict());
+        var reservation = reservations.placeHold(waiting.getId(), b.getId());
+        borrowing.returnBook(loan.getId());
+        mvc.perform(delete("/api/v1/books/" + b.getId()).header("Authorization", token(admin)))
+                .andExpect(status().isConflict());
+        reservations.cancelHold(reservation.getId(), waiting.getId(), false);
+        mvc.perform(delete("/api/v1/books/" + b.getId()).header("Authorization", token(admin)))
+                .andExpect(status().isNoContent());
+        assertThat(books.findById(b.getId()).orElseThrow().isActive()).isFalse();
+    }
 
     @Test void onlyAdminCanCreateMemberAccounts() throws Exception {
         String body = "{\"firstName\":\"New\",\"lastName\":\"Member\",\"email\":\"" + UUID.randomUUID()

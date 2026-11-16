@@ -25,6 +25,7 @@ public interface BorrowingRecordRepository extends JpaRepository<BorrowingRecord
     List<BorrowingRecord> findByStatusAndDueDateBefore(BorrowingRecord.BorrowingStatus status, LocalDate today);
     long countByUserIdAndStatus(Long userId, BorrowingRecord.BorrowingStatus status);
     long countByUserIdAndStatusIn(Long userId, List<BorrowingRecord.BorrowingStatus> statuses);
+    long countByBookIdAndStatusIn(Long bookId, List<BorrowingRecord.BorrowingStatus> statuses);
     long countByStatus(BorrowingRecord.BorrowingStatus status);
 
     @Query("SELECT COUNT(r) FROM BorrowingRecord r WHERE r.status IN ('BORROWED', 'OVERDUE') AND r.dueDate < :today")

@@ -15,6 +15,7 @@ public class AnalyticsController {
 
     private final AnalyticsService analyticsService;
 
+    @org.springframework.security.access.prepost.PreAuthorize("hasAnyRole('ADMIN', 'LIBRARIAN')")
     @GetMapping
     public ResponseEntity<LibraryAnalyticsDTO> getAnalytics() {
         return ResponseEntity.ok(analyticsService.getAnalytics());
