@@ -31,6 +31,11 @@ $env:APPLICATION_SECURITY_JWT_SECRET_KEY = 'your-base64-signing-key'
 .\mvnw.cmd spring-boot:run
 ```
 
+For persistent local settings, create `library-management-system/application-local.properties`
+(ignored by Git). It is loaded automatically when running from the backend directory.
+Set `application.security.jwt.secret-key` to your private Base64 signing key there;
+this replaces the need to export the key in every terminal. Never commit the local file.
+
 The API runs on port 8080. Generate a signing key once and keep it private; do not change it
 on each restart unless you intend to invalidate existing sessions.
 
