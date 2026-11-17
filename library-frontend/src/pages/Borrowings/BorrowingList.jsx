@@ -343,7 +343,9 @@ const BorrowingList = () => {
             <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
               <Search className="h-4 w-4" />
             </div>
+            <label htmlFor="loans-search" className="sr-only">Search loans by member, book, author, or record ID</label>
             <input
+              id="loans-search"
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -353,6 +355,7 @@ const BorrowingList = () => {
             {searchTerm && (
               <button
                 onClick={() => setSearchTerm('')}
+                aria-label="Clear loan search"
                 className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600"
               >
                 <X className="h-4 w-4" />
@@ -365,7 +368,9 @@ const BorrowingList = () => {
             <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
               <Filter className="h-4 w-4" />
             </div>
+            <label htmlFor="loans-status" className="sr-only">Filter loans by status</label>
             <select
+              id="loans-status"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               className="w-full pl-10 pr-8 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-700/20 focus:border-indigo-700 shadow-xs transition-all appearance-none cursor-pointer"
@@ -557,8 +562,9 @@ const BorrowingList = () => {
         {activeTab === 'all' && totalPages > 1 && (
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-slate-200 bg-slate-50/60 text-xs text-slate-500">
             <div className="flex items-center gap-3">
-              <span>Rows per page:</span>
+              <label htmlFor="loans-page-size"><span aria-hidden="true">Rows per page:</span><span className="sr-only">Loan rows per page</span></label>
               <select
+                id="loans-page-size"
                 value={pageSize}
                 onChange={(e) => {
                   setPageSize(Number(e.target.value));

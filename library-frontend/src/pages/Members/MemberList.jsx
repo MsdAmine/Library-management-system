@@ -427,6 +427,7 @@ const MemberList = () => {
           {/* Search Bar */}
           <div className="w-full sm:max-w-md relative">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+            <label htmlFor="member-search-input" className="sr-only">Search members by name</label>
             <input
               type="text"
               id="member-search-input"
@@ -440,6 +441,7 @@ const MemberList = () => {
                 onClick={clearSearch}
                 className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1"
                 title="Clear search"
+                aria-label="Clear member search"
               >
                 <X className="h-3 w-3" />
               </button>
@@ -796,8 +798,9 @@ const MemberList = () => {
             </span>
 
             <div className="flex items-center gap-1.5 pl-3 border-l border-slate-200">
-              <span className="text-[11px] font-medium text-slate-500">Per page:</span>
+              <label htmlFor="members-page-size" className="text-[11px] font-medium text-slate-500"><span aria-hidden="true">Per page:</span><span className="sr-only">Members per page</span></label>
               <select
+                id="members-page-size"
                 value={pageSize}
                 onChange={(e) => {
                   setPageSize(Number(e.target.value));

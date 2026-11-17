@@ -402,7 +402,9 @@ const BookList = () => {
           {/* Title Search Input */}
           <div className="lg:col-span-4 relative">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+            <label htmlFor="catalog-title" className="sr-only">Search books by title</label>
             <input
+              id="catalog-title"
               type="text"
               placeholder="Search by book title..."
               value={filters.title}
@@ -412,6 +414,7 @@ const BookList = () => {
             {filters.title && (
               <button
                 onClick={() => handleFilterChange('title', '')}
+                aria-label="Clear book title search"
                 className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1"
               >
                 <X className="h-3 w-3" />
@@ -422,7 +425,9 @@ const BookList = () => {
           {/* Author Search Input */}
           <div className="lg:col-span-3 relative">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+            <label htmlFor="catalog-author" className="sr-only">Filter books by author</label>
             <input
+              id="catalog-author"
               type="text"
               placeholder="Filter by author..."
               value={filters.author}
@@ -432,6 +437,7 @@ const BookList = () => {
             {filters.author && (
               <button
                 onClick={() => handleFilterChange('author', '')}
+                aria-label="Clear author filter"
                 className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1"
               >
                 <X className="h-3 w-3" />
@@ -441,7 +447,9 @@ const BookList = () => {
 
           {/* Genre Dropdown */}
           <div className="lg:col-span-3">
+            <label htmlFor="catalog-genre" className="sr-only">Filter books by genre</label>
             <select
+              id="catalog-genre"
               value={filters.genre}
               onChange={(e) => handleFilterChange('genre', e.target.value)}
               className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:bg-white focus:outline-none focus:border-indigo-700 focus:ring-2 focus:ring-indigo-700/15 transition-all cursor-pointer font-medium"
@@ -917,8 +925,9 @@ const BookList = () => {
             </span>
 
             <div className="flex items-center gap-1.5 pl-3 border-l border-slate-200">
-              <span className="text-[11px] font-medium text-slate-500">Per page:</span>
+              <label htmlFor="catalog-page-size" className="text-[11px] font-medium text-slate-500"><span aria-hidden="true">Per page:</span><span className="sr-only">Books per page</span></label>
               <select
+                id="catalog-page-size"
                 value={pageSize}
                 onChange={(e) => {
                   setPageSize(Number(e.target.value));
