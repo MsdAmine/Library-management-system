@@ -266,7 +266,7 @@ const AnalyticsDashboard = () => {
                   <span className="text-3xl font-extrabold text-slate-900 tracking-tight">
                     {formatNumber(activeLoans)}
                   </span>
-                  <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                  <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
                     Active
                   </span>
                 </div>
@@ -411,7 +411,7 @@ const AnalyticsDashboard = () => {
           <div className="pt-4 mt-2 border-t border-slate-100 space-y-1.5">
             <div className="flex justify-between text-[11px] font-semibold">
               <span className="text-purple-700">{formatPercent(memberParticipationPct)} Active</span>
-              <span className="text-slate-400">Ratio: {activeBorrowers}/{totalMembers}</span>
+              <span className="text-slate-600">Ratio: {activeBorrowers}/{totalMembers}</span>
             </div>
             <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
               <div
@@ -480,7 +480,7 @@ const AnalyticsDashboard = () => {
             </div>
             <div className="flex items-center justify-between py-2">
               <span className="text-slate-600 font-medium">Shelf Availability Rate</span>
-              <span className="font-bold text-emerald-600">{formatPercent(availablePct)}</span>
+              <span className="font-bold text-emerald-700">{formatPercent(availablePct)}</span>
             </div>
           </div>
         </div>
@@ -532,7 +532,7 @@ const AnalyticsDashboard = () => {
             </div>
             <div className="flex items-center justify-between py-2 border-b border-slate-100">
               <span className="text-slate-600 font-medium">Compliance Rate</span>
-              <span className="font-bold text-emerald-600">{formatPercent(onTimePctOfActive)}</span>
+              <span className="font-bold text-emerald-700">{formatPercent(onTimePctOfActive)}</span>
             </div>
             <div className="flex items-center justify-between py-2 border-b border-slate-100">
               <span className="text-slate-600 font-medium">Lifetime Transactions</span>
@@ -540,7 +540,7 @@ const AnalyticsDashboard = () => {
             </div>
             <div className="flex items-center justify-between py-2">
               <span className="text-slate-600 font-medium">Total Late Penalties</span>
-              <span className="font-bold text-amber-600">{formatCurrency(totalFines)}</span>
+              <span className="font-bold text-amber-700">{formatCurrency(totalFines)}</span>
             </div>
           </div>
         </div>
@@ -630,7 +630,7 @@ const AnalyticsDashboard = () => {
                 <span className="text-xs font-bold text-slate-900 group-hover:text-indigo-700 transition-colors block">
                   Book Catalog
                 </span>
-                <span className="text-[11px] text-slate-500">Manage {formatNumber(totalTitles)} titles</span>
+                <span className="text-[11px] text-slate-600">Manage {formatNumber(totalTitles)} titles</span>
               </div>
             </div>
             <ArrowUpRight className="h-4 w-4 text-slate-400 group-hover:text-indigo-700 transition-colors" />
@@ -645,10 +645,10 @@ const AnalyticsDashboard = () => {
                 <ArrowLeftRight className="h-4.5 w-4.5" />
               </div>
               <div>
-                <span className="text-xs font-bold text-slate-900 group-hover:text-emerald-600 transition-colors block">
+                <span className="text-xs font-bold text-slate-900 group-hover:text-emerald-700 transition-colors block">
                   Loan Desk
                 </span>
-                <span className="text-[11px] text-slate-500">{formatNumber(activeLoans)} active checkouts</span>
+                <span className="text-[11px] text-slate-600">{formatNumber(activeLoans)} active checkouts</span>
               </div>
             </div>
             <ArrowUpRight className="h-4 w-4 text-slate-400 group-hover:text-emerald-600 transition-colors" />
@@ -666,7 +666,7 @@ const AnalyticsDashboard = () => {
                 <span className="text-xs font-bold text-slate-900 group-hover:text-purple-600 transition-colors block">
                   Member Directory
                 </span>
-                <span className="text-[11px] text-slate-500">{formatNumber(totalMembers)} patrons registered</span>
+                <span className="text-[11px] text-slate-600">{formatNumber(totalMembers)} patrons registered</span>
               </div>
             </div>
             <ArrowUpRight className="h-4 w-4 text-slate-400 group-hover:text-purple-600 transition-colors" />
