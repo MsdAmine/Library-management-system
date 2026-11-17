@@ -202,7 +202,7 @@ const Dashboard = () => {
                       stat.value
                     )}
                   </span>
-                  <span className="text-[10px] text-slate-400 font-medium truncate hidden sm:inline">
+                  <span className="text-[10px] text-slate-600 font-medium truncate hidden sm:inline">
                     {stat.helper}
                   </span>
                 </div>
@@ -237,7 +237,7 @@ const Dashboard = () => {
                     <div className={`h-10 w-10 sm:h-11 sm:w-11 rounded-xl bg-gradient-to-tr ${item.color} flex items-center justify-center text-white shadow-md shadow-slate-900/15 group-hover:scale-105 transition-transform`}>
                       <Icon className="h-5 w-5" />
                     </div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-indigo-700 bg-slate-100 group-hover:bg-indigo-50 px-2 py-0.5 rounded-full border border-slate-200 group-hover:border-indigo-200 transition-colors">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 group-hover:text-indigo-700 bg-slate-100 group-hover:bg-indigo-50 px-2 py-0.5 rounded-full border border-slate-200 group-hover:border-indigo-200 transition-colors">
                       {item.badge}
                     </span>
                   </div>
