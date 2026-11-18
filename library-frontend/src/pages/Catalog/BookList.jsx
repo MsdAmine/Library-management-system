@@ -494,7 +494,7 @@ const BookList = () => {
         </div>
       )}
 
-      {/* Main Content Area: Loading Skeletons vs Data vs Empty State */}
+      {/* A failed request with no cached books is handled by the error banner above. */}
       {loading ? (
         <div className="bg-white border border-slate-200/90 rounded-2xl p-6 overflow-hidden shadow-xs">
           <div className="space-y-4">
@@ -512,7 +512,7 @@ const BookList = () => {
             ))}
           </div>
         </div>
-      ) : books.length === 0 ? (
+      ) : fetchError && books.length === 0 ? null : books.length === 0 ? (
         /* Empty State */
         <div className="bg-white border border-slate-200/90 rounded-3xl p-12 text-center flex flex-col items-center justify-center space-y-4 shadow-xs">
           <div className="h-16 w-16 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-700 shadow-xs">
