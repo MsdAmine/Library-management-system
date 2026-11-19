@@ -76,6 +76,22 @@ class StabilizationIntegrationTest extends IsolatedDatabaseTest {
                 .andExpect(status().isForbidden());
     }
 
+    @Test void membersCanBorrowForThemselvesButNotForAnotherAccount() throws Exception {
+        User member = member(Role.USER); User other = member(Role.USER); Book b = book(1);
+        mvc.perform(post("/api/v1/borrowings/borrow").param("memberId", other.getId().toString())
+                .param("bookId", b.getId().toString()).header("Authorization", token(member)))
+                .andExpect(status().isForbidden());
+        assertThat(books.findById(b.getId()).orElseThrow().getAvailableCopies()).isEqualTo(1);
+        mvc.perform(post("/api/v1/borrowings/borrow").param("memberId", member.getId().toString())
+                .param("bookId", b.getId().toString()).header("Authorization", token(member)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.user.id").value(member.getId().intValue()))
+                .andExpect(jsonPath("$.book.id").value(b.getId().intValue()))
+                .andExpect(jsonPath("$.dueDate").value(LocalDate.now().plusDays(14).toString()))
+                .andExpect(jsonPath("$.status").value("BORROWED"));
+        assertThat(books.findById(b.getId()).orElseThrow().getAvailableCopies()).isZero();
+    }
+
     @Autowired AnalyticsService analytics;
 
     @Test void collectedFinesIncludePaymentsAndExcludePendingAndWaivedAmounts() {

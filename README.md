@@ -55,6 +55,20 @@ npm run dev
 Vite normally serves port 5173. Backend CORS allows localhost ports 5173 and 5174.
 Use an ignored frontend `.env.local` for persistent local frontend configuration.
 
+## Borrow as a member
+
+Sign in with a member account (`USER` role), then open **Catalog**:
+
+1. For an available title, select **Borrow Book** in table or card view.
+2. Review the title and select **Confirm Borrow**. This creates a loan immediately;
+   cancelling creates no loan.
+3. Check the confirmation for your due date, or open your member portal to see the
+   new loan. The borrowing period is 14 days.
+
+Unavailable titles retain **Reserve / Hold**. When your reserved copy is ready,
+use **Ready for Pickup - Claim Book**. Staff can still issue loans through
+**Circulation & Loans → New Loan Checkout**.
+
 ## Business rules
 
 - Five outstanding loans per member; both BORROWED and OVERDUE count.
@@ -83,7 +97,11 @@ Hibernate validates the schema; Flyway performs schema changes. Never edit appli
 add `V<number>__description.sql` instead.
 
 Existing migrations: `V1__init_schema.sql`, `V2__add_performance_indexes.sql`,
-`V3__create_fine_table.sql`, and `V4__add_reservation_pickup_fields.sql`.
+`V3__create_fine_table.sql`, `V4__add_reservation_pickup_fields.sql`, and
+`V5__make_legacy_borrowing_member_optional.sql`. V5 preserves historical
+`member_id` values in older databases while allowing new loans to use `user_id`;
+fresh databases do not need this compatibility change. Restart the backend to
+apply pending migrations automatically.
 The overdue sweep runs daily at 01:00; pickup expiry runs every 15 minutes,
 using the application's system timezone. `APP_SCHEDULER_ENABLED=false` disables scheduling.
 
