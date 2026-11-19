@@ -37,7 +37,7 @@ export const borrowingService = {
   },
 
   /**
-   * Checkout/borrow a book for a member (Requires ADMIN or LIBRARIAN role).
+   * Borrow for the signed-in member; ADMIN and LIBRARIAN can also check out for other members.
    * @param {number|string} memberId
    * @param {number|string} bookId
    */

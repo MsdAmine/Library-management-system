@@ -34,6 +34,7 @@ import borrowingService from '../../api/borrowingService';
 import { useAuth } from '../../context/AuthContext';
 import BookModal from './BookModal';
 import DeleteBookModal from './DeleteBookModal';
+import BorrowBookModal from './BorrowBookModal';
 
 const GENRES = [
   'All Genres',
@@ -61,6 +62,7 @@ const BookList = () => {
   const isLibrarian = role === 'LIBRARIAN';
   const canManageBooks = isAdmin || isLibrarian; // Role guard for Add/Edit
   const canDeleteBooks = isAdmin; // Role guard for Delete
+  const canBorrowBooks = role === 'USER' && Boolean(user);
 
   // Main data state
   const [books, setBooks] = useState([]);
@@ -93,6 +95,7 @@ const BookList = () => {
   const [editingBook, setEditingBook] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deletingBook, setDeletingBook] = useState(null);
+  const [borrowingBook, setBorrowingBook] = useState(null);
 
   // Copied ISBN feedback state
   const [copiedIsbn, setCopiedIsbn] = useState(null);
@@ -252,6 +255,16 @@ const BookList = () => {
     setIsBookModalOpen(true);
   };
 
+  const handleBookBorrowed = (loan) => {
+    const dueDate = loan.dueDate
+      ? new Date(`${loan.dueDate}T00:00:00`).toLocaleDateString()
+      : null;
+    showToast(`You borrowed "${borrowingBook.title}".${dueDate ? ` Due ${dueDate}.` : ' View your due date in the member portal.'}`);
+    setBorrowingBook(null);
+    fetchMyHolds();
+    fetchBooks();
+  };
+
   const openEditModal = (book) => {
     setEditingBook(book);
     setIsBookModalOpen(true);
@@ -288,6 +301,7 @@ const BookList = () => {
       {/* Toast Notification Alert */}
       {toastMessage && (
         <div 
+          role="status"
           className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-2xl border shadow-xl backdrop-blur-xl animate-in slide-in-from-bottom-5 duration-300 ${
             toastMessage.type === 'info'
               ? 'bg-white/95 border-slate-200 text-slate-700 shadow-slate-900/10'
@@ -715,6 +729,17 @@ const BookList = () => {
                               );
                             }
 
+                            if (canBorrowBooks) {
+                              return (
+                                <button
+                                  onClick={() => setBorrowingBook(book)}
+                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-indigo-700 hover:bg-indigo-800 transition-colors cursor-pointer"
+                                >
+                                  <BookOpen className="h-3.5 w-3.5" aria-hidden="true" />
+                                  <span>Borrow Book</span>
+                                </button>
+                              );
+                            }
                             return null;
                           })()}
 
@@ -738,13 +763,6 @@ const BookList = () => {
                             >
                               <Trash2 className="h-4 w-4" />
                             </button>
-                          )}
-
-                          {/* For standard USER with available stock (In Stock view) */}
-                          {!canManageBooks && !canDeleteBooks && isAvailable && (
-                            <span className="text-[11px] text-emerald-600 font-semibold pr-2">
-                              In Stock
-                            </span>
                           )}
                         </div>
                       </td>
@@ -811,7 +829,7 @@ const BookList = () => {
                     )}
                   </div>
 
-                  {/* Out of Stock Hold Banner / Button in Card View */}
+                  {/* Borrowing and reservation actions in Card View */}
                   {(() => {
                     const isHeldForMe = myHold?.status === 'HELD_FOR_PICKUP';
                     const isPendingForMe = myHold?.status === 'PENDING';
@@ -879,6 +897,19 @@ const BookList = () => {
                       );
                     }
 
+                    if (canBorrowBooks) {
+                      return (
+                        <div className="mt-4 pt-3 border-t border-slate-100">
+                          <button
+                            onClick={() => setBorrowingBook(book)}
+                            className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-xs font-bold text-white bg-indigo-700 hover:bg-indigo-800 transition-colors cursor-pointer"
+                          >
+                            <BookOpen className="h-4 w-4" aria-hidden="true" />
+                            <span>Borrow Book</span>
+                          </button>
+                        </div>
+                      );
+                    }
                     return null;
                   })()}
                 </div>
@@ -988,6 +1019,15 @@ const BookList = () => {
             </button>
           </div>
         </div>
+      )}
+
+      {borrowingBook && canBorrowBooks && (
+        <BorrowBookModal
+          book={borrowingBook}
+          memberId={user.id || user.userId}
+          onClose={() => setBorrowingBook(null)}
+          onSuccess={handleBookBorrowed}
+        />
       )}
 
       {/* Add / Edit Book Modal */}
