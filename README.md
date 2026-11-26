@@ -97,11 +97,14 @@ Hibernate validates the schema; Flyway performs schema changes. Never edit appli
 add `V<number>__description.sql` instead.
 
 Existing migrations: `V1__init_schema.sql`, `V2__add_performance_indexes.sql`,
-`V3__create_fine_table.sql`, `V4__add_reservation_pickup_fields.sql`, and
-`V5__make_legacy_borrowing_member_optional.sql`. V5 preserves historical
+`V3__create_fine_table.sql`, `V4__add_reservation_pickup_fields.sql`,
+`V5__make_legacy_borrowing_member_optional.sql`, and
+`V6__align_reservation_status_with_pickup.sql`. V5 preserves historical
 `member_id` values in older databases while allowing new loans to use `user_id`;
-fresh databases do not need this compatibility change. Restart the backend to
-apply pending migrations automatically.
+fresh databases do not need this compatibility change. V6 aligns reservation
+statuses with the canonical string column so older databases accept
+`HELD_FOR_PICKUP`, preserving existing reservations and their relationships.
+Restart the backend to apply pending migrations automatically.
 The overdue sweep runs daily at 01:00; pickup expiry runs every 15 minutes,
 using the application's system timezone. `APP_SCHEDULER_ENABLED=false` disables scheduling.
 

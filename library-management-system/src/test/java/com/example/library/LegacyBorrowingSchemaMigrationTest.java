@@ -39,7 +39,7 @@ class LegacyBorrowingSchemaMigrationTest {
                     + "VALUES (40,10,20,30,'2026-01-01','2026-01-15','BORROWED')");
 
             Flyway latest = Flyway.configure()
-                    .dataSource(MYSQL.getJdbcUrl(), MYSQL.getUsername(), MYSQL.getPassword()).load();
+                    .dataSource(MYSQL.getJdbcUrl(), MYSQL.getUsername(), MYSQL.getPassword()).target("5").load();
             assertThat(latest.migrate().migrationsExecuted).isEqualTo(1);
 
             try (ResultSet row = statement.executeQuery(
